@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="EpAccounting.UI.View.UserControl.ClientSearchView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModel="clr-namespace:EpAccounting.UI.ViewModel"
+             d:DataContext="{d:DesignInstance viewModel:ClientSearchViewModel}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary Source="../ViewResourceDictionary.xaml" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
+
+        <ListView Grid.Row="3"
+                  IsEnabled="{Binding Path=IsClientLoadingEnabled}"
+                  ItemsSource="{Binding Path=FoundClients}"
+                  ScrollViewer.CanContentScroll="True"
+                  SelectedItem="{Binding Path=SelectedClientDetailViewModel}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="Auto"
+                                    DisplayMemberBinding="{Binding Path=ClientId}"
+                                    Header="Kundennummer" />
+                    <GridViewColumn Width="Auto"
+                                    DisplayMemberBinding="{Binding Path=Title}"
+                                    Header="Anrede" />
+                    <GridViewColumn Width="Auto"
+                                    DisplayMemberBinding="{Binding Path=FirstName}"
+                                    Header="Vorname" />
+                    <GridViewColumn Width="Auto"
+                                    DisplayMemberBinding="{Binding Path=LastName}"
+                                    Header="Nachname" />
+                    <GridViewColumn Width="Auto"
+                                    DisplayMemberBinding="{Binding Path=Street}"
+                                    Header="Straße" />
+                    <GridViewColumn Width="Auto"
+                                    DisplayMemberBinding="{Binding Path=HouseNumber}"
+                                    Header="Hausnummer" />
+                    <GridViewColumn Width="Auto"
+                                    DisplayMemberBinding="{Binding Path=PostalCode}"
+                                    Header="PLZ" />
+                    <GridViewColumn Width="Auto"
+                                    DisplayMemberBinding="{Binding Path=City}"
+                                    Header="Ort" />
+                    <GridViewColumn Width="Auto"
+                                    DisplayMemberBinding="{Binding Path=PhoneNumber1}"
+                                    Header="Telefonnummer 1" />
+                    <GridViewColumn Width="Auto"
+                                    DisplayMemberBinding="{Binding Path=MobileNumber}"
+                                    Header="Handynummer" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>

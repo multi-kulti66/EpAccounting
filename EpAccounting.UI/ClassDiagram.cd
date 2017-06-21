@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="EpAccounting.UI.ViewModel.BillDetailViewModel">
+    <Position X="1.75" Y="2.5" Width="5" />
+    <TypeIdentifier>
+      <HashCode>AABAAEAAAACAAAIYoAAAAAAAAEAAIEABAAIABAEAAAg=</HashCode>
+      <FileName>ViewModel\BillDetailViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.BillEditViewModel">
+    <Position X="7.5" Y="2.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>EABAQEARSAQCAEIQAiABAIAACgNAAAFAAABBAIBABIQ=</HashCode>
+      <FileName>ViewModel\BillEditViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.BillItemDetailViewModel">
+    <Position X="18" Y="2.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQQAggAAgAAAAAACAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\BillItemDetailViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.BillViewModel">
+    <Position X="33.5" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\BillViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.BindableViewModelBase">
+    <Position X="22.75" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\BindableViewModelBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.ClientDetailViewModel">
+    <Position X="11.75" Y="2.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAIACEAAACAAAEAMoAAARAAAgEAQAAAAAAIABAAAQAg=</HashCode>
+      <FileName>ViewModel\ClientDetailViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.ClientEditViewModel">
+    <Position X="20.75" Y="2.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>gAHCwEJBSFASGEAIECgCAIACKhEDAKQAAIEJAKBIJAY=</HashCode>
+      <FileName>ViewModel\ClientEditViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.ClientSearchViewModel">
+    <Position X="36.5" Y="2.5" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAAAACAAAAAGAACgAAgAAAAAAAAAAIAAAAJAQ=</HashCode>
+      <FileName>ViewModel\ClientSearchViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.ClientViewModel">
+    <Position X="25.25" Y="5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAABAAACAAAAAAgIAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\ClientViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.CommandViewModel">
+    <Position X="14.75" Y="2.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>ViewModel\CommandViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.ImageCommandViewModel">
+    <Position X="15" Y="5.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\ImageCommandViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.MainViewModel">
+    <Position X="41.5" Y="2.5" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>ARAAAAABAAACACBACAAAAAAgAAEIABAAAAAAAAAAIEI=</HashCode>
+      <FileName>ViewModel\MainViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.OptionViewModel">
+    <Position X="29.5" Y="5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAACAAABAAACAAAAAAAAIAEEAAAQEAAAAAFAAAAAAAA=</HashCode>
+      <FileName>ViewModel\OptionViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.ViewModelLocator" Collapsed="true">
+    <Position X="50.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAAAA=</HashCode>
+      <FileName>ViewModel\ViewModelLocator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.ViewModel.WorkspaceViewModel">
+    <Position X="29.5" Y="2.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\WorkspaceViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EpAccounting.UI.State.BillCreationState" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="47.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQEAAQAAAAEAAAAAAAAAACAEAAAAAAAABAIBABAQ=</HashCode>
+      <FileName>State\BillCreationState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="EpAccounting.UI.State.BillEditState" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="49" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQEAAQAAAAEAAAAAAAAAACAEAAAAAAAABAIBABAQ=</HashCode>
+      <FileName>State\BillEditState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="EpAccounting.UI.State.BillEmptyState" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="50.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQEAAQAAAAEAAAAAAAAAACAEAAAAAAAABAIBABAQ=</HashCode>
+      <FileName>State\BillEmptyState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="EpAccounting.UI.State.BillLoadedState" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="52.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQEAAQAAAAEAAAAAAAAAACAEAAAAAAAABAIBABAQ=</HashCode>
+      <FileName>State\BillLoadedState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="EpAccounting.UI.State.BillSearchState" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="47.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQEAAQAAAAEAAAAAAAAAACAEAAAAAAAABAIBABAQ=</HashCode>
+      <FileName>State\BillSearchState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="EpAccounting.UI.State.ClientCreationState" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="49" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQEAAQAAAAEQAAAAAAAAACAEAAAAAAAABAIBABAQ=</HashCode>
+      <FileName>State\ClientCreationState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="EpAccounting.UI.State.ClientEditState" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="50.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQEAAQAAAAEQAAAAAAAAACAEAAAAAAAABAIBABAQ=</HashCode>
+      <FileName>State\ClientEditState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="EpAccounting.UI.State.ClientEmptyState" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="52.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQEAAQAAAAEQAAAAAAAAACAEAAAAAAAABAIBABAQ=</HashCode>
+      <FileName>State\ClientEmptyState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="EpAccounting.UI.State.ClientLoadedState" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="47.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQEAAQAAAAEQAAAAAAAAACAEAAAAAAAABAIBABAQ=</HashCode>
+      <FileName>State\ClientLoadedState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="EpAccounting.UI.State.ClientSearchState" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="49" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQEAAQAAAAEQAAAAAAAAACAEAAAAAAAABAIBABAQ=</HashCode>
+      <FileName>State\ClientSearchState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="EpAccounting.UI.State.IBillState" Collapsed="true">
+    <Position X="47.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQEAAQAAAAEAAAAAAAAAACAEAAAAAAAABAIBABAQ=</HashCode>
+      <FileName>State\IBillState.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="EpAccounting.UI.State.IClientState" Collapsed="true">
+    <Position X="49" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQEAAQAAAAEAAAAAAAAAACAEAAAAAAAABAIBABAQ=</HashCode>
+      <FileName>State\IClientState.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

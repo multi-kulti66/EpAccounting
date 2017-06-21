@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Clients>
+  <Client ClientID="1" Title="Herr" FirstName="Andre" LastName="Multerer" Street="Benzstraße" HouseNumber="1a"
+          PostalCode="93053" City="Regensburg" DateOfBirth="06.11.1993" PhoneNumber1="09942/902097"
+          PhoneNumber2="09942/902099" MobileNumber="+49 160 55-07-869" Telefax="09942/902098"
+          Email="andre.multerer@gmail.com">
+    <Bill BillID="1" Date="27.11.2016" KindOfBill="Rechnung" KindOfVAT="inkl. MwSt" VATPercentage="19">
+      <BillItem BillItemID="1" Position="1" ArticleNumber="0" Description="Glühbirne" Amount="3" Price="1,00"
+                  Discount="10" />
+      <BillItem BillItemID="2" Position="2" ArticleNumber="0" Description="LCD TV" Amount="1" Price="799,00"
+                  Discount="0" />
+    </Bill>
+  </Client>
+
+  <Client ClientID="2" Title="Herr" FirstName="Alfred" LastName="Hanke" Street="Schmidstraße" HouseNumber="14"
+          PostalCode="94234" City="Viechtach" DateOfBirth="20.08.1951" PhoneNumber1="09942/902097"
+          PhoneNumber2="09942/902099" MobileNumber="+49 171 41-72-479" Telefax="09942/902098"
+          Email="alfred.hanke@gmail.com">
+    <Bill BillID="2" Date="01.12.2016" KindOfBill="Rechnung" KindOfVAT="zzgl. MwSt" VATPercentage="19">
+      <BillItem BillItemID="3" Position="1" ArticleNumber="1" Description="Blitzschaden" Amount="1" Price="150,00"
+                  Discount="5" />
+      <BillItem BillItemID="4" Position="2" ArticleNumber="0" Description="Batterie" Amount="10" Price="5,00"
+                  Discount="0" />
+    </Bill>
+    <Bill BillID="3" Date="02.12.2016" KindOfBill="Rechnung" KindOfVAT="ohne MwSt" VATPercentage="10">
+      <BillItem BillItemID="5" Position="1" ArticleNumber="0" Description="Waschmaschine" Amount="1"
+                  Price="1000,00" Discount="15" />
+      <BillItem BillItemID="6" Position="2" ArticleNumber="2" Description="15€ Handykarte" Amount="6" Price="15,00"
+                  Discount="0" />
+    </Bill>
+  </Client>
+
+  <Client ClientID="3" Title="Frau" FirstName="Stefanie" LastName="Multerer" Street="Pickelstraße" HouseNumber="4"
+          PostalCode="80637" City="München" DateOfBirth="31.07.1995" PhoneNumber1="09942/902097"
+          PhoneNumber2="09942/902099" MobileNumber="+49 175 20-22-567" Telefax="09942/902098"
+          Email="stefanie.multerer@gmx.de" />
+
+  <Client ClientID="4" Title="Firma" FirstName="" LastName="Schierer" Street="Am Regen" HouseNumber="9"
+          PostalCode="94234" City="Viechtach" DateOfBirth="" PhoneNumber1="09942/94640" PhoneNumber2="" MobileNumber=""
+          Telefax="" Email="">
+    <Bill BillID="4" Date="05.06.2016" KindOfBill="Rechnung" KindOfVAT="ohne MwSt" VATPercentage="19">
+      <BillItem BillItemID="7" Position="1" ArticleNumber="0" Description="Samsung Galaxy S7" Amount="1"
+                  Price="799,00" Discount="0" />
+      <BillItem BillItemID="8" Position="2" ArticleNumber="1" Description="Blitzschaden" Amount="1" Price="5,00"
+                  Discount="0" />
+    </Bill>
+  </Client>
+
+  <Client ClientID="5" Title="Firma" FirstName="" LastName="Nistler" Street="Regerstraße" HouseNumber="8"
+          PostalCode="94234" City="Viechtach" DateOfBirth="" PhoneNumber1="09942 808635" PhoneNumber2=""
+          MobileNumber="" Telefax="" Email="" />
+</Clients>
