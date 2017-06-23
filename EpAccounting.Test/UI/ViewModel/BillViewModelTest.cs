@@ -25,18 +25,27 @@ namespace EpAccounting.Test.UI.ViewModel
     public class BillViewModelTest
     {
         [Test]
-        public void AllSubViewModelsInitializedAfterCreation()
+        public void BillEditViewModelInitializedAfterCreation()
         {
             // Act
             BillViewModel billViewModel = this.GetBillViewModel();
 
             // Assert
             billViewModel.BillEditViewModel.Should().NotBeNull();
+        }
+
+        [Test]
+        public void BillWorkspaceViewModelInitializedAfterCreation()
+        {
+            // Act
+            BillViewModel billViewModel = this.GetBillViewModel();
+
+            // Assert
             billViewModel.BillWorkspaceViewModel.Should().NotBeNull();
         }
 
         [Test]
-        public void ChangeWorkspaceToBillSearchViewModelOnNotificationMessage()
+        public void ChangeWorkspaceToBillSearchViewModelOnNotificationMessageThatBillSearchViewModelShouldBeLoaded()
         {
             // Arrange
             BillViewModel billViewModel = this.GetBillViewModel();
@@ -49,7 +58,7 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
-        public void ChangeWorkspaceToBillItemEditViewModelOnNotificationMessage()
+        public void ChangeWorkspaceToBillItemEditViewModelOnNotificationMessageThatBillItemEditViewModelShouldBeLoaded()
         {
             // Arrange
             BillViewModel billViewModel = this.GetBillViewModel();
@@ -59,6 +68,19 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             billViewModel.BillWorkspaceViewModel.Should().BeOfType<BillItemEditViewModel>();
+        }
+
+        [Test]
+        public void ChangeWorkspaceToBillSearchViewModelOnNotificationMessageThatBillWasDeleted()
+        {
+            // Arrange
+            BillViewModel billViewModel = this.GetBillViewModel();
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Messenger_Message_RemoveBill));
+
+            // Assert
+            billViewModel.BillWorkspaceViewModel.Should().BeOfType<BillSearchViewModel>();
         }
 
         private BillViewModel GetBillViewModel()

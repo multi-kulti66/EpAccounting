@@ -26,30 +26,17 @@
                   SelectedItem="{Binding Path=SelectedBillDetailViewModel}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="Auto"
-                                    DisplayMemberBinding="{Binding Path=BillId}"
-                                    Header="Rechnungsnr" />
-                    <GridViewColumn Width="Auto"
-                                    DisplayMemberBinding="{Binding Path=KindOfBill}"
-                                    Header="Rechnungsart" />
-                    <GridViewColumn Width="Auto"
-                                    DisplayMemberBinding="{Binding Path=KindOfVat}"
-                                    Header="MwStart" />
-                    <GridViewColumn Width="Auto"
-                                    DisplayMemberBinding="{Binding Path=ClientId}"
-                                    Header="Kundennummer" />
-                    <GridViewColumn Width="Auto"
-                                    DisplayMemberBinding="{Binding Path=Street}"
-                                    Header="Straße" />
-                    <GridViewColumn Width="Auto"
-                                    DisplayMemberBinding="{Binding Path=HouseNumber}"
-                                    Header="Hausnummer" />
-                    <GridViewColumn Width="Auto"
-                                    DisplayMemberBinding="{Binding Path=PostalCode}"
-                                    Header="PLZ" />
-                    <GridViewColumn Width="Auto"
-                                    DisplayMemberBinding="{Binding Path=City}"
-                                    Header="Ort" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=BillId}" Header="Rechnungsnr" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=KindOfBill}" Header="Rechnungsart" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Date}" Header="Datum" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=ClientId}" Header="Kundennummer" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Title}" Header="Anrede" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=FirstName}" Header="Vorname" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=LastName}" Header="Nachname" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Street}" Header="Straße" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=HouseNumber}" Header="Hausnummer" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=PostalCode}" Header="PLZ" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=City}" Header="Ort" />
                 </GridView>
             </ListView.View>
         </ListView>

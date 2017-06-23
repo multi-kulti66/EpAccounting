@@ -42,6 +42,7 @@ namespace EpAccounting.UI.ViewModel
             this.dialogService = dialogService;
 
             Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
+            Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<Bill>>(this, this.ExecuteNotificationMessage);
         }
 
@@ -112,6 +113,15 @@ namespace EpAccounting.UI.ViewModel
         {
             if (message.Notification == Resources.Messenger_Message_LoadBillSearchViewModel)
             {
+                this.BillWorkspaceViewModel = this.BillSearchViewModel;
+            }
+        }
+
+        private void ExecuteNotificationMessage(NotificationMessage<int> message)
+        {
+            if (message.Notification == Resources.Messenger_Message_RemoveBill)
+            {
+                this.BillItemEditViewModel.Clear();
                 this.BillWorkspaceViewModel = this.BillSearchViewModel;
             }
         }

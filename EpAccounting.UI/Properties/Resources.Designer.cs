@@ -160,6 +160,24 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CN_BillItem_Add.
+        /// </summary>
+        public static string Command_Message_BillItem_Add {
+            get {
+                return ResourceManager.GetString("Command_Message_BillItem_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CN_BillItem_Delete.
+        /// </summary>
+        public static string Command_Message_BillItem_Delete {
+            get {
+                return ResourceManager.GetString("Command_Message_BillItem_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CN_Client_Add.
         /// </summary>
         public static string Command_Message_Client_Add {
@@ -385,6 +403,16 @@ namespace EpAccounting.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap img_add {
+            get {
+                object obj = ResourceManager.GetObject("img_add", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap img_bills {
             get {
                 object obj = ResourceManager.GetObject("img_bills", resourceCulture);
@@ -515,6 +543,16 @@ namespace EpAccounting.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap img_remove {
+            get {
+                object obj = ResourceManager.GetObject("img_remove", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap img_saveOrUpdate {
             get {
                 object obj = ResourceManager.GetObject("img_saveOrUpdate", resourceCulture);
@@ -565,6 +603,15 @@ namespace EpAccounting.UI.Properties {
         public static string Messenger_Message_EnableStateForClientLoading {
             get {
                 return ResourceManager.GetString("Messenger_Message_EnableStateForClientLoading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message_FocusBillItems.
+        /// </summary>
+        public static string Messenger_Message_FocusBillItems {
+            get {
+                return ResourceManager.GetString("Messenger_Message_FocusBillItems", resourceCulture);
             }
         }
         

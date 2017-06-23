@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEditViewModel.cs
-// Last Change: 02.06.2017  21:27
+// Last Change: 21.06.2017  16:35
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -10,7 +10,6 @@ namespace EpAccounting.UI.ViewModel
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
@@ -53,6 +52,7 @@ namespace EpAccounting.UI.ViewModel
 
             this._currentBillState = this.GetBillEmptyState();
 
+            Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
 
@@ -200,6 +200,10 @@ namespace EpAccounting.UI.ViewModel
             {
                 this.Load(this.repository.GetById<Bill>(message.Content), this.GetBillLoadedState());
             }
+            if (message.Notification == Resources.Messenger_Message_UpdateClientValues)
+            {
+                this.Reload();
+            }
         }
 
         private void LoadBill(Bill bill)
@@ -248,6 +252,7 @@ namespace EpAccounting.UI.ViewModel
         {
             Conjunction conjunction = Restrictions.Conjunction();
 
+            // Bill data
             if (this.CurrentBillDetailViewModel.BillId != 0)
             {
                 conjunction.Add(Restrictions.Where<Bill>(b => b.BillId == this.CurrentBillDetailViewModel.BillId));
@@ -267,18 +272,53 @@ namespace EpAccounting.UI.ViewModel
                 conjunction.Add(Restrictions.Where<Bill>(b => b.Date.IsLike(this.CurrentBillDetailViewModel.Date, MatchMode.Anywhere)));
             }
 
+            // Client data
+            // if client id is passed, it should just search bills for this client
+            if (this.CurrentBillDetailViewModel.ClientId != 0)
+            {
+                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.ClientId == this.CurrentBillDetailViewModel.ClientId));
+                return conjunction;
+            }
+
+            // searches all bills with specific client data
+            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.Title))
+            {
+                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.Title.IsLike(this.CurrentBillDetailViewModel.Title, MatchMode.Anywhere)));
+            }
+            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.FirstName))
+            {
+                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.FirstName.IsLike(this.CurrentBillDetailViewModel.FirstName, MatchMode.Anywhere)));
+            }
+            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.LastName))
+            {
+                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.LastName.IsLike(this.CurrentBillDetailViewModel.LastName, MatchMode.Anywhere)));
+            }
+            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.Street))
+            {
+                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.Street.IsLike(this.CurrentBillDetailViewModel.Street, MatchMode.Anywhere)));
+            }
+            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.HouseNumber))
+            {
+                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.HouseNumber.IsLike(this.CurrentBillDetailViewModel.HouseNumber, MatchMode.Anywhere)));
+            }
+            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.PostalCode))
+            {
+                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.PostalCode.IsLike(this.CurrentBillDetailViewModel.PostalCode, MatchMode.Anywhere)));
+            }
+            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.City))
+            {
+                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.City.IsLike(this.CurrentBillDetailViewModel.City, MatchMode.Anywhere)));
+            }
+
             return conjunction;
         }
 
         private void InitPropertyInfos()
         {
-            this.PropertyInfos = this.GetType().
-                                      GetProperties(BindingFlags.Public | BindingFlags.Instance).
-                                      Where(
-                                            prop => prop.DeclaringType == this.GetType() &&
-                                                    prop.CanRead && prop.GetMethod.IsPublic &&
-                                                    prop.PropertyType != typeof(RelayCommand)).
-                                      ToArray();
+            this.PropertyInfos = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(
+                                                                                                                 prop => prop.DeclaringType == this.GetType() &&
+                                                                                                                         prop.CanRead && prop.GetMethod.IsPublic &&
+                                                                                                                         prop.PropertyType != typeof(RelayCommand)).ToArray();
         }
 
 

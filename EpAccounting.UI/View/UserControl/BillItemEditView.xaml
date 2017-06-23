@@ -4,7 +4,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModel="clr-namespace:EpAccounting.UI.ViewModel"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              d:DataContext="{d:DesignInstance viewModel:BillItemEditViewModel}"
              mc:Ignorable="d">
     <UserControl.Resources>
@@ -18,11 +17,26 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <ItemsControl Grid.Row="1" IsTabStop="False"
+                      ItemTemplate="{StaticResource ImageCommandDataTemplate}"
+                      ItemsSource="{Binding Path=Commands}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
         <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-        <DataGrid Grid.Row="3" AutoGenerateColumns="False"
+        <DataGrid Grid.Row="3" Name="DataGrid_BillItems"
+                  AutoGenerateColumns="False" CanUserAddRows="True"
                   IsEnabled="{Binding Path=IsEditingEnabled}"
-                  ItemsSource="{Binding Path=BillItemDetailViewModels}">
+                  ItemsSource="{Binding Path=BillItemDetailViewModels}"
+                  SelectedItem="{Binding Path=SelectedBillItemDetailViewModel}">
+            <DataGrid.InputBindings>
+                <KeyBinding Modifiers="Ctrl" Key="N" Command="{Binding Path=Commands[0].RelayCommand}" />
+            </DataGrid.InputBindings>
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Path=Position}" Header="Position" />
                 <DataGridTextColumn Binding="{Binding Path=ArticleNumber}" Header="Artikelnummer" />

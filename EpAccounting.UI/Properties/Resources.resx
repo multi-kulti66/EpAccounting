@@ -316,4 +316,19 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   <data name="Messenger_Message_LoadBillItemEditViewModel" xml:space="preserve">
     <value>Message_LoadBillItemEditViewModel</value>
   </data>
+  <data name="img_add" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_add.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_remove" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_remove.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Command_Message_BillItem_Add" xml:space="preserve">
+    <value>CN_BillItem_Add</value>
+  </data>
+  <data name="Command_Message_BillItem_Delete" xml:space="preserve">
+    <value>CN_BillItem_Delete</value>
+  </data>
+  <data name="Messenger_Message_FocusBillItems" xml:space="preserve">
+    <value>Message_FocusBillItems</value>
+  </data>
 </root>

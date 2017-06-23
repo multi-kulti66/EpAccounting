@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEditViewModelTest.cs
-// Last Change: 19.06.2017  20:20
+// Last Change: 21.06.2017  16:46
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -409,6 +409,34 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
+        public void SendBillSearchCriterionThatSearchesForBillsWithSpecificBillDataAndClientNumber()
+        {
+            // Arrange
+            const int ExpectedId = 2;
+            const string KindOfBill = "Gutschein";
+            const string Date = "01.02.2017";
+            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
+            Client client = new Client() { ClientId = ExpectedId };
+            Bill bill = new Bill { KindOfBill = KindOfBill, Date = Date, Client = client };
+            billEditViewModel.Load(bill, billEditViewModel.GetBillLoadedState());
+
+            ICriterion criterion = null;
+            Messenger.Default.Register<NotificationMessage<ICriterion>>(this, x => criterion = x.Content);
+
+            Conjunction ExpectedConjunction = Restrictions.Conjunction();
+            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(KindOfBill, MatchMode.Anywhere)));
+            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Date.IsLike(Date, MatchMode.Anywhere)));
+            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.ClientId == ExpectedId));
+
+            // Act
+            billEditViewModel.SendBillSearchCriterionMessage();
+
+            // Assert
+            criterion.Should().NotBeNull();
+            criterion.ToString().Should().Be(ExpectedConjunction.ToString());
+        }
+
+        [Test]
         public void SendBillSearchCriterionThatSearchesWithAllEnteredBillValues()
         {
             // Arrange
@@ -423,6 +451,13 @@ namespace EpAccounting.Test.UI.ViewModel
             ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(ModelFactory.DefaultBillKindOfBill, MatchMode.Anywhere)));
             ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfVat.IsLike(ModelFactory.DefaultBillKindOfVat, MatchMode.Anywhere)));
             ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Date.IsLike(ModelFactory.DefaultBillDate, MatchMode.Anywhere)));
+            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.Title.IsLike(ModelFactory.DefaultClientTitle, MatchMode.Anywhere)));
+            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.FirstName.IsLike(ModelFactory.DefaultClientFirstName, MatchMode.Anywhere)));
+            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.LastName.IsLike(ModelFactory.DefaultClientLastName, MatchMode.Anywhere)));
+            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.Street.IsLike(ModelFactory.DefaultClientStreet, MatchMode.Anywhere)));
+            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.HouseNumber.IsLike(ModelFactory.DefaultClientHouseNumber, MatchMode.Anywhere)));
+            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.PostalCode.IsLike(ModelFactory.DefaultClientPostalCode, MatchMode.Anywhere)));
+            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.City.IsLike(ModelFactory.DefaultClientCity, MatchMode.Anywhere)));
 
             // Act
             billEditViewModel.SendBillSearchCriterionMessage();
@@ -530,15 +565,36 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             const int ExpectedId = 2;
+            const string Date = "01.01.2017";
             Mock<IRepository> mockRepsoitory = new Mock<IRepository>();
-            mockRepsoitory.Setup(x => x.GetById<Bill>(ExpectedId)).Returns(new Bill());
+            mockRepsoitory.Setup(x => x.GetById<Bill>(ExpectedId)).Returns(new Bill() { Date = Date});
             BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepsoitory);
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(ExpectedId, Resources.Messenger_Message_LoadSelectedBill));
 
             // Assert
-            mockRepsoitory.Verify(x => x.GetById<Bill>(ExpectedId), Times.Once);
+            billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(Date);
+        }
+
+        [Test]
+        public void ReloadBillViaMessengerMessage()
+        {
+            // Arrange
+            const string Date = "01.01.2017";
+            Bill bill = new Bill() { Date = Date };
+
+            Mock<IRepository> mockRepsoitory = new Mock<IRepository>();
+            mockRepsoitory.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(new Bill() {Date = Date});
+            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepsoitory);
+            billEditViewModel.Load(bill, null);
+
+            // Act
+            billEditViewModel.CurrentBillDetailViewModel.Date = "02.02.2016";
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Messenger_Message_UpdateClientValues));
+
+            // Assert
+            billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(Date);
         }
 
         [Test]

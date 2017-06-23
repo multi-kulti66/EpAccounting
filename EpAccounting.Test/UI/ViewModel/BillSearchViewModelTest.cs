@@ -89,7 +89,7 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
-        public void UpdatesBillWhenUpdateNotificationReceived()
+        public void UpdatesBillWhenUpdateBillNotificationReceived()
         {
             // Arrange
             const string ExpectedDate = "01.01.2015";
@@ -108,6 +108,28 @@ namespace EpAccounting.Test.UI.ViewModel
             billSearchViewModel.FoundBills.Should().HaveCount(2);
             billSearchViewModel.FoundBills[0].Date.Should().Be(ExpectedDate);
             billSearchViewModel.FoundBills[1].Date.Should().Be(ModelFactory.DefaultBillDate);
+        }
+
+        [Test]
+        public void UpdatesBillWhenUpdateClientNotificationReceived()
+        {
+            // Arrange
+            const string ExpectedFirstName = "Matthias";
+            Bill expectedBill = ModelFactory.GetDefaultBill();
+            expectedBill.Client.FirstName = ExpectedFirstName;
+            Mock<IRepository> mockRepository = new Mock<IRepository>();
+            mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
+
+            BillSearchViewModel billSearchViewModel = this.GetDefaultViewModel(mockRepository);
+            billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { BillId = 1, Date = "01.01.2017", KindOfVat = "Gutschein", Client = new Client()}));
+            billSearchViewModel.FoundBills.Add(new BillDetailViewModel( ModelFactory.GetDefaultBill()));
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Messenger_Message_UpdateClientValues));
+
+            // Assert
+            billSearchViewModel.FoundBills.Should().HaveCount(2);
+            billSearchViewModel.FoundBills[1].FirstName.Should().Be(ExpectedFirstName);
         }
 
         [Test]

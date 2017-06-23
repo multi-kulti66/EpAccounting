@@ -39,7 +39,6 @@ namespace EpAccounting.UI.ViewModel
 
             Messenger.Default.Register<NotificationMessage<ICriterion>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
-            Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
 
         #endregion
@@ -91,7 +90,11 @@ namespace EpAccounting.UI.ViewModel
         {
             if (message.Notification == Resources.Messenger_Message_UpdateBillValues)
             {
-                this.UpdateBill(message.Content);
+                this.UpdateBillViaBillId(message.Content);
+            }
+            else if (message.Notification == Resources.Messenger_Message_UpdateClientValues)
+            {
+                this.UpdateBillViaClientId(message.Content);
             }
             else if (message.Notification == Resources.Messenger_Message_RemoveBill)
             {
@@ -109,13 +112,25 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        private void UpdateBill(int id)
+        private void UpdateBillViaBillId(int id)
         {
             for (int i = 0; i < this.FoundBills.Count; i++)
             {
                 if (this.FoundBills[i].BillId == id)
                 {
                     Bill bill = this.repository.GetById<Bill>(id);
+                    this.FoundBills[i] = new BillDetailViewModel(bill);
+                }
+            }
+        }
+
+        private void UpdateBillViaClientId(int id)
+        {
+            for (int i = 0; i < this.FoundBills.Count; i++)
+            {
+                if (this.FoundBills[i].ClientId == id)
+                {
+                    Bill bill = this.repository.GetById<Bill>(this.FoundBills[i].BillId);
                     this.FoundBills[i] = new BillDetailViewModel(bill);
                 }
             }

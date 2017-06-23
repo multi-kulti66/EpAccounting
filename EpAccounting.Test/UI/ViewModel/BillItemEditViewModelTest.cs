@@ -8,6 +8,7 @@
 
 namespace EpAccounting.Test.UI.ViewModel
 {
+    using System.Linq;
     using EpAccounting.Model;
     using EpAccounting.Test.Model;
     using EpAccounting.UI.Properties;
@@ -33,7 +34,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void LoadBillItemDetailViewModelsViaPassedBill()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetBillItemEditViewModel();
+            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             Bill bill = ModelFactory.GetDefaultBill();
 
             // Act
@@ -48,7 +49,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void EnableEditingOnEnableEditingMessage()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetBillItemEditViewModel();
+            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
 
             // Act
             Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
@@ -61,7 +62,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void DisableEditingOnDisableEditingMessage()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetBillItemEditViewModel();
+            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
 
             // Act
             Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
@@ -71,11 +72,54 @@ namespace EpAccounting.Test.UI.ViewModel
             billItemEditViewModel.IsEditingEnabled.Should().BeFalse();
         }
 
+        [Test]
+        public void ClearsCurrentlyLoadedBillAndBillItems()
+        {
+            // Arrange
+            BillItemEditViewModel billItemDetailViewModel = this.GetDefaultViewModel();
+            billItemDetailViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Act
+            billItemDetailViewModel.Clear();
+
+            // Assert
+            billItemDetailViewModel.BillItemDetailViewModels.Should().HaveCount(0);
+        }
+
+        [Test]
+        public void AddsNewBillItem()
+        {
+            // Arrange
+            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
+            billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+
+            // Act
+            billItemEditViewModel.Commands.Find(x => x.CommandMessage == Resources.Command_Message_BillItem_Add).RelayCommand.Execute(null);
+
+            // Assert
+            billItemEditViewModel.BillItemDetailViewModels.Count.Should().Be(2);
+        }
+
+        [Test]
+        public void CanNotAddNewBillItemWhenEditingNotEnabled()
+        {
+            // Arrange
+            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
+            billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Act
+            billItemEditViewModel.Commands.Find(x => x.CommandMessage == Resources.Command_Message_BillItem_Add).RelayCommand.Execute(null);
+
+            // Assert
+            billItemEditViewModel.BillItemDetailViewModels.Count.Should().Be(1);
+        }
+
         #endregion
 
 
 
-        private BillItemEditViewModel GetBillItemEditViewModel()
+        private BillItemEditViewModel GetDefaultViewModel()
         {
             return new BillItemEditViewModel();
         }

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditViewModel.cs
-// Last Change: 21.06.2017  15:22
+// Last Change: 23.06.2017  21:19
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,9 +8,11 @@
 
 namespace EpAccounting.UI.ViewModel
 {
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using EpAccounting.Model;
     using EpAccounting.UI.Properties;
+    using GalaSoft.MvvmLight.Command;
     using GalaSoft.MvvmLight.Messaging;
 
 
@@ -21,6 +23,7 @@ namespace EpAccounting.UI.ViewModel
 
         private Bill currentBill;
         private ObservableCollection<BillItemDetailViewModel> _billItemDetailViewModels;
+        private BillItemDetailViewModel _selectedBillItemDetailViewModel;
 
         private bool _isEditingEnabled;
 
@@ -32,6 +35,8 @@ namespace EpAccounting.UI.ViewModel
 
         public BillItemEditViewModel()
         {
+            this.InitCommands();
+
             Messenger.Default.Register<NotificationMessage<bool>>(this, this.ExecuteNotificationMessage);
         }
 
@@ -53,10 +58,22 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
+        public BillItemDetailViewModel SelectedBillItemDetailViewModel
+        {
+            get { return this._selectedBillItemDetailViewModel; }
+            set { this.SetProperty(ref this._selectedBillItemDetailViewModel, value); }
+        }
+
+        public List<ImageCommandViewModel> Commands { get; private set; }
+
         public bool IsEditingEnabled
         {
             get { return this._isEditingEnabled; }
-            private set { this.SetProperty(ref this._isEditingEnabled, value); }
+            private set
+            {
+                this.SetProperty(ref this._isEditingEnabled, value);
+                this.UpdateCommands();
+            }
         }
 
         #endregion
@@ -66,6 +83,12 @@ namespace EpAccounting.UI.ViewModel
         public void LoadBill(Bill bill)
         {
             this.LoadBillItems(bill);
+        }
+
+        public void Clear()
+        {
+            this.currentBill = null;
+            this.BillItemDetailViewModels.Clear();
         }
 
         private void ExecuteNotificationMessage(NotificationMessage<bool> message)
@@ -87,5 +110,59 @@ namespace EpAccounting.UI.ViewModel
                 this.BillItemDetailViewModels.Add(new BillItemDetailViewModel(billItem));
             }
         }
+
+
+
+        #region Command Methods
+
+        private void InitCommands()
+        {
+            this.Commands = new List<ImageCommandViewModel>
+                            {
+                                new ImageCommandViewModel(Resources.img_add,
+                                                          Resources.Command_DisplayName_Add,
+                                                          Resources.Command_Message_BillItem_Add,
+                                                          new RelayCommand(this.AddItem, this.CanAddItem)),
+                                new ImageCommandViewModel(Resources.img_remove,
+                                                          Resources.Command_DisplayName_Delete,
+                                                          Resources.Command_Message_BillItem_Delete,
+                                                          new RelayCommand(this.DeleteItem, this.CanDeleteItem))
+                            };
+        }
+
+        private void UpdateCommands()
+        {
+            foreach (ImageCommandViewModel imageCommandViewModel in this.Commands)
+            {
+                imageCommandViewModel.RelayCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        private bool CanAddItem()
+        {
+            return this.IsEditingEnabled;
+        }
+
+        private void AddItem()
+        {
+            BillItem billItem = new BillItem() {Position = this.BillItemDetailViewModels.Count + 1};
+            BillItemDetailViewModel billItemDetailViewModel = new BillItemDetailViewModel(billItem);
+
+            this.currentBill.AddBillItem(billItem);
+            this.BillItemDetailViewModels.Add(billItemDetailViewModel);
+            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_FocusBillItems));
+        }
+
+        private bool CanDeleteItem()
+        {
+            return this.IsEditingEnabled;
+        }
+
+        private void DeleteItem()
+        {
+            // TODO: implement
+        }
+
+        #endregion
     }
 }
