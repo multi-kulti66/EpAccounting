@@ -96,7 +96,7 @@ namespace EpAccounting.Test.Model.Mapping
 
         private static bool AreEqualBillItems(BillItem billDetail1, BillItem billDetail2)
         {
-            if ((billDetail1.BillItemId == billDetail2.BillItemId) &&
+            if ((billDetail1.Id == billDetail2.Id) &&
                 (billDetail1.Position == billDetail2.Position) &&
                 (billDetail1.ArticleNumber == billDetail2.ArticleNumber) &&
                 (billDetail1.Description == billDetail2.Description) &&

@@ -38,7 +38,7 @@ namespace EpAccounting.Test.Model
         public const double DefaultBillVatPercentage = 19;
         public const string DefaultBillDate = "01.01.2017";
 
-        public const int DefaultBillItemPosition = 2;
+        public const int DefaultBillItemPosition = 1;
         public const int DefaultBillItemArticleNumber = 1;
         public const string DefaultBillItemDescription = "Test Description";
         public const double DefaultBillItemAmount = 3;

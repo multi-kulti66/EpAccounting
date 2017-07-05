@@ -232,7 +232,7 @@ namespace EpAccounting.UI.ViewModel
 
         private BillItem CreateXmlBillItem(XElement billDetailElement)
         {
-            int billDetailID = Convert.ToInt32(billDetailElement.Attribute("BillItemId")?.Value.Trim());
+            int billDetailID = Convert.ToInt32(billDetailElement.Attribute("Id")?.Value.Trim());
             int position = Convert.ToInt32(billDetailElement.Attribute("Position")?.Value.Trim());
             int articleNumber = Convert.ToInt32(billDetailElement.Attribute("ArticleNumber")?.Value.Trim());
             string description = billDetailElement.Attribute("Description")?.Value.Trim();
@@ -242,7 +242,7 @@ namespace EpAccounting.UI.ViewModel
 
             BillItem billItem = new BillItem
                                 {
-                                    BillItemId = billDetailID,
+                                    Id = billDetailID,
                                     Position = position,
                                     ArticleNumber = articleNumber,
                                     Description = description,

@@ -55,7 +55,7 @@ namespace EpAccounting.Test.Model.Mapping
 
             // Assert
             new PersistenceSpecification<BillItem>(sessionManager.OpenSession(), new ObjectEqualityComparer())
-                .CheckProperty(c => c.BillItemId, ModelFactory.DefaultId)
+                .CheckProperty(c => c.Id, ModelFactory.DefaultId)
                 .CheckProperty(c => c.Position, ModelFactory.DefaultBillItemPosition)
                 .CheckProperty(c => c.ArticleNumber, ModelFactory.DefaultBillItemArticleNumber)
                 .CheckProperty(c => c.Description, ModelFactory.DefaultBillItemDescription)

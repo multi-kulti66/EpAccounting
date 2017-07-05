@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemDetailViewModel.cs
-// Last Change: 18.04.2017  20:09
+// Last Change: 05.07.2017  20:26
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -34,6 +34,11 @@ namespace EpAccounting.UI.ViewModel
 
 
         #region Properties
+
+        public int Id
+        {
+            get { return this.billItem.Id; }
+        }
 
         public int Position
         {

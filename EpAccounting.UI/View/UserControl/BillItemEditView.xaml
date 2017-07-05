@@ -29,16 +29,24 @@
 
         <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-        <DataGrid Grid.Row="3" Name="DataGrid_BillItems"
-                  AutoGenerateColumns="False" CanUserAddRows="True"
+        <DataGrid Name="dataGrid_BillItems" Grid.Row="3" AutoGenerateColumns="False"
+                  CanUserDeleteRows="False" CanUserReorderColumns="False"
+                  CanUserSortColumns="False"
                   IsEnabled="{Binding Path=IsEditingEnabled}"
                   ItemsSource="{Binding Path=BillItemDetailViewModels}"
-                  SelectedItem="{Binding Path=SelectedBillItemDetailViewModel}">
+                  SelectedItem="{Binding Path=SelectedBillItemDetailViewModel}"
+                  SelectionMode="Single">
+            <DataGrid.ContextMenu>
+                <ContextMenu ItemTemplate="{StaticResource ImageCommandContextMenuDataTemplate}" ItemsSource="{Binding Path=Commands}" />
+            </DataGrid.ContextMenu>
             <DataGrid.InputBindings>
-                <KeyBinding Modifiers="Ctrl" Key="N" Command="{Binding Path=Commands[0].RelayCommand}" />
+                <KeyBinding Key="N" Command="{Binding Path=AddItemCommand.RelayCommand}" Modifiers="Control" />
+                <KeyBinding Key="Delete" Command="{Binding Path=DeleteItemCommand.RelayCommand}" />
+                <KeyBinding Key="PageUp" Command="{Binding Path=MoveItemUpCommand.RelayCommand}"/>
+                <KeyBinding Key="PageDown" Command="{Binding Path=MoveItemDownCommand.RelayCommand}"/>
             </DataGrid.InputBindings>
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Path=Position}" Header="Position" />
+                <DataGridTextColumn Binding="{Binding Path=Position}" Header="Position" IsReadOnly="True" />
                 <DataGridTextColumn Binding="{Binding Path=ArticleNumber}" Header="Artikelnummer" />
                 <DataGridTextColumn Binding="{Binding Path=Description}" Header="Beschreibung" />
                 <DataGridTextColumn Binding="{Binding Path=Amount}" Header="Menge" />
@@ -49,3 +57,4 @@
         </DataGrid>
     </Grid>
 </UserControl>
+

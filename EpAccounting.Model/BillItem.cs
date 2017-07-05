@@ -16,7 +16,7 @@ namespace EpAccounting.Model
     {
         #region Properties
 
-        public virtual int BillItemId { get; set; }
+        public virtual int Id { get; set; }
 
         public virtual Bill Bill { get; set; }
 
@@ -56,7 +56,7 @@ namespace EpAccounting.Model
                 return false;
             }
 
-            return this.BillItemId == otherBillItem.BillItemId && this.Bill?.BillId == otherBillItem.Bill?.BillId &&
+            return this.Id == otherBillItem.Id && this.Bill?.BillId == otherBillItem.Bill?.BillId &&
                    this.Position == otherBillItem.Position && this.ArticleNumber == otherBillItem.ArticleNumber &&
                    string.Equals(this.Description, otherBillItem.Description) && this.Amount.Equals(otherBillItem.Amount) &&
                    this.Price.Equals(otherBillItem.Price) && this.Discount.Equals(otherBillItem.Discount);
@@ -66,7 +66,7 @@ namespace EpAccounting.Model
         {
             unchecked
             {
-                int hashCode = this.BillItemId;
+                int hashCode = this.Id;
                 hashCode = (hashCode * 397) ^ (this.Bill?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ this.Position;
                 hashCode = (hashCode * 397) ^ this.ArticleNumber;

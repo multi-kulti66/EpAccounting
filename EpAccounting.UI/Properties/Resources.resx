@@ -331,4 +331,22 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   <data name="Messenger_Message_FocusBillItems" xml:space="preserve">
     <value>Message_FocusBillItems</value>
   </data>
+  <data name="img_arrow_down" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_arrow_down.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_arrow_up" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_arrow_up.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Command_DisplayName_Down" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="Command_DisplayName_Up" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="Command_Message_BillItem_Down" xml:space="preserve">
+    <value>CN_BillItem_Down</value>
+  </data>
+  <data name="Command_Message_BillItem_Up" xml:space="preserve">
+    <value>CN_BillItem_Up</value>
+  </data>
 </root>

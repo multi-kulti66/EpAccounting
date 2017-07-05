@@ -29,6 +29,7 @@ namespace EpAccounting.Test.UI.ViewModel
             BillItemDetailViewModel billItemDetailViewModel = this.GetDefaultViewModel();
 
             // Assert
+            billItemDetailViewModel.Id.Should().Be(0);
             billItemDetailViewModel.Position.Should().Be(ModelFactory.DefaultBillItemPosition);
             billItemDetailViewModel.ArticleNumber.Should().Be(ModelFactory.DefaultBillItemArticleNumber);
             billItemDetailViewModel.Description.Should().Be(ModelFactory.DefaultBillItemDescription);

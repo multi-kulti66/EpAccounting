@@ -88,6 +88,15 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Down.
+        /// </summary>
+        public static string Command_DisplayName_Down {
+            get {
+                return ResourceManager.GetString("Command_DisplayName_Down", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit.
         /// </summary>
         public static string Command_DisplayName_Edit {
@@ -111,6 +120,15 @@ namespace EpAccounting.UI.Properties {
         public static string Command_DisplayName_Search {
             get {
                 return ResourceManager.GetString("Command_DisplayName_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Up.
+        /// </summary>
+        public static string Command_DisplayName_Up {
+            get {
+                return ResourceManager.GetString("Command_DisplayName_Up", resourceCulture);
             }
         }
         
@@ -174,6 +192,24 @@ namespace EpAccounting.UI.Properties {
         public static string Command_Message_BillItem_Delete {
             get {
                 return ResourceManager.GetString("Command_Message_BillItem_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CN_BillItem_Down.
+        /// </summary>
+        public static string Command_Message_BillItem_Down {
+            get {
+                return ResourceManager.GetString("Command_Message_BillItem_Down", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CN_BillItem_Up.
+        /// </summary>
+        public static string Command_Message_BillItem_Up {
+            get {
+                return ResourceManager.GetString("Command_Message_BillItem_Up", resourceCulture);
             }
         }
         
@@ -406,6 +442,26 @@ namespace EpAccounting.UI.Properties {
         public static System.Drawing.Bitmap img_add {
             get {
                 object obj = ResourceManager.GetObject("img_add", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap img_arrow_down {
+            get {
+                object obj = ResourceManager.GetObject("img_arrow_down", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap img_arrow_up {
+            get {
+                object obj = ResourceManager.GetObject("img_arrow_up", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
