@@ -163,8 +163,8 @@
   <data name="img_db_disconnected" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\img_db_disconnected.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Messenger_Message_UpdateConnectionState" xml:space="preserve">
-    <value>Message_UpdateConnectionState</value>
+  <data name="Messenger_Message_UpdateConnectionStateMessageForMainVM" xml:space="preserve">
+    <value>Message_UpdateConnectionStateMessageForMainVM</value>
   </data>
   <data name="Dialog_Question_ShouldOverwriteDatabase" xml:space="preserve">
     <value>Soll die Datenbank überschrieben werden?
@@ -241,35 +241,29 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   <data name="Dialog_Title_ClientExistsAlready" xml:space="preserve">
     <value>Der Kunde existiert bereits!</value>
   </data>
-  <data name="Messenger_Message_ClientSearchCriteria" xml:space="preserve">
-    <value>Message_ClientSearchCriteria</value>
+  <data name="Messenger_Message_ClientSearchCriteriaForClientSearchVM" xml:space="preserve">
+    <value>Message_ClientSearchCriteriaForClientSearchVM</value>
   </data>
-  <data name="Messenger_Message_LoadSelectedClient" xml:space="preserve">
-    <value>Message_LoadSelectedClient</value>
+  <data name="Messenger_Message_LoadSelectedClientMessageForClientEditVM" xml:space="preserve">
+    <value>Message_LoadSelectedClientMessageForClientEditVM</value>
   </data>
-  <data name="Messenger_Message_UpdateClientValues" xml:space="preserve">
-    <value>Message_UpdateClientValues</value>
-  </data>
-  <data name="Messenger_Message_EnableStateForClientLoading" xml:space="preserve">
-    <value>Message_ChangeClientLoadingEnableState</value>
+  <data name="Messenger_Message_EnableStateMessageForClientSearchVM" xml:space="preserve">
+    <value>Message_EnableStateMessageForClientSearchVM</value>
   </data>
   <data name="TestData" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\TestData.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="Messenger_Message_LoadSelectedBill" xml:space="preserve">
-    <value>Message_LoadSelectedBill</value>
+  <data name="Messenger_Message_LoadSelectedBillForBillEditVM" xml:space="preserve">
+    <value>Message_LoadSelectedBillForBillEditVM</value>
   </data>
-  <data name="Messenger_Message_BillSearchCriteria" xml:space="preserve">
-    <value>Message_BillSearchCriteria</value>
+  <data name="Messenger_Message_BillSearchCriteriaForBillSearchVM" xml:space="preserve">
+    <value>Message_BillSearchCriteriaForBillSearchVM</value>
   </data>
-  <data name="Messenger_Message_EnableStateForBillItemEditing" xml:space="preserve">
-    <value>Message_ChangeBillItemEditingState</value>
-  </data>
-  <data name="Messenger_Message_UpdateBillValues" xml:space="preserve">
+  <data name="Messenger_Message_UpdateBillValuesMessageForBillSearchVM" xml:space="preserve">
     <value>Message_UpdateBillValues</value>
   </data>
-  <data name="Messenger_Message_RemoveClient" xml:space="preserve">
-    <value>Message_RemoveClient</value>
+  <data name="Messenger_Message_RemoveClientMessageForClientSearchVM" xml:space="preserve">
+    <value>Message_RemoveClientMessageForClientSearchVM</value>
   </data>
   <data name="Dialog_Title_CanNotSaveOrUpdateBill" xml:space="preserve">
     <value>Die Rechnung konnte nicht gespeichert werden!</value>
@@ -280,8 +274,8 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   <data name="Dialog_Title_CanNotDeleteBill" xml:space="preserve">
     <value>Die Rechnung konnte nicht gelöscht werden!</value>
   </data>
-  <data name="Messenger_Message_RemoveBill" xml:space="preserve">
-    <value>Message_RemoveBill</value>
+  <data name="Messenger_Message_RemoveBillMessageForBillSearchVM" xml:space="preserve">
+    <value>Message_RemoveBillMessageForBillSearchVM</value>
   </data>
   <data name="img_edit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\img_edit.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -310,11 +304,11 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   <data name="Command_Message_Bill_SaveOrUpdate" xml:space="preserve">
     <value>CN_Bill_SaveOrUpdate</value>
   </data>
-  <data name="Messenger_Message_LoadBillSearchViewModel" xml:space="preserve">
-    <value>Message_LoadBillSearchViewModel</value>
+  <data name="Messenger_Message_LoadBillSearchViewModelMessageForBillVM" xml:space="preserve">
+    <value>Message_LoadBillSearchViewModelMessageForBillVM</value>
   </data>
-  <data name="Messenger_Message_LoadBillItemEditViewModel" xml:space="preserve">
-    <value>Message_LoadBillItemEditViewModel</value>
+  <data name="Messenger_Message_LoadBillItemEditViewModelMessageForBillVM" xml:space="preserve">
+    <value>Message_LoadBillItemEditViewModelMessageForBillVM</value>
   </data>
   <data name="img_add" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\img_add.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -328,8 +322,8 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   <data name="Command_Message_BillItem_Delete" xml:space="preserve">
     <value>CN_BillItem_Delete</value>
   </data>
-  <data name="Messenger_Message_FocusBillItems" xml:space="preserve">
-    <value>Message_FocusBillItems</value>
+  <data name="Messenger_Message_FocusBillItemsMessageForBillItemEditView" xml:space="preserve">
+    <value>Message_FocusBillItemsMessageForBillItemEditView</value>
   </data>
   <data name="img_arrow_down" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\img_arrow_down.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -348,5 +342,56 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   </data>
   <data name="Command_Message_BillItem_Up" xml:space="preserve">
     <value>CN_BillItem_Up</value>
+  </data>
+  <data name="img_arrow_left" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_arrow_left.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_arrow_right" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_arrow_right.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Command_DisplayName_Next_Page" xml:space="preserve">
+    <value>Next Page</value>
+  </data>
+  <data name="Command_DisplayName_Previous_Page" xml:space="preserve">
+    <value>Previous Page</value>
+  </data>
+  <data name="Command_Message_Next_Page" xml:space="preserve">
+    <value>CN_Next_Page</value>
+  </data>
+  <data name="Command_Message_Previous_Page" xml:space="preserve">
+    <value>CN_Previous_Page</value>
+  </data>
+  <data name="Messenger_Message_CreateNewBillMessageForBillEditVM" xml:space="preserve">
+    <value>Message_CreateNewBillMessageForBillEditVM</value>
+  </data>
+  <data name="Workspace_Title_Articles" xml:space="preserve">
+    <value>Artikel</value>
+  </data>
+  <data name="Workspace_Title_Bills" xml:space="preserve">
+    <value>Rechnungen</value>
+  </data>
+  <data name="Workspace_Title_Clients" xml:space="preserve">
+    <value>Kunden</value>
+  </data>
+  <data name="Workspace_Title_Options" xml:space="preserve">
+    <value>Optionen</value>
+  </data>
+  <data name="Messenger_Message_CreateNewBillMessageForMainVM" xml:space="preserve">
+    <value>Message_CreateNewBillMessageForMainVM</value>
+  </data>
+  <data name="Messenger_Message_UpdateClientValuesMessageForBillEditVM" xml:space="preserve">
+    <value>Message_UpdateClientValuesMessageForBillEditVM</value>
+  </data>
+  <data name="Messenger_Message_UpdateClientValuesMessageForClientSearchVM" xml:space="preserve">
+    <value>Message_UpdateClientValuesMessageForClientSearchVM</value>
+  </data>
+  <data name="Messenger_Message_UpdateClientValuesMessageForBillSearchVM" xml:space="preserve">
+    <value>Message_UpdateClinetValuesMessageForBillSearchVM</value>
+  </data>
+  <data name="Messenger_Message_RemoveBillMessageForBillVM" xml:space="preserve">
+    <value>Message_RemoveBillMessageForBillVM</value>
+  </data>
+  <data name="Messenger_Message_EnableStateMessageForBillItemEditVM" xml:space="preserve">
+    <value>Message_EnableStateMessageForBillItemEditVM</value>
   </data>
 </root>

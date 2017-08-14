@@ -106,6 +106,24 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Next Page.
+        /// </summary>
+        public static string Command_DisplayName_Next_Page {
+            get {
+                return ResourceManager.GetString("Command_DisplayName_Next_Page", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Previous Page.
+        /// </summary>
+        public static string Command_DisplayName_Previous_Page {
+            get {
+                return ResourceManager.GetString("Command_DisplayName_Previous_Page", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SaveOrUpdate.
         /// </summary>
         public static string Command_DisplayName_SaveOrUpdate {
@@ -273,6 +291,24 @@ namespace EpAccounting.UI.Properties {
         public static string Command_Message_Client_Search {
             get {
                 return ResourceManager.GetString("Command_Message_Client_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CN_Next_Page.
+        /// </summary>
+        public static string Command_Message_Next_Page {
+            get {
+                return ResourceManager.GetString("Command_Message_Next_Page", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CN_Previous_Page.
+        /// </summary>
+        public static string Command_Message_Previous_Page {
+            get {
+                return ResourceManager.GetString("Command_Message_Previous_Page", resourceCulture);
             }
         }
         
@@ -459,6 +495,26 @@ namespace EpAccounting.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap img_arrow_left {
+            get {
+                object obj = ResourceManager.GetObject("img_arrow_left", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap img_arrow_right {
+            get {
+                object obj = ResourceManager.GetObject("img_arrow_right", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap img_arrow_up {
             get {
                 object obj = ResourceManager.GetObject("img_arrow_up", resourceCulture);
@@ -627,128 +683,173 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_BillSearchCriteria.
+        ///   Looks up a localized string similar to Message_BillSearchCriteriaForBillSearchVM.
         /// </summary>
-        public static string Messenger_Message_BillSearchCriteria {
+        public static string Messenger_Message_BillSearchCriteriaForBillSearchVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_BillSearchCriteria", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_BillSearchCriteriaForBillSearchVM", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_ClientSearchCriteria.
+        ///   Looks up a localized string similar to Message_ClientSearchCriteriaForClientSearchVM.
         /// </summary>
-        public static string Messenger_Message_ClientSearchCriteria {
+        public static string Messenger_Message_ClientSearchCriteriaForClientSearchVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_ClientSearchCriteria", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_ClientSearchCriteriaForClientSearchVM", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_ChangeBillItemEditingState.
+        ///   Looks up a localized string similar to Message_CreateNewBillMessageForBillEditVM.
         /// </summary>
-        public static string Messenger_Message_EnableStateForBillItemEditing {
+        public static string Messenger_Message_CreateNewBillMessageForBillEditVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_EnableStateForBillItemEditing", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_CreateNewBillMessageForBillEditVM", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_ChangeClientLoadingEnableState.
+        ///   Looks up a localized string similar to Message_CreateNewBillMessageForMainVM.
         /// </summary>
-        public static string Messenger_Message_EnableStateForClientLoading {
+        public static string Messenger_Message_CreateNewBillMessageForMainVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_EnableStateForClientLoading", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_CreateNewBillMessageForMainVM", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_FocusBillItems.
+        ///   Looks up a localized string similar to Message_EnableStateMessageForBillItemEditVM.
         /// </summary>
-        public static string Messenger_Message_FocusBillItems {
+        public static string Messenger_Message_EnableStateMessageForBillItemEditVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_FocusBillItems", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_EnableStateMessageForBillItemEditVM", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_LoadBillItemEditViewModel.
+        ///   Looks up a localized string similar to Message_EnableStateMessageForClientSearchVM.
         /// </summary>
-        public static string Messenger_Message_LoadBillItemEditViewModel {
+        public static string Messenger_Message_EnableStateMessageForClientSearchVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_LoadBillItemEditViewModel", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_EnableStateMessageForClientSearchVM", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_LoadBillSearchViewModel.
+        ///   Looks up a localized string similar to Message_FocusBillItemsMessageForBillItemEditView.
         /// </summary>
-        public static string Messenger_Message_LoadBillSearchViewModel {
+        public static string Messenger_Message_FocusBillItemsMessageForBillItemEditView {
             get {
-                return ResourceManager.GetString("Messenger_Message_LoadBillSearchViewModel", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_FocusBillItemsMessageForBillItemEditView", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_LoadSelectedBill.
+        ///   Looks up a localized string similar to Message_LoadBillItemEditViewModelMessageForBillVM.
         /// </summary>
-        public static string Messenger_Message_LoadSelectedBill {
+        public static string Messenger_Message_LoadBillItemEditViewModelMessageForBillVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_LoadSelectedBill", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_LoadBillItemEditViewModelMessageForBillVM", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_LoadSelectedClient.
+        ///   Looks up a localized string similar to Message_LoadBillSearchViewModelMessageForBillVM.
         /// </summary>
-        public static string Messenger_Message_LoadSelectedClient {
+        public static string Messenger_Message_LoadBillSearchViewModelMessageForBillVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_LoadSelectedClient", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_LoadBillSearchViewModelMessageForBillVM", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_RemoveBill.
+        ///   Looks up a localized string similar to Message_LoadSelectedBillForBillEditVM.
         /// </summary>
-        public static string Messenger_Message_RemoveBill {
+        public static string Messenger_Message_LoadSelectedBillForBillEditVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_RemoveBill", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_LoadSelectedBillForBillEditVM", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_RemoveClient.
+        ///   Looks up a localized string similar to Message_LoadSelectedClientMessageForClientEditVM.
         /// </summary>
-        public static string Messenger_Message_RemoveClient {
+        public static string Messenger_Message_LoadSelectedClientMessageForClientEditVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_RemoveClient", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_LoadSelectedClientMessageForClientEditVM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message_RemoveBillMessageForBillSearchVM.
+        /// </summary>
+        public static string Messenger_Message_RemoveBillMessageForBillSearchVM {
+            get {
+                return ResourceManager.GetString("Messenger_Message_RemoveBillMessageForBillSearchVM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message_RemoveBillMessageForBillVM.
+        /// </summary>
+        public static string Messenger_Message_RemoveBillMessageForBillVM {
+            get {
+                return ResourceManager.GetString("Messenger_Message_RemoveBillMessageForBillVM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message_RemoveClientMessageForClientSearchVM.
+        /// </summary>
+        public static string Messenger_Message_RemoveClientMessageForClientSearchVM {
+            get {
+                return ResourceManager.GetString("Messenger_Message_RemoveClientMessageForClientSearchVM", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Message_UpdateBillValues.
         /// </summary>
-        public static string Messenger_Message_UpdateBillValues {
+        public static string Messenger_Message_UpdateBillValuesMessageForBillSearchVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_UpdateBillValues", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_UpdateBillValuesMessageForBillSearchVM", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_UpdateClientValues.
+        ///   Looks up a localized string similar to Message_UpdateClientValuesMessageForBillEditVM.
         /// </summary>
-        public static string Messenger_Message_UpdateClientValues {
+        public static string Messenger_Message_UpdateClientValuesMessageForBillEditVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_UpdateClientValues", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_UpdateClientValuesMessageForBillEditVM", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_UpdateConnectionState.
+        ///   Looks up a localized string similar to Message_UpdateClinetValuesMessageForBillSearchVM.
         /// </summary>
-        public static string Messenger_Message_UpdateConnectionState {
+        public static string Messenger_Message_UpdateClientValuesMessageForBillSearchVM {
             get {
-                return ResourceManager.GetString("Messenger_Message_UpdateConnectionState", resourceCulture);
+                return ResourceManager.GetString("Messenger_Message_UpdateClientValuesMessageForBillSearchVM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message_UpdateClientValuesMessageForClientSearchVM.
+        /// </summary>
+        public static string Messenger_Message_UpdateClientValuesMessageForClientSearchVM {
+            get {
+                return ResourceManager.GetString("Messenger_Message_UpdateClientValuesMessageForClientSearchVM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message_UpdateConnectionStateMessageForMainVM.
+        /// </summary>
+        public static string Messenger_Message_UpdateConnectionStateMessageForMainVM {
+            get {
+                return ResourceManager.GetString("Messenger_Message_UpdateConnectionStateMessageForMainVM", resourceCulture);
             }
         }
         
@@ -765,6 +866,42 @@ namespace EpAccounting.UI.Properties {
         public static string TestData {
             get {
                 return ResourceManager.GetString("TestData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Artikel.
+        /// </summary>
+        public static string Workspace_Title_Articles {
+            get {
+                return ResourceManager.GetString("Workspace_Title_Articles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rechnungen.
+        /// </summary>
+        public static string Workspace_Title_Bills {
+            get {
+                return ResourceManager.GetString("Workspace_Title_Bills", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kunden.
+        /// </summary>
+        public static string Workspace_Title_Clients {
+            get {
+                return ResourceManager.GetString("Workspace_Title_Clients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Optionen.
+        /// </summary>
+        public static string Workspace_Title_Options {
+            get {
+                return ResourceManager.GetString("Workspace_Title_Options", resourceCulture);
             }
         }
     }

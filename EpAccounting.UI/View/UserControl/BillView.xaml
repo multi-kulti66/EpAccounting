@@ -18,9 +18,9 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <userControl:BillEditView Grid.Column="0" DataContext="{Binding Path=BillEditViewModel}" />
+        <userControl:BillEditView x:Name="BillEditView" Grid.Column="0" DataContext="{Binding Path=BillEditViewModel}" />
         <GridSplitter Grid.Column="1" Style="{StaticResource VerticalGridSplitterStyle}" />
-        <ContentPresenter Grid.Column="2" Content="{Binding Path=BillWorkspaceViewModel}" />
+        <ContentPresenter Grid.Column="2" MaxHeight="{Binding ActualHeight, ElementName=BillEditView}" Content="{Binding Path=BillWorkspaceViewModel}" />
     </Grid>
 </UserControl>
 

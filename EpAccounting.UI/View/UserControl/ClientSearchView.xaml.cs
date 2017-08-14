@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientSearchView.xaml.cs
-// Last Change: 18.04.2017  20:19
+// Last Change: 12.07.2017  16:59
 // Author: Andre Multerer
 // ///////////////////////////////////
 

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModel.cs
-// Last Change: 04.05.2017  20:52
+// Last Change: 14.08.2017  07:47
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,11 +8,14 @@
 
 namespace EpAccounting.UI.ViewModel
 {
+    using System;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Linq.Expressions;
     using EpAccounting.Business;
     using EpAccounting.Model;
     using EpAccounting.UI.Properties;
+    using GalaSoft.MvvmLight.Command;
     using GalaSoft.MvvmLight.Messaging;
     using NHibernate.Criterion;
 
@@ -24,8 +27,15 @@ namespace EpAccounting.UI.ViewModel
 
         private readonly IRepository repository;
 
+        private int _numberOfAllPages;
+        private int _currentPage;
+        private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> _lastCriterion;
         private ObservableCollection<BillDetailViewModel> _foundBills;
         private BillDetailViewModel _selectedBillDetailViewModel;
+
+        private RelayCommand _loadSelectedBillCommand;
+        private ImageCommandViewModel _loadNextPageCommand;
+        private ImageCommandViewModel _loadPreviousPageCommand;
 
         #endregion
 
@@ -37,7 +47,7 @@ namespace EpAccounting.UI.ViewModel
         {
             this.repository = repository;
 
-            Messenger.Default.Register<NotificationMessage<ICriterion>>(this, this.ExecuteNotificationMessage);
+            Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
 
@@ -46,6 +56,18 @@ namespace EpAccounting.UI.ViewModel
 
 
         #region Properties
+
+        public int NumberOfAllPages
+        {
+            get { return this._numberOfAllPages; }
+            private set { this.SetProperty(ref this._numberOfAllPages, value); }
+        }
+
+        public int CurrentPage
+        {
+            get { return this._currentPage; }
+            private set { this.SetProperty(ref this._currentPage, value); }
+        }
 
         public ObservableCollection<BillDetailViewModel> FoundBills
         {
@@ -63,52 +85,169 @@ namespace EpAccounting.UI.ViewModel
         public BillDetailViewModel SelectedBillDetailViewModel
         {
             get { return this._selectedBillDetailViewModel; }
-            set
-            {
-                this.SetProperty(ref this._selectedBillDetailViewModel, value);
+            set { this.SetProperty(ref this._selectedBillDetailViewModel, value); }
+        }
 
-                if (this._selectedBillDetailViewModel != null)
+        public RelayCommand LoadSelectedBillCommand
+        {
+            get
+            {
+                if (this._loadSelectedBillCommand == null)
                 {
-                    this.SendLoadSelectedBillMessage();
+                    this._loadSelectedBillCommand = new RelayCommand(this.SendLoadSelectedBillMessage, this.CanLoadSelectedBill);
                 }
+
+                return this._loadSelectedBillCommand;
             }
+        }
+
+        public ImageCommandViewModel LoadNextPageCommand
+        {
+            get
+            {
+                if (this._loadNextPageCommand == null)
+                {
+                    this._loadNextPageCommand = new ImageCommandViewModel(Resources.img_arrow_right,
+                                                                          Resources.Command_DisplayName_Next_Page,
+                                                                          Resources.Command_Message_Next_Page,
+                                                                          new RelayCommand(this.LoadNextPage, this.CanLoadNextPage));
+                }
+
+                return this._loadNextPageCommand;
+            }
+        }
+
+        public ImageCommandViewModel LoadPreviousPageCommand
+        {
+            get
+            {
+                if (this._loadPreviousPageCommand == null)
+                {
+                    this._loadPreviousPageCommand = new ImageCommandViewModel(Resources.img_arrow_left,
+                                                                              Resources.Command_DisplayName_Previous_Page,
+                                                                              Resources.Command_Message_Previous_Page,
+                                                                              new RelayCommand(this.LoadPreviousPage, this.CanLoadPreviousPage));
+                }
+
+                return this._loadPreviousPageCommand;
+            }
+        }
+
+        private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> LastCriterion
+        {
+            get { return this._lastCriterion; }
+            set { this._lastCriterion = value; }
         }
 
         #endregion
 
 
 
-        private void ExecuteNotificationMessage(NotificationMessage<ICriterion> message)
+        private bool CanLoadSelectedBill()
         {
-            if (message.Notification == Resources.Messenger_Message_BillSearchCriteria)
+            if (this.SelectedBillDetailViewModel == null)
             {
-                this.LoadSearchedBills(message.Content);
+                return false;
+            }
+
+            return true;
+        }
+
+        private void SendLoadSelectedBillMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage<int>(this.SelectedBillDetailViewModel.BillId, Resources.Messenger_Message_LoadSelectedBillForBillEditVM));
+        }
+
+        private bool CanLoadNextPage()
+        {
+            if (this.CurrentPage < this.NumberOfAllPages)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void LoadNextPage()
+        {
+            this.CurrentPage++;
+            this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
+        }
+
+        private bool CanLoadPreviousPage()
+        {
+            if (this.CurrentPage > 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void LoadPreviousPage()
+        {
+            this.CurrentPage--;
+            this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
+        }
+
+        private void ExecuteNotificationMessage(NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>> message)
+        {
+            if (message.Notification == Resources.Messenger_Message_BillSearchCriteriaForBillSearchVM)
+            {
+                this.LastCriterion = message.Content;
+                this.LoadSearchedBills(message.Content, 1);
             }
         }
 
         private void ExecuteNotificationMessage(NotificationMessage<int> message)
         {
-            if (message.Notification == Resources.Messenger_Message_UpdateBillValues)
+            if (message.Notification == Resources.Messenger_Message_UpdateBillValuesMessageForBillSearchVM)
             {
                 this.UpdateBillViaBillId(message.Content);
             }
-            else if (message.Notification == Resources.Messenger_Message_UpdateClientValues)
+            else if (message.Notification == Resources.Messenger_Message_UpdateClientValuesMessageForBillSearchVM)
             {
                 this.UpdateBillViaClientId(message.Content);
             }
-            else if (message.Notification == Resources.Messenger_Message_RemoveBill)
+            else if (message.Notification == Resources.Messenger_Message_RemoveBillMessageForBillSearchVM)
             {
                 this.RemoveBill(message.Content);
             }
         }
 
-        private void LoadSearchedBills(ICriterion criterion)
+        private void LoadSearchedBills(Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> tupleCriterion, int page)
         {
+            // ReSharper disable once PossibleLossOfFraction
+            int numberOfBills;
+
+            if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
+            {
+                numberOfBills = this.repository.GetQuantityByCriteria<Bill>(tupleCriterion.Item1);
+            }
+            else
+            {
+                numberOfBills = this.repository.GetQuantityByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3);
+            }
+
+            this.NumberOfAllPages = (numberOfBills - 1) / Settings.Default.PageSize + 1;
+            this.CurrentPage = this.CurrentPage > this.NumberOfAllPages ? this.NumberOfAllPages : page;
+            this.ReloadCommands();
+
             this.FoundBills.Clear();
 
-            foreach (Bill bill in this.repository.GetByCriteria<Bill>(criterion).ToList())
+            if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
             {
-                this.FoundBills.Add(new BillDetailViewModel(bill));
+                foreach (Bill bill in this.repository.GetByCriteria<Bill>(tupleCriterion.Item1, this.CurrentPage).ToList())
+                {
+                    this.FoundBills.Add(new BillDetailViewModel(bill));
+                }
+            }
+            else
+            {
+                foreach (Bill bill in this.repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, this.CurrentPage).ToList())
+                {
+                    this.FoundBills.Add(new BillDetailViewModel(bill));
+                }
             }
         }
 
@@ -145,11 +284,14 @@ namespace EpAccounting.UI.ViewModel
                     this.FoundBills.RemoveAt(i);
                 }
             }
+
+            this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
         }
 
-        private void SendLoadSelectedBillMessage()
+        private void ReloadCommands()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.SelectedBillDetailViewModel.BillId, Resources.Messenger_Message_LoadSelectedBill));
+            this.LoadPreviousPageCommand.RelayCommand.RaiseCanExecuteChanged();
+            this.LoadNextPageCommand.RelayCommand.RaiseCanExecuteChanged();
         }
     }
 }

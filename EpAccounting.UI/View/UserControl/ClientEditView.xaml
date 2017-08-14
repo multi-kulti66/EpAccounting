@@ -163,16 +163,15 @@
                      Text="{Binding Path=CurrentClientDetailViewModel.Email}" />
 
             <TextBlock Grid.Row="19" Grid.Column="0" Text="Rechnungsanz:" />
-            <TextBlock Grid.Row="19" Grid.Column="1"
-                       Text="{Binding Path=CurrentClientDetailViewModel.NumberOfBills, Mode=OneWay}" />
+            <TextBlock Grid.Row="19" Grid.Column="1" Text="{Binding Path=CurrentClientDetailViewModel.NumberOfBills, Mode=OneWay}" />
             <Button Grid.Row="19" Grid.Column="3" Content="Rechnungen"
                     IsEnabled="{Binding Path=CanDoBillAction, Mode=OneWay}" />
 
             <TextBlock Grid.Row="21" Grid.Column="0" Text="Bish. Umsatz:" />
-            <TextBlock Grid.Row="21" Grid.Column="1"
-                       Text="{Binding Path=CurrentClientDetailViewModel.Sales, Mode=OneWay, StringFormat=C, ConverterCulture=de-DE}" />
+            <TextBlock Grid.Row="21" Grid.Column="1" Text="{Binding Path=CurrentClientDetailViewModel.Sales, Mode=OneWay, StringFormat=C, ConverterCulture=de-DE}" />
 
             <Button Grid.Row="23" Grid.Column="0" Grid.ColumnSpan="4"
+                    Command="{Binding Path=CreateNewBillCommand}"
                     Content="Neuer Auftrag"
                     IsEnabled="{Binding Path=CanDoBillAction, Mode=OneWay}" />
         </Grid>

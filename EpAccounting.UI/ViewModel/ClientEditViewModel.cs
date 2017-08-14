@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditViewModel.cs
-// Last Change: 11.05.2017  20:46
+// Last Change: 03.08.2017  20:39
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -34,6 +34,8 @@ namespace EpAccounting.UI.ViewModel
         private Client currentClient;
         private ClientDetailViewModel _currentClientDetailViewModel;
         private IClientState _currentClientState;
+
+        private RelayCommand _createNewBillCommand;
 
         #endregion
 
@@ -74,6 +76,19 @@ namespace EpAccounting.UI.ViewModel
         {
             get { return this._currentClientState; }
             private set { this.SetProperty(ref this._currentClientState, value); }
+        }
+
+        public RelayCommand CreateNewBillCommand
+        {
+            get
+            {
+                if (this._createNewBillCommand == null)
+                {
+                    this._createNewBillCommand = new RelayCommand(this.SendCreateNewBillMessage, this.CanCreateNewBill);
+                }
+
+                return this._createNewBillCommand;
+            }
         }
 
         public bool CanInsertClientId
@@ -183,8 +198,8 @@ namespace EpAccounting.UI.ViewModel
 
             try
             {
-                this.SendRemoveClientMessage();
                 this.repository.Delete(this.currentClient);
+                this.SendRemoveClientMessage();
                 return true;
             }
             catch (Exception e)
@@ -196,34 +211,36 @@ namespace EpAccounting.UI.ViewModel
 
         public virtual void SendClientSearchCriterionMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(this.GetClientSearchCriterion(), Resources.Messenger_Message_ClientSearchCriteria));
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(this.GetClientSearchCriterion(), Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
         }
 
         public virtual void SendUpdateClientValuesMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Messenger_Message_UpdateClientValues));
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Messenger_Message_UpdateClientValuesMessageForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Messenger_Message_UpdateClientValuesMessageForBillEditVM));
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Messenger_Message_UpdateClientValuesMessageForBillSearchVM));
         }
 
         private void SendRemoveClientMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Messenger_Message_RemoveClient));
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Messenger_Message_RemoveClientMessageForClientSearchVM));
         }
 
         private void SendEnableStateForClientLoadingMessage()
         {
             if (this.CurrentClientState.GetType() == typeof(ClientEditState) || this.CurrentClientState.GetType() == typeof(ClientCreationState))
             {
-                Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Messenger_Message_EnableStateForClientLoading));
+                Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Messenger_Message_EnableStateMessageForClientSearchVM));
             }
             else
             {
-                Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForClientLoading));
+                Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForClientSearchVM));
             }
         }
 
         private void ExecuteNotificationMessage(NotificationMessage<int> message)
         {
-            if (message.Notification == Resources.Messenger_Message_LoadSelectedClient)
+            if (message.Notification == Resources.Messenger_Message_LoadSelectedClientMessageForClientEditVM)
             {
                 this.Load(this.repository.GetById<Client>(message.Content), this.GetClientLoadedState());
             }
@@ -255,6 +272,8 @@ namespace EpAccounting.UI.ViewModel
             {
                 command.RelayCommand.RaiseCanExecuteChanged();
             }
+
+            this.CreateNewBillCommand.RaiseCanExecuteChanged();
         }
 
         private void UpdateProperties()
@@ -273,13 +292,12 @@ namespace EpAccounting.UI.ViewModel
 
         private Client GetEqualClient()
         {
-            return this.repository.GetByCriteria<Client>(this.GetEqualClientCriterion()).FirstOrDefault();
+            return this.repository.GetByCriteria<Client>(this.GetEqualClientCriterion(), 1).FirstOrDefault();
         }
 
         private ICriterion GetEqualClientCriterion()
         {
-            return Restrictions.Where<Client>(
-                                              c => (c.ClientId != this.CurrentClientDetailViewModel.ClientId &&
+            return Restrictions.Where<Client>(c => (c.ClientId != this.CurrentClientDetailViewModel.ClientId &&
                                                     c.FirstName == this.CurrentClientDetailViewModel.FirstName) &&
                                                    (c.LastName == this.CurrentClientDetailViewModel.LastName));
         }
@@ -352,12 +370,25 @@ namespace EpAccounting.UI.ViewModel
 
         private void InitPropertyInfos()
         {
-            this.PropertyInfos = this.GetType().
-                                      GetProperties(BindingFlags.Public | BindingFlags.Instance).
-                                      Where(prop => prop.DeclaringType == this.GetType() &&
-                                                    prop.CanRead && prop.GetMethod.IsPublic &&
-                                                    prop.PropertyType != typeof(RelayCommand)).
-                                      ToArray();
+            this.PropertyInfos = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(prop => prop.DeclaringType == this.GetType() &&
+                                                                                                                         prop.CanRead && prop.GetMethod.IsPublic &&
+                                                                                                                         prop.PropertyType != typeof(RelayCommand)).ToArray();
+        }
+
+        private bool CanCreateNewBill()
+        {
+            if (this.CurrentClientState == this.GetClientLoadedState())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void SendCreateNewBillMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Messenger_Message_CreateNewBillMessageForBillEditVM));
+            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_CreateNewBillMessageForMainVM));
         }
 
 

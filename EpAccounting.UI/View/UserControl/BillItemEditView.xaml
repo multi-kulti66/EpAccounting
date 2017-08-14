@@ -42,19 +42,18 @@
             <DataGrid.InputBindings>
                 <KeyBinding Key="N" Command="{Binding Path=AddItemCommand.RelayCommand}" Modifiers="Control" />
                 <KeyBinding Key="Delete" Command="{Binding Path=DeleteItemCommand.RelayCommand}" />
-                <KeyBinding Key="PageUp" Command="{Binding Path=MoveItemUpCommand.RelayCommand}"/>
-                <KeyBinding Key="PageDown" Command="{Binding Path=MoveItemDownCommand.RelayCommand}"/>
+                <KeyBinding Key="PageUp" Command="{Binding Path=MoveItemUpCommand.RelayCommand}" />
+                <KeyBinding Key="PageDown" Command="{Binding Path=MoveItemDownCommand.RelayCommand}" />
             </DataGrid.InputBindings>
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Path=Position}" Header="Position" IsReadOnly="True" />
-                <DataGridTextColumn Binding="{Binding Path=ArticleNumber}" Header="Artikelnummer" />
-                <DataGridTextColumn Binding="{Binding Path=Description}" Header="Beschreibung" />
-                <DataGridTextColumn Binding="{Binding Path=Amount}" Header="Menge" />
-                <DataGridTextColumn Binding="{Binding Path=Price, StringFormat=C, ConverterCulture=de-DE}" Header="Einzelpreis" />
-                <DataGridTextColumn Binding="{Binding Path=Discount, StringFormat={}{0} %, ConverterCulture=de-DE}" Header="Rabatt" />
+                <DataGridTextColumn Binding="{Binding Path=ArticleNumber, UpdateSourceTrigger=LostFocus}" Header="Artikelnummer" />
+                <DataGridTextColumn Binding="{Binding Path=Description, UpdateSourceTrigger=LostFocus}" Header="Beschreibung" />
+                <DataGridTextColumn Binding="{Binding Path=Amount, UpdateSourceTrigger=LostFocus}" Header="Menge" />
+                <DataGridTextColumn Binding="{Binding Path=Price, UpdateSourceTrigger=LostFocus, StringFormat=C, ConverterCulture=de-DE, Converter={StaticResource UnitToDoubleConverter}}" Header="Einzelpreis" />
+                <DataGridTextColumn Binding="{Binding Path=Discount, UpdateSourceTrigger=LostFocus, StringFormat={}{0:F2} %, ConverterCulture=de-DE, Converter={StaticResource UnitToDoubleConverter}}" Header="Rabatt" />
                 <DataGridTextColumn Binding="{Binding Path=Sum, Mode=OneWay, StringFormat=C, ConverterCulture=de-DE}" Header="Gesamt" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
 </UserControl>
-

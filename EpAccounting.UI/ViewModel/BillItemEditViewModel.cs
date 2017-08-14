@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditViewModel.cs
-// Last Change: 05.07.2017  20:20
+// Last Change: 22.07.2017  19:38
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -105,7 +105,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void ExecuteNotificationMessage(NotificationMessage<bool> message)
         {
-            if (message.Notification == Resources.Messenger_Message_EnableStateForBillItemEditing)
+            if (message.Notification == Resources.Messenger_Message_EnableStateMessageForBillItemEditVM)
             {
                 this.IsEditingEnabled = message.Content;
             }
@@ -186,9 +186,9 @@ namespace EpAccounting.UI.ViewModel
                 if (this._moveItemDownCommand == null)
                 {
                     this._moveItemDownCommand = new ImageCommandViewModel(Resources.img_arrow_down,
-                                                                        Resources.Command_DisplayName_Down,
-                                                                        Resources.Command_Message_BillItem_Down,
-                                                                        new RelayCommand(this.MoveItemDown, this.CanMoveItemDown));
+                                                                          Resources.Command_DisplayName_Down,
+                                                                          Resources.Command_Message_BillItem_Down,
+                                                                          new RelayCommand(this.MoveItemDown, this.CanMoveItemDown));
                 }
 
                 return this._moveItemDownCommand;
@@ -248,7 +248,7 @@ namespace EpAccounting.UI.ViewModel
 
             this.currentBill.AddBillItem(billItem);
             this.BillItemDetailViewModels.Add(billItemDetailViewModel);
-            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_FocusBillItems));
+            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_FocusBillItemsMessageForBillItemEditView));
         }
 
         public ImageCommandViewModel DeleteItemCommand

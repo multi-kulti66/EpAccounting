@@ -10,6 +10,7 @@ namespace EpAccounting.Test.UI.ViewModel
 {
     using System;
     using System.ComponentModel;
+    using System.Linq.Expressions;
     using System.Threading.Tasks;
     using EpAccounting.Business;
     using EpAccounting.Model;
@@ -397,15 +398,19 @@ namespace EpAccounting.Test.UI.ViewModel
             Bill bill = new Bill { BillId = ExpectedId, Date = "01.02.2017", KindOfBill = "Gutschein" };
             billEditViewModel.Load(bill, billEditViewModel.GetBillLoadedState());
 
-            ICriterion criterion = null;
-            Messenger.Default.Register<NotificationMessage<ICriterion>>(this, x => criterion = x.Content);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> criterion = null;
+            Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>>(this, x => criterion = x.Content);
+
+            Conjunction billConjunction = Restrictions.Conjunction();
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.BillId == ExpectedId));
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, null, null);
 
             // Act
             billEditViewModel.SendBillSearchCriterionMessage();
 
             // Assert
             criterion.Should().NotBeNull();
-            criterion.ToString().Should().Be(Restrictions.Conjunction().Add(Restrictions.Where<Bill>(c => c.BillId == ExpectedId)).ToString());
+            criterion.ToString().Should().Be(expectedTuple.ToString());
         }
 
         [Test]
@@ -420,20 +425,24 @@ namespace EpAccounting.Test.UI.ViewModel
             Bill bill = new Bill { KindOfBill = KindOfBill, Date = Date, Client = client };
             billEditViewModel.Load(bill, billEditViewModel.GetBillLoadedState());
 
-            ICriterion criterion = null;
-            Messenger.Default.Register<NotificationMessage<ICriterion>>(this, x => criterion = x.Content);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> criterion = null;
+            Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>>(this, x => criterion = x.Content);
 
-            Conjunction ExpectedConjunction = Restrictions.Conjunction();
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(KindOfBill, MatchMode.Anywhere)));
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Date.IsLike(Date, MatchMode.Anywhere)));
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.ClientId == ExpectedId));
+            Conjunction billConjunction = Restrictions.Conjunction();
+            billConjunction.Add(Restrictions.Where<Bill>(b => b.KindOfBill.IsLike(KindOfBill, MatchMode.Anywhere)));
+            billConjunction.Add(Restrictions.Where<Bill>(b => b.Date.IsLike(Date, MatchMode.Anywhere)));
+
+            Conjunction clientConjunction = Restrictions.Conjunction();
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.ClientId == ExpectedId));
+
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
 
             // Act
             billEditViewModel.SendBillSearchCriterionMessage();
 
             // Assert
             criterion.Should().NotBeNull();
-            criterion.ToString().Should().Be(ExpectedConjunction.ToString());
+            criterion.ToString().Should().Be(expectedTuple.ToString());
         }
 
         [Test]
@@ -444,27 +453,31 @@ namespace EpAccounting.Test.UI.ViewModel
             Bill bill = ModelFactory.GetDefaultBill();
             billEditViewModel.Load(bill, billEditViewModel.GetBillLoadedState());
 
-            ICriterion criterion = null;
-            Messenger.Default.Register<NotificationMessage<ICriterion>>(this, x => criterion = x.Content);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> criterion = null;
+            Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>>(this, x => criterion = x.Content);
 
-            Conjunction ExpectedConjunction = Restrictions.Conjunction();
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(ModelFactory.DefaultBillKindOfBill, MatchMode.Anywhere)));
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfVat.IsLike(ModelFactory.DefaultBillKindOfVat, MatchMode.Anywhere)));
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Date.IsLike(ModelFactory.DefaultBillDate, MatchMode.Anywhere)));
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.Title.IsLike(ModelFactory.DefaultClientTitle, MatchMode.Anywhere)));
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.FirstName.IsLike(ModelFactory.DefaultClientFirstName, MatchMode.Anywhere)));
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.LastName.IsLike(ModelFactory.DefaultClientLastName, MatchMode.Anywhere)));
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.Street.IsLike(ModelFactory.DefaultClientStreet, MatchMode.Anywhere)));
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.HouseNumber.IsLike(ModelFactory.DefaultClientHouseNumber, MatchMode.Anywhere)));
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.PostalCode.IsLike(ModelFactory.DefaultClientPostalCode, MatchMode.Anywhere)));
-            ExpectedConjunction.Add(Restrictions.Where<Bill>(c => c.Client.City.IsLike(ModelFactory.DefaultClientCity, MatchMode.Anywhere)));
+            Conjunction billConjunction = Restrictions.Conjunction();
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(ModelFactory.DefaultBillKindOfBill, MatchMode.Anywhere)));
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfVat.IsLike(ModelFactory.DefaultBillKindOfVat, MatchMode.Anywhere)));
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.Date.IsLike(ModelFactory.DefaultBillDate, MatchMode.Anywhere)));
+
+            Conjunction clientConjunction = Restrictions.Conjunction();
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title.IsLike(ModelFactory.DefaultClientTitle, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.FirstName.IsLike(ModelFactory.DefaultClientFirstName, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.LastName.IsLike(ModelFactory.DefaultClientLastName, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Street.IsLike(ModelFactory.DefaultClientStreet, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.HouseNumber.IsLike(ModelFactory.DefaultClientHouseNumber, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.PostalCode.IsLike(ModelFactory.DefaultClientPostalCode, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.City.IsLike(ModelFactory.DefaultClientCity, MatchMode.Anywhere)));
+
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
 
             // Act
             billEditViewModel.SendBillSearchCriterionMessage();
 
             // Assert
             criterion.Should().NotBeNull();
-            criterion.ToString().Should().Be(ExpectedConjunction.ToString());
+            criterion.ToString().Should().Be(expectedTuple.ToString());
         }
 
         [Test]
@@ -571,7 +584,7 @@ namespace EpAccounting.Test.UI.ViewModel
             BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepsoitory);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<int>(ExpectedId, Resources.Messenger_Message_LoadSelectedBill));
+            Messenger.Default.Send(new NotificationMessage<int>(ExpectedId, Resources.Messenger_Message_LoadSelectedBillForBillEditVM));
 
             // Assert
             billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(Date);
@@ -586,15 +599,38 @@ namespace EpAccounting.Test.UI.ViewModel
 
             Mock<IRepository> mockRepsoitory = new Mock<IRepository>();
             mockRepsoitory.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(new Bill() {Date = Date});
+            mockRepsoitory.Setup(x => x.IsConnected).Returns(true);
             BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepsoitory);
-            billEditViewModel.Load(bill, null);
+            billEditViewModel.Load(bill, billEditViewModel.GetBillEditState());
 
             // Act
             billEditViewModel.CurrentBillDetailViewModel.Date = "02.02.2016";
-            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Messenger_Message_UpdateClientValues));
-
+            billEditViewModel.BillCommands.Find(x => x.CommandMessage == Resources.Command_Message_Bill_Cancel).RelayCommand.Execute(null);
+            
             // Assert
             billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(Date);
+        }
+
+        [Test]
+        public void ReloadBillWhenClientValuesOfLoadedBillChanged()
+        {
+            // Arrange
+            const string FirstName = "Annalena";
+            Bill bill = ModelFactory.GetDefaultBill();
+            bill.Client.FirstName = FirstName;
+
+            Mock<IRepository> mockRepsoitory = new Mock<IRepository>();
+            mockRepsoitory.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(bill);
+
+            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepsoitory);
+            billEditViewModel.Load(ModelFactory.GetDefaultBill(), billEditViewModel.GetBillLoadedState());
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Messenger_Message_UpdateClientValuesMessageForBillEditVM));
+
+            // Assert
+            billEditViewModel.CurrentBillDetailViewModel.FirstName.Should().Be(FirstName);
+
         }
 
         [Test]
@@ -643,6 +679,21 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             enableState.Should().BeTrue();
+        }
+
+        [Test]
+        public void CreatesNewBillWithSpecificClientByCreateBillMessage()
+        {
+            // Arrange
+            Mock<IRepository> mockRepository = new Mock<IRepository>();
+            mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient);
+            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Messenger_Message_CreateNewBillMessageForBillEditVM));
+
+            // Assert
+            mockRepository.Verify(x => x.GetById<Client>(It.IsAny<int>()), Times.Once);
         }
 
         #endregion

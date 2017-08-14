@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: IRepository.cs
-// Last Change: 13.03.2017  20:58
+// Last Change: 14.08.2017  07:45
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,7 +8,9 @@
 
 namespace EpAccounting.Business
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
     using NHibernate.Criterion;
 
 
@@ -37,10 +39,16 @@ namespace EpAccounting.Business
 
         int GetQuantity<T>() where T : class;
 
-        ICollection<T> GetAll<T>() where T : class;
+        ICollection<T> GetAll<T>(int page) where T : class;
 
         T GetById<T>(int id) where T : class;
 
-        ICollection<T> GetByCriteria<T>(ICriterion criterion) where T : class;
+        int GetQuantityByCriteria<T>(ICriterion criterion) where T : class;
+
+        int GetQuantityByCriteria<T, U>(ICriterion criterion1, Expression<Func<T, U>> combinationCriterion, ICriterion criterion2) where T : class;
+
+        ICollection<T> GetByCriteria<T>(ICriterion criterion, int page) where T : class;
+
+        ICollection<T> GetByCriteria<T, U>(ICriterion criterion1, Expression<Func<T, U>> combinationCriterion, ICriterion criterion2, int page) where T : class;
     }
 }

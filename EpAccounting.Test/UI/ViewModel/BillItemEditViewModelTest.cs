@@ -75,7 +75,7 @@ namespace EpAccounting.Test.UI.ViewModel
             BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
 
             // Assert
             billItemEditViewModel.IsEditingEnabled.Should().BeTrue();
@@ -88,8 +88,8 @@ namespace EpAccounting.Test.UI.ViewModel
             BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
-            Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Messenger_Message_EnableStateForBillItemEditing));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
+            Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
 
             // Assert
             billItemEditViewModel.IsEditingEnabled.Should().BeFalse();
@@ -115,7 +115,7 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
 
             // Act
             billItemEditViewModel.AddItemCommand.RelayCommand.Execute(null);
@@ -146,7 +146,7 @@ namespace EpAccounting.Test.UI.ViewModel
             // Act
             billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
             billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[0];
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
             billItemEditViewModel.DeleteItemCommand.RelayCommand.Execute(null);
 
             // Assert
@@ -171,7 +171,7 @@ namespace EpAccounting.Test.UI.ViewModel
             // Act
             billItemEditViewModel.LoadBill(bill);
             billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[2];
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
             billItemEditViewModel.DeleteItemCommand.RelayCommand.Execute(null);
 
             // Assert
@@ -203,7 +203,7 @@ namespace EpAccounting.Test.UI.ViewModel
             billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
 
             // Assert
             billItemEditViewModel.DeleteItemCommand.RelayCommand.CanExecute(null).Should().BeFalse();
@@ -242,7 +242,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             billItemEditViewModel.LoadBill(bill);
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
             billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[2];
             billItemEditViewModel.MoveItemUpCommand.RelayCommand.Execute(null);
 
@@ -294,7 +294,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             billItemEditViewModel.LoadBill(bill);
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
 
             // Assert
             billItemEditViewModel.MoveItemUpCommand.RelayCommand.CanExecute(null).Should().BeFalse();
@@ -317,7 +317,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             billItemEditViewModel.LoadBill(bill);
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
             billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[0];
 
             // Assert
@@ -341,7 +341,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             billItemEditViewModel.LoadBill(bill);
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
             billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[2];
             billItemEditViewModel.MoveItemDownCommand.RelayCommand.Execute(null);
 
@@ -393,7 +393,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             billItemEditViewModel.LoadBill(bill);
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
 
             // Assert
             billItemEditViewModel.MoveItemDownCommand.RelayCommand.CanExecute(null).Should().BeFalse();
@@ -416,7 +416,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             billItemEditViewModel.LoadBill(bill);
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
             billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[4];
 
             // Assert

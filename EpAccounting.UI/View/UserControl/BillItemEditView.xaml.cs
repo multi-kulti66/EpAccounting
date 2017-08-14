@@ -32,7 +32,7 @@ namespace EpAccounting.UI.View.UserControl
 
         private void ExecuteNotificationMessage(NotificationMessage obj)
         {
-            if (obj.Notification == Properties.Resources.Messenger_Message_FocusBillItems)
+            if (obj.Notification == Properties.Resources.Messenger_Message_FocusBillItemsMessageForBillItemEditView)
             {
                 this.SetFocusOnCell();
             }

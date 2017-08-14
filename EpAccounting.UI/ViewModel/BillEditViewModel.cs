@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEditViewModel.cs
-// Last Change: 21.06.2017  16:35
+// Last Change: 14.08.2017  10:08
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -11,6 +11,7 @@ namespace EpAccounting.UI.ViewModel
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
     using EpAccounting.Business;
@@ -53,7 +54,6 @@ namespace EpAccounting.UI.ViewModel
             this._currentBillState = this.GetBillEmptyState();
 
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
-            Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
 
         #endregion
@@ -64,16 +64,16 @@ namespace EpAccounting.UI.ViewModel
 
         public List<ImageCommandViewModel> BillCommands { get; private set; }
 
-        public IBillState CurrentBillState
-        {
-            get { return this._currentBillState; }
-            private set { this.SetProperty(ref this._currentBillState, value); }
-        }
-
         public BillDetailViewModel CurrentBillDetailViewModel
         {
             get { return this._currentBillDetailViewModel; }
             private set { this.SetProperty(ref this._currentBillDetailViewModel, value); }
+        }
+
+        public IBillState CurrentBillState
+        {
+            get { return this._currentBillState; }
+            private set { this.SetProperty(ref this._currentBillState, value); }
         }
 
         public bool IsInSearchMode
@@ -120,7 +120,7 @@ namespace EpAccounting.UI.ViewModel
 
             if (this.CurrentBillState == this.GetBillLoadedState())
             {
-                Messenger.Default.Send(new NotificationMessage<Bill>(this.currentBill, Resources.Messenger_Message_LoadBillItemEditViewModel));
+                this.SendLoadBillItemEditViewModelMessage(this.currentBill);
             }
         }
 
@@ -145,8 +145,7 @@ namespace EpAccounting.UI.ViewModel
 
         public virtual async Task<bool> DeleteBillAsync()
         {
-            bool shouldDelete = await this.dialogService.ShowDialogYesNo(
-                                                                         Resources.Dialog_Title_Attention,
+            bool shouldDelete = await this.dialogService.ShowDialogYesNo(Resources.Dialog_Title_Attention,
                                                                          Resources.Dialog_Question_DeleteBill);
 
             if (!shouldDelete)
@@ -156,8 +155,8 @@ namespace EpAccounting.UI.ViewModel
 
             try
             {
-                this.SendRemoveBillMessage();
                 this.repository.Delete(this.currentBill);
+                this.SendRemoveBillMessage();
                 return true;
             }
             catch (Exception e)
@@ -169,40 +168,55 @@ namespace EpAccounting.UI.ViewModel
 
         public virtual void SendBillSearchCriterionMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(this.GetBillSearchCriterion(), Resources.Messenger_Message_BillSearchCriteria));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(this.GetBillSearchCriterion(), Resources.Messenger_Message_BillSearchCriteriaForBillSearchVM));
         }
 
         public virtual void SendUpdateBillValuesMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.BillId, Resources.Messenger_Message_UpdateBillValues));
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.BillId, Resources.Messenger_Message_UpdateBillValuesMessageForBillSearchVM));
         }
 
         public virtual void SendRemoveBillMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.BillId, Resources.Messenger_Message_RemoveBill));
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.BillId, Resources.Messenger_Message_RemoveBillMessageForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_RemoveBillMessageForBillVM));
+        }
+
+        private void SendLoadBillItemEditViewModelMessage(Bill bill)
+        {
+            Messenger.Default.Send(new NotificationMessage<Bill>(bill, Resources.Messenger_Message_LoadBillItemEditViewModelMessageForBillVM));
         }
 
         private void SendEnableStateForBillItemEditing()
         {
-            if (this.CurrentBillState.GetType() == typeof(BillEditState))
+            if (this.CurrentBillState.GetType() == typeof(BillEditState) || this.CurrentBillState.GetType() == typeof(BillCreationState))
             {
-                Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateForBillItemEditing));
+                Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
             }
             else
             {
-                Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Messenger_Message_EnableStateForBillItemEditing));
+                Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
             }
         }
 
         private void ExecuteNotificationMessage(NotificationMessage<int> message)
         {
-            if (message.Notification == Resources.Messenger_Message_LoadSelectedBill)
+            if (message.Notification == Resources.Messenger_Message_LoadSelectedBillForBillEditVM)
             {
                 this.Load(this.repository.GetById<Bill>(message.Content), this.GetBillLoadedState());
             }
-            if (message.Notification == Resources.Messenger_Message_UpdateClientValues)
+            else if (message.Notification == Resources.Messenger_Message_CreateNewBillMessageForBillEditVM)
             {
-                this.Reload();
+                Bill bill = new Bill() { Client = this.repository.GetById<Client>(message.Content) };
+                this.Load(bill, this.GetBillCreationState());
+                this.SendLoadBillItemEditViewModelMessage(bill);
+            }
+            else if (message.Notification == Resources.Messenger_Message_UpdateClientValuesMessageForBillEditVM)
+            {
+                if (message.Content == this.currentBill?.Client.ClientId)
+                {
+                    this.Reload();
+                }
             }
         }
 
@@ -248,77 +262,80 @@ namespace EpAccounting.UI.ViewModel
             this.CurrentBillDetailViewModel = new BillDetailViewModel(this.currentBill);
         }
 
-        private ICriterion GetBillSearchCriterion()
+        private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> GetBillSearchCriterion()
         {
-            Conjunction conjunction = Restrictions.Conjunction();
+            Conjunction billConjunction = Restrictions.Conjunction();
 
             // Bill data
             if (this.CurrentBillDetailViewModel.BillId != 0)
             {
-                conjunction.Add(Restrictions.Where<Bill>(b => b.BillId == this.CurrentBillDetailViewModel.BillId));
-                return conjunction;
+                billConjunction.Add(Restrictions.Where<Bill>(b => b.BillId == this.CurrentBillDetailViewModel.BillId));
+                return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, null, null);
             }
 
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.KindOfBill))
             {
-                conjunction.Add(Restrictions.Where<Bill>(b => b.KindOfBill.IsLike(this.CurrentBillDetailViewModel.KindOfBill, MatchMode.Anywhere)));
+                billConjunction.Add(Restrictions.Where<Bill>(b => b.KindOfBill.IsLike(this.CurrentBillDetailViewModel.KindOfBill, MatchMode.Anywhere)));
             }
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.KindOfVat))
             {
-                conjunction.Add(Restrictions.Where<Bill>(b => b.KindOfVat.IsLike(this.CurrentBillDetailViewModel.KindOfVat, MatchMode.Anywhere)));
+                billConjunction.Add(Restrictions.Where<Bill>(b => b.KindOfVat.IsLike(this.CurrentBillDetailViewModel.KindOfVat, MatchMode.Anywhere)));
             }
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.Date))
             {
-                conjunction.Add(Restrictions.Where<Bill>(b => b.Date.IsLike(this.CurrentBillDetailViewModel.Date, MatchMode.Anywhere)));
+                billConjunction.Add(Restrictions.Where<Bill>(b => b.Date.IsLike(this.CurrentBillDetailViewModel.Date, MatchMode.Anywhere)));
             }
+
+            Conjunction clientConjunction = Restrictions.Conjunction();
 
             // Client data
             // if client id is passed, it should just search bills for this client
             if (this.CurrentBillDetailViewModel.ClientId != 0)
             {
-                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.ClientId == this.CurrentBillDetailViewModel.ClientId));
-                return conjunction;
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.ClientId == this.CurrentBillDetailViewModel.ClientId));
+                return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
             }
 
             // searches all bills with specific client data
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.Title))
             {
-                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.Title.IsLike(this.CurrentBillDetailViewModel.Title, MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.Title.IsLike(this.CurrentBillDetailViewModel.Title, MatchMode.Anywhere)));
             }
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.FirstName))
             {
-                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.FirstName.IsLike(this.CurrentBillDetailViewModel.FirstName, MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.FirstName.IsLike(this.CurrentBillDetailViewModel.FirstName, MatchMode.Anywhere)));
             }
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.LastName))
             {
-                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.LastName.IsLike(this.CurrentBillDetailViewModel.LastName, MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.LastName.IsLike(this.CurrentBillDetailViewModel.LastName, MatchMode.Anywhere)));
             }
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.Street))
             {
-                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.Street.IsLike(this.CurrentBillDetailViewModel.Street, MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.Street.IsLike(this.CurrentBillDetailViewModel.Street, MatchMode.Anywhere)));
             }
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.HouseNumber))
             {
-                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.HouseNumber.IsLike(this.CurrentBillDetailViewModel.HouseNumber, MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.HouseNumber.IsLike(this.CurrentBillDetailViewModel.HouseNumber, MatchMode.Anywhere)));
             }
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.PostalCode))
             {
-                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.PostalCode.IsLike(this.CurrentBillDetailViewModel.PostalCode, MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.PostalCode.IsLike(this.CurrentBillDetailViewModel.PostalCode, MatchMode.Anywhere)));
             }
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.City))
             {
-                conjunction.Add(Restrictions.Where<Bill>(b => b.Client.City.IsLike(this.CurrentBillDetailViewModel.City, MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.City.IsLike(this.CurrentBillDetailViewModel.City, MatchMode.Anywhere)));
             }
 
-            return conjunction;
+            return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
         }
 
         private void InitPropertyInfos()
         {
-            this.PropertyInfos = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(
-                                                                                                                 prop => prop.DeclaringType == this.GetType() &&
-                                                                                                                         prop.CanRead && prop.GetMethod.IsPublic &&
-                                                                                                                         prop.PropertyType != typeof(RelayCommand)).ToArray();
+            this.PropertyInfos = this.GetType()
+                                     .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                     .Where(prop => prop.DeclaringType == this.GetType() &&
+                                                    prop.CanRead && prop.GetMethod.IsPublic &&
+                                                    prop.PropertyType != typeof(RelayCommand)).ToArray();
         }
 
 

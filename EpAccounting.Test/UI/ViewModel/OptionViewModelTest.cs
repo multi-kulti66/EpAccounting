@@ -297,7 +297,7 @@ namespace EpAccounting.Test.UI.ViewModel
             optionViewModel.CreateDatabaseCommand.Execute(null);
 
             // Assert
-            message.Should().Be(Resources.Messenger_Message_UpdateConnectionState);
+            message.Should().Be(Resources.Messenger_Message_UpdateConnectionStateMessageForMainVM);
         }
 
         [Test]
@@ -317,7 +317,7 @@ namespace EpAccounting.Test.UI.ViewModel
             optionViewModel.LoadDatabaseCommand.Execute(null);
 
             // Assert
-            message.Should().Be(Resources.Messenger_Message_UpdateConnectionState);
+            message.Should().Be(Resources.Messenger_Message_UpdateConnectionStateMessageForMainVM);
         }
 
         private OptionViewModel GetDefaultOptionViewModel()

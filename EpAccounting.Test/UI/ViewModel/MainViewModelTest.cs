@@ -126,10 +126,23 @@ namespace EpAccounting.Test.UI.ViewModel
             mainViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_UpdateConnectionState));
+            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_UpdateConnectionStateMessageForMainVM));
 
             // Assert
             mainViewModel.ShouldRaisePropertyChangeFor(x => x.IsConnected);
+        }
+
+        [Test]
+        public void ChangeToBillWorkspaceWhenCreateNewBillMessageReceived()
+        {
+            // Arrange
+            MainViewModel mainViewModel = this.GetMainViewModel();
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Messenger_Message_CreateNewBillMessageForBillEditVM));
+
+            // Assert
+            mainViewModel.CurrentWorkspaceViewModel.Should().BeOfType<BillViewModel>();
         }
 
         private MainViewModel GetMainViewModel()

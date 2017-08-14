@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:behavior="clr-namespace:EpAccounting.UI.Behavior"
                     xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                     xmlns:converter="clr-namespace:EpAccounting.UI.Converter"
                     xmlns:userControl="clr-namespace:EpAccounting.UI.View.UserControl"
@@ -7,6 +8,7 @@
 
     <!--  Converter  -->
     <converter:BitmapToBitmapImageConverter x:Key="BitmapToBitmapImageConverter" />
+    <converter:UnitToDoubleConverter x:Key="UnitToDoubleConverter" />
 
     <!--  Style: Grid  -->
     <Style x:Key="TitleGridStyle" TargetType="{x:Type Grid}">

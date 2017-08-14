@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: TextBoxInputRegExBehavior.cs
-// Last Change: 14.03.2017  17:48
+// Last Change: 12.07.2017  17:09
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -22,13 +22,13 @@ namespace EpAccounting.UI.Behavior
         #region Fields
 
         public static readonly DependencyProperty RegularExpressionProperty =
-            DependencyProperty.Register(nameof(RegularExpression), typeof(string), typeof(TextBoxInputRegExBehavior), new FrameworkPropertyMetadata(".*"));
+                DependencyProperty.Register(nameof(RegularExpression), typeof(string), typeof(TextBoxInputRegExBehavior), new FrameworkPropertyMetadata(".*"));
 
         public static readonly DependencyProperty MaxLengthProperty =
-            DependencyProperty.Register(nameof(MaxLength), typeof(int), typeof(TextBoxInputRegExBehavior), new FrameworkPropertyMetadata(int.MinValue));
+                DependencyProperty.Register(nameof(MaxLength), typeof(int), typeof(TextBoxInputRegExBehavior), new FrameworkPropertyMetadata(int.MinValue));
 
         public static readonly DependencyProperty EmptyValueProperty =
-            DependencyProperty.Register(nameof(EmptyValue), typeof(string), typeof(TextBoxInputRegExBehavior), null);
+                DependencyProperty.Register(nameof(EmptyValue), typeof(string), typeof(TextBoxInputRegExBehavior), null);
 
         #endregion
 

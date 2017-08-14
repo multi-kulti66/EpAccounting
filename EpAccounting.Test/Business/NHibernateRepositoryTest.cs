@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: NHibernateRepositoryTest.cs
-// Last Change: 18.03.2017  22:25
+// Last Change: 26.07.2017  20:13
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -13,6 +13,7 @@ namespace EpAccounting.Test.Business
     using EpAccounting.Data;
     using EpAccounting.Model;
     using EpAccounting.Test.Model;
+    using EpAccounting.UI.Properties;
     using FluentAssertions;
     using NHibernate.Criterion;
     using NUnit.Framework;
@@ -22,7 +23,15 @@ namespace EpAccounting.Test.Business
     [TestFixture]
     public class NHibernateRepositoryTest
     {
+        #region Fields
+
         private IRepository repository;
+
+        #endregion
+
+
+
+        #region Setup/Teardown
 
         [SetUp]
         public void TestInit()
@@ -37,6 +46,12 @@ namespace EpAccounting.Test.Business
             DatabaseFactory.DeleteTestFolderAndFile();
             DatabaseFactory.ClearSavedFilePath();
         }
+
+        #endregion
+
+
+
+        #region Test Methods
 
         [Test]
         public void EmptyFilePathIfNotConnected()
@@ -384,7 +399,7 @@ namespace EpAccounting.Test.Business
             this.repository.Delete(client);
 
             // Assert
-            this.repository.GetAll<Client>().Should().HaveCount(0);
+            this.repository.GetAll<Client>(1).Should().HaveCount(0);
         }
 
         [Test]
@@ -402,7 +417,7 @@ namespace EpAccounting.Test.Business
             this.repository.Delete(bill);
 
             // Assert
-            this.repository.GetAll<Bill>().Should().HaveCount(0);
+            this.repository.GetAll<Bill>(1).Should().HaveCount(0);
         }
 
         [Test]
@@ -498,7 +513,7 @@ namespace EpAccounting.Test.Business
             this.CreateRepository();
 
             // Act
-            Action action = () => this.repository.GetAll<Client>();
+            Action action = () => this.repository.GetAll<Client>(1);
 
             // Assert
             action.ShouldThrow<NullReferenceException>();
@@ -511,7 +526,7 @@ namespace EpAccounting.Test.Business
             this.CreateRepository();
 
             // Act
-            Action action = () => this.repository.GetAll<Bill>();
+            Action action = () => this.repository.GetAll<Bill>(1);
 
             // Assert
             action.ShouldThrow<NullReferenceException>();
@@ -525,7 +540,7 @@ namespace EpAccounting.Test.Business
             this.repository.LoadDatabase(DatabaseFactory.TestFilePath);
 
             // Assert
-            this.repository.GetAll<Client>().Should().HaveCount(0);
+            this.repository.GetAll<Client>(1).Should().HaveCount(0);
         }
 
         [Test]
@@ -536,7 +551,7 @@ namespace EpAccounting.Test.Business
             this.repository.LoadDatabase(DatabaseFactory.TestFilePath);
 
             // Assert
-            this.repository.GetAll<Bill>().Should().HaveCount(0);
+            this.repository.GetAll<Bill>(1).Should().HaveCount(0);
         }
 
         [Test]
@@ -555,7 +570,7 @@ namespace EpAccounting.Test.Business
             }
 
             // Assert
-            this.repository.GetAll<Client>().Should().HaveCount(quantity);
+            this.repository.GetAll<Client>(1).Should().HaveCount(quantity);
         }
 
         [Test]
@@ -574,7 +589,7 @@ namespace EpAccounting.Test.Business
             }
 
             // Assert
-            this.repository.GetAll<Bill>().Should().HaveCount(quantity);
+            this.repository.GetAll<Bill>(1).Should().HaveCount(quantity);
         }
 
         [Test]
@@ -696,7 +711,7 @@ namespace EpAccounting.Test.Business
             conjunction.Add(Restrictions.Where<Client>(client => client.FirstName.IsLike("test")));
 
             // Act
-            Action action = () => this.repository.GetByCriteria<Client>(conjunction);
+            Action action = () => this.repository.GetByCriteria<Client>(conjunction, 1);
 
             // Assert
             action.ShouldThrow<NullReferenceException>();
@@ -712,7 +727,7 @@ namespace EpAccounting.Test.Business
             conjunction.Add(Restrictions.Where<Bill>(bill => bill.KindOfBill.IsLike("test")));
 
             // Act
-            Action action = () => this.repository.GetByCriteria<Bill>(conjunction);
+            Action action = () => this.repository.GetByCriteria<Bill>(conjunction, 1);
 
             // Assert
             action.ShouldThrow<NullReferenceException>();
@@ -748,7 +763,7 @@ namespace EpAccounting.Test.Business
             }
 
             // Assert
-            this.repository.GetByCriteria<Client>(conjunction).Should().HaveCount(0);
+            this.repository.GetByCriteria<Client>(conjunction, 1).Should().HaveCount(0);
         }
 
         [Test]
@@ -782,7 +797,7 @@ namespace EpAccounting.Test.Business
             }
 
             // Assert
-            this.repository.GetByCriteria<Bill>(conjunction).Should().HaveCount(0);
+            this.repository.GetByCriteria<Bill>(conjunction, 1).Should().HaveCount(0);
         }
 
         [Test]
@@ -816,7 +831,7 @@ namespace EpAccounting.Test.Business
             }
 
             // Assert
-            this.repository.GetByCriteria<Client>(conjunction).Should().HaveCount(2 * quantity);
+            this.repository.GetByCriteria<Client>(conjunction, 1).Should().HaveCount(2 * quantity);
         }
 
         [Test]
@@ -851,8 +866,185 @@ namespace EpAccounting.Test.Business
             }
 
             // Assert
-            this.repository.GetByCriteria<Bill>(conjunction).Should().HaveCount(quantity);
+            this.repository.GetByCriteria<Bill>(conjunction, 1).Should().HaveCount(quantity);
         }
+
+        [Test]
+        public void GetBillsByCriteriaForClientAndBill()
+        {
+            // Arrange
+            const int quantity = 6;
+            this.CreateRepositoryWithLoadedDatabase();
+            this.repository.LoadDatabase(DatabaseFactory.TestFilePath);
+
+            Conjunction billConjunction = Restrictions.Conjunction();
+            billConjunction.Add(Restrictions.Where<Bill>(bill => bill.KindOfBill == ModelFactory.DefaultBillKindOfBill));
+
+            Conjunction clientConjunction = Restrictions.Conjunction();
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.FirstName == ModelFactory.DefaultClientFirstName));
+
+            // Act
+            for (int i = 0; i < quantity; i++)
+            {
+                Bill bill = ModelFactory.GetDefaultBill();
+                this.repository.SaveOrUpdate(bill.Client);
+                this.repository.SaveOrUpdate(bill);
+            }
+
+            for (int i = 0; i < quantity; i++)
+            {
+                Bill bill = ModelFactory.GetDefaultBill();
+                bill.Client.FirstName = "Manuel";
+                this.repository.SaveOrUpdate(bill.Client);
+                this.repository.SaveOrUpdate(bill);
+            }
+
+            // Assert
+            this.repository.GetByCriteria<Bill, Client>(billConjunction, b => b.Client, clientConjunction, 1).Should().HaveCount(quantity);
+        }
+
+        [Test]
+        public void RestrictBillsByPageSize()
+        {
+            // Arrange
+            const int pageSize = 50;
+            const int quantity = 54;
+            this.CreateRepositoryWithLoadedDatabase();
+            this.repository.LoadDatabase(DatabaseFactory.TestFilePath);
+
+            Conjunction conjunction = Restrictions.Conjunction();
+            conjunction.Add(Restrictions.Where<Bill>(bill => bill.KindOfBill == ModelFactory.DefaultBillKindOfBill));
+
+            // Act
+            for (int i = 0; i < quantity; i++)
+            {
+                Bill bill = new Bill();
+                this.repository.SaveOrUpdate(bill);
+            }
+
+            for (int i = 0; i < quantity; i++)
+            {
+                Bill bill = ModelFactory.GetDefaultBill();
+                this.repository.SaveOrUpdate(bill.Client);
+                this.repository.SaveOrUpdate(bill);
+            }
+
+            for (int i = 0; i < quantity; i++)
+            {
+                Bill bill = new Bill() { KindOfBill = "Bescheinigung" };
+                this.repository.SaveOrUpdate(bill);
+            }
+
+            // Assert
+            this.repository.GetByCriteria<Bill>(conjunction, 1).Should().HaveCount(pageSize);
+        }
+
+        [Test]
+        public void GetQuantityOfClientsByCriteria()
+        {
+            // Arrange
+            const int quantity = 7;
+            this.CreateRepositoryWithLoadedDatabase();
+            this.repository.LoadDatabase(DatabaseFactory.TestFilePath);
+
+            Conjunction conjunction = Restrictions.Conjunction();
+            conjunction.Add(Restrictions.Where<Client>(client => client.FirstName.IsLike("ndr", MatchMode.Anywhere)));
+
+            // Act
+            for (int i = 0; i < quantity; i++)
+            {
+                Client client = new Client();
+                this.repository.SaveOrUpdate(client);
+            }
+
+            for (int i = 0; i < quantity; i++)
+            {
+                Client client = ModelFactory.GetDefaultClient();
+                this.repository.SaveOrUpdate(client);
+            }
+
+            for (int i = 0; i < quantity; i++)
+            {
+                Client client = new Client() { FirstName = "Andreas" };
+                this.repository.SaveOrUpdate(client);
+            }
+
+            // Assert
+            this.repository.GetQuantityByCriteria<Client>(conjunction).Should().Be(2 * quantity);
+        }
+
+        [Test]
+        public void GetQuantityOfBillsByCriteria()
+        {
+            // Arrange
+            const int quantity = 2;
+            this.CreateRepositoryWithLoadedDatabase();
+            this.repository.LoadDatabase(DatabaseFactory.TestFilePath);
+
+            Conjunction conjunction = Restrictions.Conjunction();
+            conjunction.Add(Restrictions.Where<Bill>(bill => bill.KindOfBill == ModelFactory.DefaultBillKindOfBill));
+
+            // Act
+            for (int i = 0; i < quantity; i++)
+            {
+                Bill bill = new Bill();
+                this.repository.SaveOrUpdate(bill);
+            }
+
+            for (int i = 0; i < quantity; i++)
+            {
+                Bill bill = ModelFactory.GetDefaultBill();
+                this.repository.SaveOrUpdate(bill.Client);
+                this.repository.SaveOrUpdate(bill);
+            }
+
+            for (int i = 0; i < quantity; i++)
+            {
+                Bill bill = new Bill() { KindOfBill = "Bescheinigung" };
+                this.repository.SaveOrUpdate(bill);
+            }
+
+            // Assert
+            this.repository.GetQuantityByCriteria<Bill>(conjunction).Should().Be(quantity);
+        }
+
+        [Test]
+        public void GetQuantityOfBillsByCriteriasForClientAndBill()
+        {
+            // Arrange
+            const int quantity = 3;
+            this.CreateRepositoryWithLoadedDatabase();
+            this.repository.LoadDatabase(DatabaseFactory.TestFilePath);
+
+            Conjunction billConjunction = Restrictions.Conjunction();
+            billConjunction.Add(Restrictions.Where<Bill>(bill => bill.KindOfBill == ModelFactory.DefaultBillKindOfBill));
+
+            Conjunction clientConjunction = Restrictions.Conjunction();
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.FirstName == ModelFactory.DefaultClientFirstName));
+
+            // Act
+            for (int i = 0; i < quantity; i++)
+            {
+                Bill bill = ModelFactory.GetDefaultBill();
+                this.repository.SaveOrUpdate(bill.Client);
+                this.repository.SaveOrUpdate(bill);
+            }
+
+            for (int i = 0; i < quantity; i++)
+            {
+                Bill bill = ModelFactory.GetDefaultBill();
+                bill.Client.FirstName = "Manuel";
+                this.repository.SaveOrUpdate(bill.Client);
+                this.repository.SaveOrUpdate(bill);
+            }
+
+            // Assert
+            this.repository.GetQuantityByCriteria<Bill, Client>(billConjunction, b => b.Client, clientConjunction).Should().Be(quantity);
+        }
+
+        #endregion
+
+
 
         private void CreateDatabaseAndSetPath()
         {
@@ -873,8 +1065,12 @@ namespace EpAccounting.Test.Business
 
         private class Person
         {
+            #region Properties
+
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public string Name { get; set; }
+
+            #endregion
         }
     }
 }

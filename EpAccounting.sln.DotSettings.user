@@ -4,7 +4,7 @@
 	
 	<s:String x:Key="/Default/Environment/ContinuousTesting/PersistentDataLocation/@EntryValue">C:\Users\andre\AppData\Local\Temp\JetBrains\ContinuousTesting\ed3587bd-6fc4-4b32-b272-f09cefcf53e3</s:String>
 	<s:String x:Key="/Default/Environment/ContinuousTesting/ScopeCriterion/@EntryValue">9b0nIQIAAACJbLoh162VEvW9JyECAAAA0Q7cXB8AAABDAG8AbgB0AGkAbgB1AG8AdQBzAFQAZQBzAHQAaQBuAGcASABvAHMAdABQAHIAbwB2AGkAZABlAHIASQBkADCHYr8BAAAA5ZrClwcAAABOAFUAbgBpAHQAMwB4ACQAAAA4ADEARQBDADEANQAwADgALQA1ADQAOABFAC0ANABFADAANAAtAEIANwAwAEUALQA1AEIANwAzADEARQBFADYAMQBCADIARAAcAAAALgBOAEUAVABGAHIAYQBtAGUAdwBvAHIAawAsAFYAZQByAHMAaQBvAG4APQB2ADQALgA1AC4AMgAwAAAARQBwAEEAYwBjAG8AdQBuAHQAaQBuAGcALgBUAGUAcwB0AC4AVQBJAC4AVgBpAGUAdwBNAG8AZABlAGwALgBNAGEAaQBuAFYAaQBlAHcATQBvAGQAZQBsAFQAZQBzAHQA</s:String>
-	<s:String x:Key="/Default/Environment/ContinuousTesting/SnapshotLocation/@EntryValue">C:\Users\Andre\AppData\Local\Temp\ssm.Nofazaw.tmp</s:String>
+	<s:String x:Key="/Default/Environment/ContinuousTesting/SnapshotLocation/@EntryValue">C:\Users\Andre\AppData\Local\Temp\ssm.Fukizuc.tmp</s:String>
 	<s:String x:Key="/Default/Environment/ContinuousTesting/Strategy/@EntryValue">RunTests</s:String>
 	<s:String x:Key="/Default/Environment/ContinuousTesting/TriggerMode/@EntryValue">OnSave</s:String>
 	<s:Boolean x:Key="/Default/Housekeeping/Bookmarks/NumberedBookmarks/=Bookmark4/@KeyIndexDefined">True</s:Boolean>

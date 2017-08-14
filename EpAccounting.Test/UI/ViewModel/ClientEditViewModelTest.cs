@@ -367,7 +367,7 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>())).Returns(() => new List<Client>());
+            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client>());
 
             ClientEditViewModel clientEditViewModel = this.GetDefaultClientEditViewModel(mockRepository);
             Client client = new Client() { FirstName = "Andre", LastName = "Multerer" };
@@ -386,7 +386,7 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>())).Returns(() => new List<Client> { new Client() });
+            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client> { new Client() });
 
             Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
             mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(true));
@@ -409,7 +409,7 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>())).Returns(() => new List<Client> { new Client() });
+            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client> { new Client() });
 
             Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
             mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(false));
@@ -432,7 +432,7 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>())).Returns(() => new List<Client>());
+            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client>());
 
             ClientEditViewModel clientEditViewModel = this.GetDefaultClientEditViewModel(mockRepository);
             Client client = new Client() { FirstName = "Andre", LastName = "Multerer" };
@@ -451,7 +451,7 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>())).Returns(() => new List<Client>());
+            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client>());
             mockRepository.Setup(x => x.SaveOrUpdate(It.IsAny<Client>())).Throws(new Exception());
             Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
 
@@ -687,7 +687,7 @@ namespace EpAccounting.Test.UI.ViewModel
             ClientEditViewModel clientEditViewModel = this.GetDefaultClientEditViewModel(mockRepsoitory);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<int>(ExpectedId, Resources.Messenger_Message_LoadSelectedClient));
+            Messenger.Default.Send(new NotificationMessage<int>(ExpectedId, Resources.Messenger_Message_LoadSelectedClientMessageForClientEditVM));
 
             // Assert
             mockRepsoitory.Verify(x => x.GetById<Client>(ExpectedId), Times.Once);
@@ -739,6 +739,45 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             isEnabled.Should().BeFalse();
+        }
+
+        [Test]
+        public void CanNotSendCreateNewBillWhenNotInLoadedClientState()
+        {
+            // Act
+            ClientEditViewModel clientEditViewModel = this.GetDefaultClientEditViewModel();
+
+            // Assert
+            clientEditViewModel.CreateNewBillCommand.CanExecute(null).Should().BeFalse();
+        }
+
+        [Test]
+        public void CanSendCreateNewBillWhenNotInLoadedClientState()
+        {
+            // Arrange
+            ClientEditViewModel clientEditViewModel = this.GetDefaultClientEditViewModel();
+
+            // Act
+            clientEditViewModel.Load(ModelFactory.GetDefaultClient(), clientEditViewModel.GetClientLoadedState());
+
+            // Assert
+            clientEditViewModel.CreateNewBillCommand.CanExecute(null).Should().BeTrue();
+        }
+
+        [Test]
+        public void SendCreateNewBillMessage()
+        {
+            // Arrange
+            string notificationMessage = this.ToString();
+            Messenger.Default.Register<NotificationMessage<int>>(this, x => notificationMessage = x.Notification);
+            ClientEditViewModel clientEditViewModel = this.GetDefaultClientEditViewModel();
+
+            // Act
+            clientEditViewModel.Load(ModelFactory.GetDefaultClient(), clientEditViewModel.GetClientLoadedState());
+            clientEditViewModel.CreateNewBillCommand.Execute(null);
+
+            // Assert
+            notificationMessage.Should().Be(Resources.Messenger_Message_CreateNewBillMessageForBillEditVM);
         }
 
         #endregion

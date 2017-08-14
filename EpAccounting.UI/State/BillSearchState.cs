@@ -78,7 +78,7 @@ namespace EpAccounting.UI.State
         public void Cancel()
         {
             this.billEditViewModel.Load(new Bill() {Client = new Client()}, this.billEditViewModel.GetBillEmptyState());
-            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_LoadBillSearchViewModel));
+            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_LoadBillSearchViewModelMessageForBillVM));
         }
 
         public bool CanDelete()

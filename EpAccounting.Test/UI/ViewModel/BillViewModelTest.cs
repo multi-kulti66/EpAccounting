@@ -8,6 +8,9 @@
 
 namespace EpAccounting.Test.UI.ViewModel
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq.Expressions;
     using EpAccounting.Business;
     using EpAccounting.Model;
     using EpAccounting.Test.Model;
@@ -17,6 +20,7 @@ namespace EpAccounting.Test.UI.ViewModel
     using FluentAssertions;
     using GalaSoft.MvvmLight.Messaging;
     using Moq;
+    using NHibernate.Criterion;
     using NUnit.Framework;
 
 
@@ -51,7 +55,7 @@ namespace EpAccounting.Test.UI.ViewModel
             BillViewModel billViewModel = this.GetBillViewModel();
 
             // Act
-            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_LoadBillSearchViewModel));
+            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_LoadBillSearchViewModelMessageForBillVM));
 
             // Assert
             billViewModel.BillWorkspaceViewModel.Should().BeOfType<BillSearchViewModel>();
@@ -64,7 +68,7 @@ namespace EpAccounting.Test.UI.ViewModel
             BillViewModel billViewModel = this.GetBillViewModel();
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Bill>(ModelFactory.GetDefaultBill(), Resources.Messenger_Message_LoadBillItemEditViewModel));
+            Messenger.Default.Send(new NotificationMessage<Bill>(ModelFactory.GetDefaultBill(), Resources.Messenger_Message_LoadBillItemEditViewModelMessageForBillVM));
 
             // Assert
             billViewModel.BillWorkspaceViewModel.Should().BeOfType<BillItemEditViewModel>();
@@ -74,10 +78,13 @@ namespace EpAccounting.Test.UI.ViewModel
         public void ChangeWorkspaceToBillSearchViewModelOnNotificationMessageThatBillWasDeleted()
         {
             // Arrange
-            BillViewModel billViewModel = this.GetBillViewModel();
+            Mock<IRepository> mockRepository = new Mock<IRepository>();
+            mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
+                          .Returns(new List<Bill>());
+            BillViewModel billViewModel = this.GetBillViewModel(mockRepository);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Messenger_Message_RemoveBill));
+            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_RemoveBillMessageForBillVM));
 
             // Assert
             billViewModel.BillWorkspaceViewModel.Should().BeOfType<BillSearchViewModel>();
@@ -88,7 +95,14 @@ namespace EpAccounting.Test.UI.ViewModel
             Mock<IRepository> mockRepository = new Mock<IRepository>();
             Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
 
-            return new BillViewModel("Rechnungen", Resources.img_bills, mockRepository.Object, mockDialogService.Object);
+            return new BillViewModel(Resources.Workspace_Title_Bills, Resources.img_bills, mockRepository.Object, mockDialogService.Object);
+        }
+
+        private BillViewModel GetBillViewModel(Mock<IRepository> mockRepository)
+        {
+            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
+
+            return new BillViewModel(Resources.Workspace_Title_Bills, Resources.img_bills, mockRepository.Object, mockDialogService.Object);
         }
     }
 }

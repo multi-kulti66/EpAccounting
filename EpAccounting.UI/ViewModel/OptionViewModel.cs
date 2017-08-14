@@ -146,7 +146,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void SendUpdateConnectionStateMessage()
         {
-            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_UpdateConnectionState));
+            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_UpdateConnectionStateMessageForMainVM));
         }
     }
 }

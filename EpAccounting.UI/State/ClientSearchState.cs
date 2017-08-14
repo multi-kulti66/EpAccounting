@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientSearchState.cs
-// Last Change: 11.05.2017  20:36
+// Last Change: 14.08.2017  09:57
 // Author: Andre Multerer
 // ///////////////////////////////////
 

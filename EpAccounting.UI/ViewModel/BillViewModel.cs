@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillViewModel.cs
-// Last Change: 09.05.2017  19:27
+// Last Change: 03.08.2017  20:50
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -21,14 +21,11 @@ namespace EpAccounting.UI.ViewModel
     {
         #region Fields
 
-        private readonly IRepository repository;
-        private readonly IDialogService dialogService;
-
-        private BillEditViewModel _billEditViewModel;
+        private readonly BillEditViewModel _billEditViewModel;
+        private readonly BillItemEditViewModel _billItemEditViewModel;
+        private readonly BillSearchViewModel _billSearchViewModel;
 
         private BillWorkspaceViewModel _billWorkspaceViewModel;
-        private BillItemEditViewModel _billItemEditViewModel;
-        private BillSearchViewModel _billSearchViewModel;
 
         #endregion
 
@@ -38,11 +35,12 @@ namespace EpAccounting.UI.ViewModel
 
         public BillViewModel(string title, Bitmap image, IRepository repository, IDialogService dialogService) : base(title, image)
         {
-            this.repository = repository;
-            this.dialogService = dialogService;
+            this._billEditViewModel = new BillEditViewModel(repository, dialogService);
+            this._billItemEditViewModel = new BillItemEditViewModel();
+            this._billSearchViewModel = new BillSearchViewModel(repository);
+            this._billWorkspaceViewModel = this.BillSearchViewModel;
 
             Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
-            Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<Bill>>(this, this.ExecuteNotificationMessage);
         }
 
@@ -54,55 +52,23 @@ namespace EpAccounting.UI.ViewModel
 
         public BillEditViewModel BillEditViewModel
         {
-            get
-            {
-                if (this._billEditViewModel == null)
-                {
-                    this._billEditViewModel = new BillEditViewModel(this.repository, this.dialogService);
-                }
-
-                return this._billEditViewModel;
-            }
+            get { return this._billEditViewModel; }
         }
 
         public BillWorkspaceViewModel BillWorkspaceViewModel
         {
-            get
-            {
-                if (this._billWorkspaceViewModel == null)
-                {
-                    this._billWorkspaceViewModel = this.BillSearchViewModel;
-                }
-
-                return this._billWorkspaceViewModel;
-            }
+            get { return this._billWorkspaceViewModel; }
             set { this.SetProperty(ref this._billWorkspaceViewModel, value); }
         }
 
         private BillItemEditViewModel BillItemEditViewModel
         {
-            get
-            {
-                if (this._billItemEditViewModel == null)
-                {
-                    this._billItemEditViewModel = new BillItemEditViewModel();
-                }
-
-                return this._billItemEditViewModel;
-            }
+            get { return this._billItemEditViewModel; }
         }
 
         private BillSearchViewModel BillSearchViewModel
         {
-            get
-            {
-                if (this._billSearchViewModel == null)
-                {
-                    this._billSearchViewModel = new BillSearchViewModel(this.repository);
-                }
-
-                return this._billSearchViewModel;
-            }
+            get { return this._billSearchViewModel; }
         }
 
         #endregion
@@ -111,15 +77,11 @@ namespace EpAccounting.UI.ViewModel
 
         private void ExecuteNotificationMessage(NotificationMessage message)
         {
-            if (message.Notification == Resources.Messenger_Message_LoadBillSearchViewModel)
+            if (message.Notification == Resources.Messenger_Message_LoadBillSearchViewModelMessageForBillVM)
             {
                 this.BillWorkspaceViewModel = this.BillSearchViewModel;
             }
-        }
-
-        private void ExecuteNotificationMessage(NotificationMessage<int> message)
-        {
-            if (message.Notification == Resources.Messenger_Message_RemoveBill)
+            else if (message.Notification == Resources.Messenger_Message_RemoveBillMessageForBillVM)
             {
                 this.BillItemEditViewModel.Clear();
                 this.BillWorkspaceViewModel = this.BillSearchViewModel;
@@ -128,7 +90,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void ExecuteNotificationMessage(NotificationMessage<Bill> message)
         {
-            if (message.Notification == Resources.Messenger_Message_LoadBillItemEditViewModel)
+            if (message.Notification == Resources.Messenger_Message_LoadBillItemEditViewModelMessageForBillVM)
             {
                 this.BillWorkspaceViewModel = this.BillItemEditViewModel;
                 this.BillItemEditViewModel.LoadBill(message.Content);

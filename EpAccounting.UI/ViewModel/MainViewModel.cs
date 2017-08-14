@@ -1,6 +1,6 @@
 // ///////////////////////////////////
 // File: MainViewModel.cs
-// Last Change: 09.04.2017  20:47
+// Last Change: 14.08.2017  09:39
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -12,6 +12,7 @@ namespace EpAccounting.UI.ViewModel
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
     using System.Xml;
     using System.Xml.Linq;
@@ -47,7 +48,7 @@ namespace EpAccounting.UI.ViewModel
             this.CurrentWorkspaceViewModel = this.WorkspaceViewModels[0];
             this.TryConnectingAtStartup();
 
-            Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationTask);
+            Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
         }
 
         #endregion
@@ -77,9 +78,9 @@ namespace EpAccounting.UI.ViewModel
         {
             this.WorkspaceViewModels = new ObservableCollection<WorkspaceViewModel>
                                        {
-                                           new ClientViewModel("Kunden", Resources.img_clients, this.repository, this.dialogService),
-                                           new BillViewModel("Rechnungen", Resources.img_bills, this.repository, this.dialogService),
-                                           new OptionViewModel("Optionen", Resources.img_options, this.repository, this.dialogService)
+                                           new ClientViewModel(Resources.Workspace_Title_Clients, Resources.img_clients, this.repository, this.dialogService),
+                                           new BillViewModel(Resources.Workspace_Title_Bills, Resources.img_bills, this.repository, this.dialogService),
+                                           new OptionViewModel(Resources.Workspace_Title_Options, Resources.img_options, this.repository, this.dialogService)
                                        };
         }
 
@@ -112,11 +113,15 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        private void ExecuteNotificationTask(NotificationMessage message)
+        private void ExecuteNotificationMessage(NotificationMessage message)
         {
-            if (message.Notification == Resources.Messenger_Message_UpdateConnectionState)
+            if (message.Notification == Resources.Messenger_Message_UpdateConnectionStateMessageForMainVM)
             {
                 this.UpdateConnectionState();
+            }
+            else if (message.Notification == Resources.Messenger_Message_CreateNewBillMessageForMainVM)
+            {
+                this.CurrentWorkspaceViewModel = this.WorkspaceViewModels.First(x => x.Title == Resources.Workspace_Title_Bills);
             }
         }
 
@@ -170,6 +175,16 @@ namespace EpAccounting.UI.ViewModel
                     }
                 }
             }
+
+            Client testClient = new Client();
+
+            for (int i = 0; i < 100; i++)
+            {
+                Bill bill = new Bill();
+                testClient.AddBill(bill);
+            }
+
+            this.clients.Add(testClient);
         }
 
         private Client CreateXmlClient(XElement clientElement)

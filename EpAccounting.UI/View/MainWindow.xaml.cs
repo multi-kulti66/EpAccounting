@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: MainWindow.xaml.cs
-// Last Change: 13.03.2017  21:59
+// Last Change: 24.07.2017  20:56
 // Author: Andre Multerer
 // ///////////////////////////////////
 
