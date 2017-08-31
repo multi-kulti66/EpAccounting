@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: SettingBindingExtension.cs
-// Last Change: 12.07.2017  16:26
+// Last Change: 16.08.2017  18:33
 // Author: Andre Multerer
 // ///////////////////////////////////
 

@@ -26,7 +26,7 @@ namespace EpAccounting.Test.UI.State
         public void CanNotSwitchToOtherModes()
         {
             // Arrange
-            ClientSearchState clientSearchState = this.GetDefaultClientSearchState();
+            ClientSearchState clientSearchState = this.GetDefaultState();
 
             // Assert
             clientSearchState.CanSwitchToSearchMode().Should().BeFalse();
@@ -38,7 +38,7 @@ namespace EpAccounting.Test.UI.State
         public void CanCommit()
         {
             // Arrange
-            ClientSearchState clientSearchState = this.GetDefaultClientSearchState();
+            ClientSearchState clientSearchState = this.GetDefaultState();
 
             // Assert
             clientSearchState.CanCommit().Should().BeTrue();
@@ -48,8 +48,8 @@ namespace EpAccounting.Test.UI.State
         public void SendsClientSearchCriterionMessage()
         {
             // Arrange
-            Mock<ClientEditViewModel> mockClientEditViewModel = this.GetDefaultMockClientEditViewModel();
-            ClientSearchState clientSearchState = this.GetDefaultClientSearchState(mockClientEditViewModel);
+            Mock<ClientEditViewModel> mockClientEditViewModel = this.GetMockedViewModel();
+            ClientSearchState clientSearchState = this.GetDefaultState(mockClientEditViewModel);
 
             // Act
             clientSearchState.Commit();
@@ -62,7 +62,7 @@ namespace EpAccounting.Test.UI.State
         public void CanCancel()
         {
             // Arrange
-            ClientSearchState clientSearchState = this.GetDefaultClientSearchState();
+            ClientSearchState clientSearchState = this.GetDefaultState();
 
             // Assert
             clientSearchState.CanCancel().Should().BeTrue();
@@ -72,41 +72,39 @@ namespace EpAccounting.Test.UI.State
         public void ReturnToEmptyClientState()
         {
             // Arrange
-            Mock<ClientEditViewModel> mockClientEditViewModel = this.GetDefaultMockClientEditViewModel();
-            ClientSearchState clientSearchState = this.GetDefaultClientSearchState(mockClientEditViewModel);
+            Mock<ClientEditViewModel> mockClientEditViewModel = this.GetMockedViewModel();
+            ClientSearchState clientSearchState = this.GetDefaultState(mockClientEditViewModel);
 
             // Act
             clientSearchState.Cancel();
 
             // Assert
-            mockClientEditViewModel.Verify(x => x.Load(new Client(), It.IsAny<ClientEmptyState>()), Times.Once);
+            mockClientEditViewModel.Verify(x => x.ChangeToEmptyMode(), Times.Once);
         }
 
         [Test]
         public void CanNotDelete()
         {
             // Arrange
-            ClientSearchState clientSearchState = this.GetDefaultClientSearchState();
+            ClientSearchState clientSearchState = this.GetDefaultState();
 
             // Assert
             clientSearchState.CanDelete().Should().BeFalse();
         }
 
-        private ClientSearchState GetDefaultClientSearchState()
+        private ClientSearchState GetDefaultState()
         {
-            return new ClientSearchState(this.GetDefaultMockClientEditViewModel().Object);
+            return new ClientSearchState(this.GetMockedViewModel().Object);
         }
 
-        private ClientSearchState GetDefaultClientSearchState(Mock<ClientEditViewModel> mockClientEditViewModel)
+        private ClientSearchState GetDefaultState(Mock<ClientEditViewModel> mockClientEditViewModel)
         {
             return new ClientSearchState(mockClientEditViewModel.Object);
         }
 
-        private Mock<ClientEditViewModel> GetDefaultMockClientEditViewModel()
+        private Mock<ClientEditViewModel> GetMockedViewModel()
         {
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            return new Mock<ClientEditViewModel>(mockRepository.Object, mockDialogService.Object);
+            return new Mock<ClientEditViewModel>(new Mock<IRepository>().Object, new Mock<IDialogService>().Object);
         }
     }
 }

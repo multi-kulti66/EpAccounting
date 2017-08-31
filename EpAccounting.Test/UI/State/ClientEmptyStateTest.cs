@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEmptyStateTest.cs
-// Last Change: 16.03.2017  21:15
+// Last Change: 20.08.2017  16:10
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,7 +9,6 @@
 namespace EpAccounting.Test.UI.State
 {
     using EpAccounting.Business;
-    using EpAccounting.Model;
     using EpAccounting.UI.Service;
     using EpAccounting.UI.State;
     using EpAccounting.UI.ViewModel;
@@ -22,11 +21,13 @@ namespace EpAccounting.Test.UI.State
     [TestFixture]
     public class ClientEmptyStateTest
     {
+        #region Test Methods
+
         [Test]
         public void CanSwitchToSearchAndAddMode()
         {
             // Arrange
-            ClientEmptyState clientEmptyState = this.GetDefaultClientEmptyState();
+            ClientEmptyState clientEmptyState = this.GetDefaultState();
 
             // Assert
             clientEmptyState.CanSwitchToSearchMode().Should().BeTrue();
@@ -37,7 +38,7 @@ namespace EpAccounting.Test.UI.State
         public void CanNotSwitchToEditState()
         {
             // Arrange
-            ClientEmptyState clientEmptyState = this.GetDefaultClientEmptyState();
+            ClientEmptyState clientEmptyState = this.GetDefaultState();
 
             // Assert
             clientEmptyState.CanSwitchToEditMode().Should().BeFalse();
@@ -47,7 +48,7 @@ namespace EpAccounting.Test.UI.State
         public void CanNotCommitOrCancelOrDelete()
         {
             // Arrange
-            ClientEmptyState clientEmptyState = this.GetDefaultClientEmptyState();
+            ClientEmptyState clientEmptyState = this.GetDefaultState();
 
             // Assert
             clientEmptyState.CanCommit().Should().BeFalse();
@@ -59,53 +60,47 @@ namespace EpAccounting.Test.UI.State
         public void LoadsNewClientAndSwitchesToSearchMode()
         {
             // Arrange
-            Mock<ClientEditViewModel> mockClientEditViewModel = this.GetDefaultMockClientEditViewModel();
-            ClientEmptyState clientCreationState = this.GetDefaultClientEmptyState(mockClientEditViewModel);
+            Mock<ClientEditViewModel> mockClientEditViewModel = this.GetMockedViewModel();
+            ClientEmptyState clientCreationState = this.GetDefaultState(mockClientEditViewModel);
 
             // Act
             clientCreationState.SwitchToSearchMode();
 
             // Assert
-            mockClientEditViewModel.Verify(x => x.Load(new Client(), It.IsAny<ClientSearchState>()), Times.Once);
+            mockClientEditViewModel.Verify(x => x.ChangeToSearchMode(), Times.Once);
         }
 
         [Test]
         public void LoadsNewClientAndSwitchesToAddMode()
         {
             // Arrange
-            Mock<ClientEditViewModel> mockClientEditViewModel = this.GetDefaultMockClientEditViewModel();
-            ClientEmptyState clientCreationState = this.GetDefaultClientEmptyState(mockClientEditViewModel);
+            Mock<ClientEditViewModel> mockClientEditViewModel = this.GetMockedViewModel();
+            ClientEmptyState clientCreationState = this.GetDefaultState(mockClientEditViewModel);
 
             // Act
             clientCreationState.SwitchToAddMode();
 
             // Assert
-            mockClientEditViewModel.Verify(x => x.Load(new Client(), It.IsAny<ClientCreationState>()), Times.Once);
+            mockClientEditViewModel.Verify(x => x.ChangeToCreationMode(), Times.Once);
         }
 
-        private ClientEmptyState GetDefaultClientEmptyState()
+        #endregion
+
+
+
+        private ClientEmptyState GetDefaultState()
         {
-            return new ClientEmptyState(this.GetDefaultClientEditViewModel());
+            return new ClientEmptyState(this.GetMockedViewModel().Object);
         }
 
-        private ClientEmptyState GetDefaultClientEmptyState(Mock<ClientEditViewModel> mockClientEditViewModel)
+        private ClientEmptyState GetDefaultState(Mock<ClientEditViewModel> mockClientEditViewModel)
         {
             return new ClientEmptyState(mockClientEditViewModel.Object);
         }
 
-        private ClientEditViewModel GetDefaultClientEditViewModel()
+        private Mock<ClientEditViewModel> GetMockedViewModel()
         {
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-
-            return new ClientEditViewModel(mockRepository.Object, mockDialogService.Object);
-        }
-
-        private Mock<ClientEditViewModel> GetDefaultMockClientEditViewModel()
-        {
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            return new Mock<ClientEditViewModel>(mockRepository.Object, mockDialogService.Object);
+            return new Mock<ClientEditViewModel>(new Mock<IRepository>().Object, new Mock<IDialogService>().Object);
         }
     }
 }

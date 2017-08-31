@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillDetailViewModelTest.cs
-// Last Change: 09.06.2017  20:04
+// Last Change: 22.08.2017  19:49
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,7 +8,7 @@
 
 namespace EpAccounting.Test.UI.ViewModel
 {
-    using EpAccounting.Test.Model;
+    using System;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
     using NUnit.Framework;
@@ -18,28 +18,52 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class BillDetailViewModelTest
     {
+        #region Fields
+
+        private BillDetailViewModel billDetailViewModel;
+
+        #endregion
+
+
+
+        #region Setup/Teardown
+
+        [SetUp]
+        public void Init()
+        {
+            this.billDetailViewModel = new BillDetailViewModel(ModelFactory.GetDefaultBill());
+        }
+
+        [TearDown]
+        public void Cleanup()
+        {
+            this.billDetailViewModel = null;
+            GC.Collect();
+        }
+
+        #endregion
+
+
+
         #region Test Methods
 
         [Test]
         public void GetDefaultValues()
         {
-            // Act
-            BillDetailViewModel billDetailViewModel = this.GetDefaultViewModel();
-
             // Assert
-            billDetailViewModel.BillId.Should().Be(0); // not in database
-            billDetailViewModel.KindOfBill.Should().Be(ModelFactory.DefaultBillKindOfBill);
-            billDetailViewModel.KindOfVat.Should().Be(ModelFactory.DefaultBillKindOfVat);
-            billDetailViewModel.VatPercentage.Should().Be(ModelFactory.DefaultBillVatPercentage);
-            billDetailViewModel.Date.Should().Be(ModelFactory.DefaultBillDate);
-            billDetailViewModel.ClientId.Should().Be(0); // not in database
-            billDetailViewModel.Title.Should().Be(ModelFactory.DefaultClientTitle);
-            billDetailViewModel.FirstName.Should().Be(ModelFactory.DefaultClientFirstName);
-            billDetailViewModel.LastName.Should().Be(ModelFactory.DefaultClientLastName);
-            billDetailViewModel.Street.Should().Be(ModelFactory.DefaultClientStreet);
-            billDetailViewModel.HouseNumber.Should().Be(ModelFactory.DefaultClientHouseNumber);
-            billDetailViewModel.PostalCode.Should().Be(ModelFactory.DefaultClientPostalCode);
-            billDetailViewModel.City.Should().Be(ModelFactory.DefaultClientCity);
+            this.billDetailViewModel.BillId.Should().Be(0); // not in database
+            this.billDetailViewModel.KindOfBill.Should().Be(ModelFactory.DefaultBillKindOfBill);
+            this.billDetailViewModel.KindOfVat.Should().Be(ModelFactory.DefaultBillKindOfVat);
+            this.billDetailViewModel.VatPercentage.Should().Be(ModelFactory.DefaultBillVatPercentage);
+            this.billDetailViewModel.Date.Should().Be(ModelFactory.DefaultBillDate);
+            this.billDetailViewModel.ClientId.Should().Be(0); // not in database
+            this.billDetailViewModel.Title.Should().Be(ModelFactory.DefaultClientTitle);
+            this.billDetailViewModel.FirstName.Should().Be(ModelFactory.DefaultClientFirstName);
+            this.billDetailViewModel.LastName.Should().Be(ModelFactory.DefaultClientLastName);
+            this.billDetailViewModel.Street.Should().Be(ModelFactory.DefaultClientStreet);
+            this.billDetailViewModel.HouseNumber.Should().Be(ModelFactory.DefaultClientHouseNumber);
+            this.billDetailViewModel.PostalCode.Should().Be(ModelFactory.DefaultClientPostalCode);
+            this.billDetailViewModel.City.Should().Be(ModelFactory.DefaultClientCity);
         }
 
         [Test]
@@ -59,46 +83,38 @@ namespace EpAccounting.Test.UI.ViewModel
             const string HouseNumber = "234 a";
             const string PostalCode = "23512";
             const string City = "Berlin";
-            BillDetailViewModel billDetailViewModel = this.GetDefaultViewModel();
 
             // Act
-            billDetailViewModel.BillId = BillId;
-            billDetailViewModel.KindOfBill = KindOfBill;
-            billDetailViewModel.KindOfVat = KindOfVat;
-            billDetailViewModel.VatPercentage = VatPercentage;
-            billDetailViewModel.Date = Date;
-            billDetailViewModel.Title = Title;
-            billDetailViewModel.ClientId = ClientId;
-            billDetailViewModel.FirstName = FirstName;
-            billDetailViewModel.LastName = LastName;
-            billDetailViewModel.Street = Street;
-            billDetailViewModel.HouseNumber = HouseNumber;
-            billDetailViewModel.PostalCode = PostalCode;
-            billDetailViewModel.City = City;
+            this.billDetailViewModel.BillId = BillId;
+            this.billDetailViewModel.KindOfBill = KindOfBill;
+            this.billDetailViewModel.KindOfVat = KindOfVat;
+            this.billDetailViewModel.VatPercentage = VatPercentage;
+            this.billDetailViewModel.Date = Date;
+            this.billDetailViewModel.Title = Title;
+            this.billDetailViewModel.ClientId = ClientId;
+            this.billDetailViewModel.FirstName = FirstName;
+            this.billDetailViewModel.LastName = LastName;
+            this.billDetailViewModel.Street = Street;
+            this.billDetailViewModel.HouseNumber = HouseNumber;
+            this.billDetailViewModel.PostalCode = PostalCode;
+            this.billDetailViewModel.City = City;
 
             // Assert
-            billDetailViewModel.BillId.Should().Be(BillId);
-            billDetailViewModel.KindOfBill.Should().Be(KindOfBill);
-            billDetailViewModel.KindOfVat.Should().Be(KindOfVat);
-            billDetailViewModel.VatPercentage.Should().Be(VatPercentage);
-            billDetailViewModel.Date.Should().Be(Date);
-            billDetailViewModel.Title.Should().Be(Title);
-            billDetailViewModel.ClientId.Should().Be(ClientId);
-            billDetailViewModel.FirstName.Should().Be(FirstName);
-            billDetailViewModel.LastName.Should().Be(LastName);
-            billDetailViewModel.Street.Should().Be(Street);
-            billDetailViewModel.HouseNumber.Should().Be(HouseNumber);
-            billDetailViewModel.PostalCode.Should().Be(PostalCode);
-            billDetailViewModel.City.Should().Be(City);
+            this.billDetailViewModel.BillId.Should().Be(BillId);
+            this.billDetailViewModel.KindOfBill.Should().Be(KindOfBill);
+            this.billDetailViewModel.KindOfVat.Should().Be(KindOfVat);
+            this.billDetailViewModel.VatPercentage.Should().Be(VatPercentage);
+            this.billDetailViewModel.Date.Should().Be(Date);
+            this.billDetailViewModel.Title.Should().Be(Title);
+            this.billDetailViewModel.ClientId.Should().Be(ClientId);
+            this.billDetailViewModel.FirstName.Should().Be(FirstName);
+            this.billDetailViewModel.LastName.Should().Be(LastName);
+            this.billDetailViewModel.Street.Should().Be(Street);
+            this.billDetailViewModel.HouseNumber.Should().Be(HouseNumber);
+            this.billDetailViewModel.PostalCode.Should().Be(PostalCode);
+            this.billDetailViewModel.City.Should().Be(City);
         }
 
         #endregion
-
-
-
-        private BillDetailViewModel GetDefaultViewModel()
-        {
-            return new BillDetailViewModel(ModelFactory.GetDefaultBill());
-        }
     }
 }

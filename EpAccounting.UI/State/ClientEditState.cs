@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditState.cs
-// Last Change: 21.04.2017  21:10
+// Last Change: 20.08.2017  16:12
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -75,7 +75,7 @@ namespace EpAccounting.UI.State
         {
             if (await this.clientEditViewModel.SaveOrUpdateClientAsync())
             {
-                this.clientEditViewModel.Load(null, this.clientEditViewModel.GetClientLoadedState());
+                this.clientEditViewModel.ChangeToLoadedMode(null);
                 this.clientEditViewModel.SendUpdateClientValuesMessage();
             }
         }

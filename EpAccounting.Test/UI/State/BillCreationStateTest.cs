@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillCreationStateTest.cs
-// Last Change: 18.06.2017  19:16
+// Last Change: 22.08.2017  20:44
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -10,7 +10,6 @@ namespace EpAccounting.Test.UI.State
 {
     using System.Threading.Tasks;
     using EpAccounting.Business;
-    using EpAccounting.Model;
     using EpAccounting.UI.Service;
     using EpAccounting.UI.State;
     using EpAccounting.UI.ViewModel;
@@ -59,7 +58,7 @@ namespace EpAccounting.Test.UI.State
             await billCreationState.Commit();
 
             // Assert
-            mockBillEditViewModel.Verify(x => x.Load(null, It.IsAny<BillLoadedState>()), Times.Once);
+            mockBillEditViewModel.Verify(x => x.ChangeToLoadedMode(null), Times.Once);
         }
 
         [Test]
@@ -75,7 +74,7 @@ namespace EpAccounting.Test.UI.State
             await billCreationState.Commit();
 
             // Assert
-            mockBillEditViewModel.Verify(x => x.Load(null, It.IsAny<BillLoadedState>()), Times.Never);
+            mockBillEditViewModel.Verify(x => x.ChangeToLoadedMode(null), Times.Never);
         }
 
         [Test]
@@ -99,7 +98,7 @@ namespace EpAccounting.Test.UI.State
             billCreationState.Cancel();
 
             // Assert
-            mockBillEditViewModel.Verify(x => x.Load(new Bill() { Client = new Client() }, It.IsAny<BillEmptyState>()), Times.Once);
+            mockBillEditViewModel.Verify(x => x.ChangeToEmptyMode(), Times.Once);
         }
 
         [Test]

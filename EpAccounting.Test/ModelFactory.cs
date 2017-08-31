@@ -1,12 +1,12 @@
 ﻿// ///////////////////////////////////
 // File: ModelFactory.cs
-// Last Change: 03.06.2017  20:07
+// Last Change: 16.08.2017  18:28
 // Author: Andre Multerer
 // ///////////////////////////////////
 
 
 
-namespace EpAccounting.Test.Model
+namespace EpAccounting.Test
 {
     using System.Collections.Generic;
     using EpAccounting.Model;
@@ -15,6 +15,8 @@ namespace EpAccounting.Test.Model
 
     public static class ModelFactory
     {
+        #region Fields
+
         public const int DefaultId = 1;
 
         public const string DefaultArticleDescription = "Testartikel - Blitzschaden";
@@ -44,6 +46,10 @@ namespace EpAccounting.Test.Model
         public const double DefaultBillItemAmount = 3;
         public const double DefaultBillItemPrice = 23.32;
         public const double DefaultBillItemDiscount = 5.5;
+
+        #endregion
+
+
 
         public static Client GetDefaultClient()
         {

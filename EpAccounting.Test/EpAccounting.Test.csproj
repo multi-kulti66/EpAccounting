@@ -107,7 +107,7 @@
     <Compile Include="Model\ClientTest.cs" />
     <Compile Include="Model\Mapping\ObjectEqualityComparer.cs" />
     <Compile Include="Model\Mapping\MappingTest.cs" />
-    <Compile Include="Model\ModelFactory.cs" />
+    <Compile Include="ModelFactory.cs" />
     <Compile Include="DatabaseFactory.cs" />
     <Compile Include="UI\State\BillCreationStateTest.cs" />
     <Compile Include="UI\State\BillEditStateTest.cs" />

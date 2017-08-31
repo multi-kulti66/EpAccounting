@@ -5,7 +5,6 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:markup="clr-namespace:EpAccounting.UI.Markup"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                      xmlns:behavior="clr-namespace:EpAccounting.UI.Behavior"
                       Title="Rechnungsprogramm"
                       Width="{markup:SettingBinding Width}"
                       Height="{markup:SettingBinding Height}"
@@ -37,17 +36,18 @@
         </Grid>
 
         <Grid Grid.Row="0" Grid.Column="1" Style="{StaticResource TitleGridStyle}">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="{Binding Path=CurrentWorkspaceViewModel.Title}" />
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="{Binding Path=CurrentWorkspace.Title}" />
         </Grid>
 
         <ListBox Grid.Row="1" Grid.Column="0"
                  ItemTemplate="{StaticResource MenuWorkspaceViewModelStyle}"
                  ItemsSource="{Binding Path=WorkspaceViewModels}"
-                 SelectedItem="{Binding Path=CurrentWorkspaceViewModel}"
+                 SelectedItem="{Binding Path=CurrentWorkspace}"
+                 IsEnabled="{Binding Path=CanChangeWorkspace}"
                  Style="{StaticResource MainMenuListBoxStyle}" />
 
         <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <ContentPresenter Content="{Binding Path=CurrentWorkspaceViewModel}" />
+            <ContentPresenter Content="{Binding Path=CurrentWorkspace}" />
         </ScrollViewer>
 
     </Grid>

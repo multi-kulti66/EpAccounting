@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: WorkspaceViewModelTest.cs
-// Last Change: 13.03.2017  15:48
+// Last Change: 23.08.2017  20:49
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,7 +8,7 @@
 
 namespace EpAccounting.Test.UI.ViewModel
 {
-    using System.Drawing;
+    using System;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
@@ -19,6 +19,35 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class WorkspaceViewModelTest
     {
+        #region Fields
+
+        private WorkspaceViewModel workspaceViewModel;
+
+        #endregion
+
+
+
+        #region Setup/Teardown
+
+        [SetUp]
+        public void Init()
+        {
+            this.workspaceViewModel = new WorkspaceViewModel(Resources.Workspace_Title_Options, Resources.img_options);
+        }
+
+        [TearDown]
+        public void Cleanup()
+        {
+            this.workspaceViewModel = null;
+            GC.Collect();
+        }
+
+        #endregion
+
+
+
+        #region Test Methods
+
         [Test]
         public void InheritsFromBindableViewModelBase()
         {
@@ -28,17 +57,12 @@ namespace EpAccounting.Test.UI.ViewModel
         [Test]
         public void CanInitializeInstance()
         {
-            // Arrange
-            const string ExpectedTitle = "Test";
-            Bitmap ExpectedImage = Resources.img_clients;
-
-            // Act
-            WorkspaceViewModel workspaceVM = new WorkspaceViewModel(ExpectedTitle, ExpectedImage);
-
             // Assert
-            workspaceVM.Should().NotBeNull();
-            workspaceVM.Title.Should().Be(ExpectedTitle);
-            workspaceVM.Image.Should().Be(ExpectedImage);
+            this.workspaceViewModel.Should().NotBeNull();
+            this.workspaceViewModel.Title.Should().Be(Resources.Workspace_Title_Options);
+            this.workspaceViewModel.Image.FrameDimensionsList.ShouldBeEquivalentTo(Resources.img_options.FrameDimensionsList);
         }
+
+        #endregion
     }
 }

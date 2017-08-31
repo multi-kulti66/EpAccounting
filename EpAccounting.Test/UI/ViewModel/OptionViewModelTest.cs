@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: OptionViewModelTest.cs
-// Last Change: 14.03.2017  16:32
+// Last Change: 23.08.2017  20:43
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -10,7 +10,6 @@ namespace EpAccounting.Test.UI.ViewModel
 {
     using System;
     using System.ComponentModel;
-    using System.Drawing;
     using System.Threading.Tasks;
     using EpAccounting.Business;
     using EpAccounting.UI.Properties;
@@ -26,13 +25,26 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class OptionViewModelTest
     {
-        private const string DefaultTitle = "Optionen";
-        private readonly Bitmap DefaultImage = Resources.img_options;
+        #region Fields
+
+        private Mock<IRepository> mockRepository;
+        private Mock<IDialogService> mockDialogService;
+        private OptionViewModel optionViewModel;
+
+        #endregion
+
+
+
+        #region Setup/Teardown
 
         [SetUp]
         public void Init()
         {
             DatabaseFactory.ClearSavedFilePath();
+
+            this.mockRepository = new Mock<IRepository>();
+            this.mockDialogService = new Mock<IDialogService>();
+            this.optionViewModel = new OptionViewModel(Resources.Workspace_Title_Options, Resources.img_options, this.mockRepository.Object, this.mockDialogService.Object);
         }
 
         [TearDown]
@@ -40,7 +52,18 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             DatabaseFactory.DeleteTestFolderAndFile();
             DatabaseFactory.ClearSavedFilePath();
+
+            this.mockRepository = null;
+            this.mockDialogService = null;
+            this.optionViewModel = null;
+            GC.Collect();
         }
+
+        #endregion
+
+
+
+        #region Test Methods
 
         [Test]
         public void DerivesFromBindableViewModelBase()
@@ -51,293 +74,221 @@ namespace EpAccounting.Test.UI.ViewModel
         [Test]
         public void PropertiesInitializedAfterCreation()
         {
-            // Act
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel();
-
             // Assert
-            optionViewModel.Title.Should().Be(DefaultTitle);
-            optionViewModel.Image.Should().Be(this.DefaultImage);
+            this.optionViewModel.Title.Should().Be(Resources.Workspace_Title_Options);
+            this.optionViewModel.Image.FrameDimensionsList.Should().BeEquivalentTo(Resources.img_options.FrameDimensionsList);
         }
 
         [Test]
         public void GetSavedDatabasePath()
         {
-            // Arrange
+            // Act
             DatabaseFactory.SetSavedFilePath();
 
-            // Act
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel();
-
             // Assert
-            optionViewModel.FilePath.Should().Be(DatabaseFactory.TestFilePath);
+            this.optionViewModel.FilePath.Should().Be(DatabaseFactory.TestFilePath);
         }
 
         [Test]
         public void DoNotCreateDatabaseWhenNoFolderWasSelected()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowFolderDialog()).Returns(() => null);
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockRepository, mockDialogService);
+            this.mockDialogService.Setup(x => x.ShowFolderDialog()).Returns(() => null);
 
             // Act
-            optionViewModel.CreateDatabaseCommand.Execute(null);
+            this.optionViewModel.CreateDatabaseCommand.Execute(null);
 
             // Assert
-            mockRepository.Verify(x => x.CreateDatabase(It.IsAny<string>()), Times.Never());
+            this.mockRepository.Verify(x => x.CreateDatabase(It.IsAny<string>()), Times.Never());
         }
 
         [Test]
         public void CreateDatabaseIfValidFolderPath()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowFolderDialog()).Returns("Desktop\\EpAccounting");
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockRepository, mockDialogService);
+            this.mockDialogService.Setup(x => x.ShowFolderDialog()).Returns(DatabaseFactory.TestFolderPath);
 
             // Act
-            optionViewModel.CreateDatabaseCommand.Execute(null);
+            this.optionViewModel.CreateDatabaseCommand.Execute(null);
 
             // Assert
-            mockRepository.Verify(x => x.CreateDatabase(It.IsAny<string>()), Times.Once);
-        }
-
-        [Test]
-        public void OverwriteExistingDatabaseIfDialogResultIsYes()
-        {
-            // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowFolderDialog()).Returns(DatabaseFactory.TestFolderPath);
-            mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()))
-                             .Returns(Task.FromResult(true));
-
-            DatabaseFactory.CreateTestFile();
-
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockRepository, mockDialogService);
-
-            // Act
-            optionViewModel.CreateDatabaseCommand.Execute(null);
-
-            // Assert
-            mockRepository.Verify(x => x.CreateDatabase(It.IsAny<string>()), Times.Once);
-        }
-
-        [Test]
-        public void DoNotOverwriteExistingDatabaseIfDialogResultIsNo()
-        {
-            // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowFolderDialog()).Returns(DatabaseFactory.TestFolderPath);
-            mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()))
-                             .Returns(Task.FromResult(false));
-
-            DatabaseFactory.CreateTestFile();
-
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockRepository, mockDialogService);
-
-            // Act
-            optionViewModel.CreateDatabaseCommand.Execute(null);
-
-            // Assert
-            mockRepository.Verify(x => x.CreateDatabase(It.IsAny<string>()), Times.Never);
+            this.mockRepository.Verify(x => x.CreateDatabase(It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public void SaveDatabaseFilePathInSettingsWhenDatabaseWasCreatedSuccessfully()
         {
             // Arrange
-            string ExpectedFolderPath = "Desktop\\EpAccounting\\";
-            string ExpectedFilePath = ExpectedFolderPath + Resources.Database_NameWithExtension;
-
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowFolderDialog()).Returns(ExpectedFolderPath);
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockRepository, mockDialogService);
+            this.mockDialogService.Setup(x => x.ShowFolderDialog()).Returns(DatabaseFactory.TestFolderPath);
 
             // Act
-            optionViewModel.CreateDatabaseCommand.Execute(null);
+            this.optionViewModel.CreateDatabaseCommand.Execute(null);
 
             // Assert
-            optionViewModel.FilePath.Should().Be(ExpectedFilePath);
+            this.optionViewModel.FilePath.Should().Be(DatabaseFactory.TestFilePath);
         }
 
         [Test]
         public void RaisePropertyChangedWhenDatabaseWasCreatedSuccessfully()
         {
             // Arrange
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowFolderDialog()).Returns("Desktop\\EpAccounting");
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockDialogService);
-            optionViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.mockDialogService.Setup(x => x.ShowFolderDialog()).Returns(DatabaseFactory.TestFolderPath);
+            this.optionViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            optionViewModel.CreateDatabaseCommand.Execute(null);
+            this.optionViewModel.CreateDatabaseCommand.Execute(null);
 
             // Assert
-            optionViewModel.ShouldRaisePropertyChangeFor(x => x.FilePath);
+            this.optionViewModel.ShouldRaisePropertyChangeFor(x => x.FilePath);
+        }
+
+        [Test]
+        public void UpdatesConnectionStateAfterDatabaseWasCreatedSuccessfully()
+        {
+            // Arrange
+            this.mockDialogService.Setup(x => x.ShowFolderDialog()).Returns(DatabaseFactory.TestFolderPath);
+
+            string receivedMessage = string.Empty;
+            Messenger.Default.Register<NotificationMessage>(this, x => receivedMessage = x.Notification);
+
+            // Act
+            this.optionViewModel.CreateDatabaseCommand.Execute(null);
+
+            // Assert
+            receivedMessage.Should().Be(Resources.Message_UpdateConnectionStateForMainVM);
+        }
+
+        [Test]
+        public void OverwriteExistingDatabaseIfDialogResultIsYes()
+        {
+            // Arrange
+            this.mockDialogService.Setup(x => x.ShowFolderDialog()).Returns(DatabaseFactory.TestFolderPath);
+            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(true));
+
+            DatabaseFactory.CreateTestFile();
+
+            // Act
+            this.optionViewModel.CreateDatabaseCommand.Execute(null);
+
+            // Assert
+            this.mockRepository.Verify(x => x.CreateDatabase(It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public void DoNotOverwriteExistingDatabaseIfDialogResultIsNo()
+        {
+            // Arrange
+            this.mockDialogService.Setup(x => x.ShowFolderDialog()).Returns(DatabaseFactory.TestFolderPath);
+            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(false));
+
+            DatabaseFactory.CreateTestFile();
+
+            // Act
+            this.optionViewModel.CreateDatabaseCommand.Execute(null);
+
+            // Assert
+            this.mockRepository.Verify(x => x.CreateDatabase(It.IsAny<string>()), Times.Never);
         }
 
         [Test]
         public void ShowMessageWhenDatabaseCanNotBeCreated()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.CreateDatabase(It.IsAny<string>())).Throws(new Exception());
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowFolderDialog()).Returns("Desktop\\EpAccounting");
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockRepository, mockDialogService);
+            this.mockRepository.Setup(x => x.CreateDatabase(It.IsAny<string>())).Throws(new Exception());
+            this.mockDialogService.Setup(x => x.ShowFolderDialog()).Returns(DatabaseFactory.TestFolderPath);
 
             // Act
-            optionViewModel.CreateDatabaseCommand.Execute(this);
+            this.optionViewModel.CreateDatabaseCommand.Execute(this);
 
             // Assert
-            mockDialogService.Verify(x => x.ShowMessage(Resources.Exception_Message_CouldNotCreateDatabase, It.IsAny<string>()), Times.Once);
+            this.mockDialogService.Verify(x => x.ShowMessage(Resources.Exception_Message_CouldNotCreateDatabase, It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public void DoNotLoadDatabaseWhenNoFolderWasSelected()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowDatabaseFileDialog()).Returns(() => null);
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockRepository, mockDialogService);
+            this.mockDialogService.Setup(x => x.ShowDatabaseFileDialog()).Returns(() => null);
 
             // Act
-            optionViewModel.LoadDatabaseCommand.Execute(null);
+            this.optionViewModel.LoadDatabaseCommand.Execute(null);
 
             // Assert
-            mockRepository.Verify(x => x.LoadDatabase(It.IsAny<string>()), Times.Never());
+            this.mockRepository.Verify(x => x.LoadDatabase(It.IsAny<string>()), Times.Never());
         }
 
         [Test]
         public void LoadDatabaseIfValidDatabaseFile()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowDatabaseFileDialog()).Returns("Desktop\\EpAccounting\\EpAccounting.db");
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockRepository, mockDialogService);
+            this.mockDialogService.Setup(x => x.ShowDatabaseFileDialog()).Returns(DatabaseFactory.TestFilePath);
 
             // Act
-            optionViewModel.LoadDatabaseCommand.Execute(null);
+            this.optionViewModel.LoadDatabaseCommand.Execute(null);
 
             // Assert
-            mockRepository.Verify(x => x.LoadDatabase(It.IsAny<string>()), Times.Once);
+            this.mockRepository.Verify(x => x.LoadDatabase(It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public void SaveDatabaseFilePathInSettingsWhenDatabaseWasLoadedSuccessfully()
         {
             // Arrange
-            string ExpectedFilePath = "Desktop\\EpAccounting\\EpAccounting.db";
-
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowDatabaseFileDialog()).Returns(ExpectedFilePath);
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockRepository, mockDialogService);
+            this.mockDialogService.Setup(x => x.ShowDatabaseFileDialog()).Returns(DatabaseFactory.TestFilePath);
 
             // Act
-            optionViewModel.LoadDatabaseCommand.Execute(null);
+            this.optionViewModel.LoadDatabaseCommand.Execute(null);
 
             // Assert
-            Settings.Default.DatabaseFilePath.Should().Be(ExpectedFilePath);
+            Settings.Default.DatabaseFilePath.Should().Be(DatabaseFactory.TestFilePath);
         }
 
         [Test]
         public void RaisePropertyChangedWhenDatabaseWasLoadedSuccessfully()
         {
             // Arrange
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowDatabaseFileDialog()).Returns("Desktop\\EpAccounting\\EpAccounting.db");
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockDialogService);
-            optionViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.mockDialogService.Setup(x => x.ShowDatabaseFileDialog()).Returns(DatabaseFactory.TestFilePath);
+            this.optionViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            optionViewModel.LoadDatabaseCommand.Execute(null);
+            this.optionViewModel.LoadDatabaseCommand.Execute(null);
 
             // Assert
-            optionViewModel.ShouldRaisePropertyChangeFor(x => x.FilePath);
+            this.optionViewModel.ShouldRaisePropertyChangeFor(x => x.FilePath);
+        }
+
+        [Test]
+        public void UpdatesConnectionStateAfterDatabaseWasLoadedSuccessfully()
+        {
+            // Arrange
+            this.mockDialogService.Setup(x => x.ShowDatabaseFileDialog()).Returns(DatabaseFactory.TestFilePath);
+
+            string receivedMessage = string.Empty;
+            Messenger.Default.Register<NotificationMessage>(this, x => receivedMessage = x.Notification);
+
+            // Act
+            this.optionViewModel.LoadDatabaseCommand.Execute(null);
+
+            // Assert
+            receivedMessage.Should().Be(Resources.Message_UpdateConnectionStateForMainVM);
         }
 
         [Test]
         public void ShowMessageWhenDatabaseCanNotBeLoaded()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.LoadDatabase(It.IsAny<string>())).Throws(new Exception());
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowDatabaseFileDialog()).Returns("Desktop\\EpAccounting\\EpAccounting.db");
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockRepository, mockDialogService);
+            this.mockRepository.Setup(x => x.LoadDatabase(It.IsAny<string>())).Throws(new Exception());
+            this.mockDialogService.Setup(x => x.ShowDatabaseFileDialog()).Returns(DatabaseFactory.TestFilePath);
 
             // Act
-            optionViewModel.LoadDatabaseCommand.Execute(this);
+            this.optionViewModel.LoadDatabaseCommand.Execute(this);
 
             // Assert
-            mockDialogService.Verify(x => x.ShowMessage(Resources.Exception_Message_CouldNotLoadDatabase, It.IsAny<string>()), Times.Once);
+            this.mockDialogService.Verify(x => x.ShowMessage(Resources.Exception_Message_CouldNotLoadDatabase, It.IsAny<string>()), Times.Once);
         }
 
-        [Test]
-        public void SendUpdateConnectionStateMessageWhenDatabaseWasCreated()
-        {
-            // Arrange
-            string message = string.Empty;
-            Messenger.Default.Register<NotificationMessage>(this, x => message = x.Notification);
-
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowFolderDialog()).Returns("Desktop\\EpAccounting");
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockRepository, mockDialogService);
-
-            // Act
-            optionViewModel.CreateDatabaseCommand.Execute(null);
-
-            // Assert
-            message.Should().Be(Resources.Messenger_Message_UpdateConnectionStateMessageForMainVM);
-        }
-
-        [Test]
-        public void SendUpdateConnectionStateMessageWhenDatabaseWasLoaded()
-        {
-            // Arrange
-            string message = string.Empty;
-            Messenger.Default.Register<NotificationMessage>(this, x => message = x.Notification);
-
-            // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowDatabaseFileDialog()).Returns("Desktop\\EpAccounting\\EpAccounting.db");
-            OptionViewModel optionViewModel = this.GetDefaultOptionViewModel(mockRepository, mockDialogService);
-
-            // Act
-            optionViewModel.LoadDatabaseCommand.Execute(null);
-
-            // Assert
-            message.Should().Be(Resources.Messenger_Message_UpdateConnectionStateMessageForMainVM);
-        }
-
-        private OptionViewModel GetDefaultOptionViewModel()
-        {
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-
-            return new OptionViewModel(DefaultTitle, this.DefaultImage, mockRepository.Object, mockDialogService.Object);
-        }
-
-        private OptionViewModel GetDefaultOptionViewModel(Mock<IDialogService> mockDialogService)
-        {
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-
-            return new OptionViewModel(DefaultTitle, this.DefaultImage, mockRepository.Object, mockDialogService.Object);
-        }
-
-        private OptionViewModel GetDefaultOptionViewModel(Mock<IRepository> mockRepository, Mock<IDialogService> mockDialogService)
-        {
-            return new OptionViewModel(DefaultTitle, this.DefaultImage, mockRepository.Object, mockDialogService.Object);
-        }
+        #endregion
     }
 }

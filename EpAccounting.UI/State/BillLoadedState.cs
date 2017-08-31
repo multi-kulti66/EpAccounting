@@ -46,8 +46,8 @@ namespace EpAccounting.UI.State
 
         public void SwitchToSearchMode()
         {
-            this.billEditViewModel.Load(new Bill() {Client = new Client()}, this.billEditViewModel.GetBillSearchState());
-            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_LoadBillSearchViewModelMessageForBillVM));
+            this.billEditViewModel.ChangeToSearchMode();
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_LoadBillSearchViewModelMessageForBillVM));
         }
 
         public bool CanSwitchToEditMode()
@@ -57,7 +57,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToEditMode()
         {
-            this.billEditViewModel.Load(null, this.billEditViewModel.GetBillEditState());
+            this.billEditViewModel.ChangeToEditMode();
         }
 
         public bool CanCommit()
@@ -89,8 +89,8 @@ namespace EpAccounting.UI.State
         {
             if (await this.billEditViewModel.DeleteBillAsync())
             {
-                this.billEditViewModel.Load(new Bill() { Client = new Client()}, this.billEditViewModel.GetBillEmptyState());
-                Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_LoadBillItemEditViewModelMessageForBillVM));
+                this.billEditViewModel.ChangeToEmptyMode();
+                Messenger.Default.Send(new NotificationMessage(Resources.Message_LoadBillItemEditViewModelForBillVM));
             }
         }
 

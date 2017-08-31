@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEmptyState.cs
-// Last Change: 09.05.2017  19:03
+// Last Change: 22.08.2017  20:43
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,7 +9,6 @@
 namespace EpAccounting.UI.State
 {
     using System.Threading.Tasks;
-    using EpAccounting.Model;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.ViewModel;
     using GalaSoft.MvvmLight.Messaging;
@@ -46,8 +45,8 @@ namespace EpAccounting.UI.State
 
         public void SwitchToSearchMode()
         {
-            this.billEditViewModel.Load(new Bill() {Client = new Client()}, this.billEditViewModel.GetBillSearchState());
-            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_LoadBillSearchViewModelMessageForBillVM));
+            this.billEditViewModel.ChangeToSearchMode();
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_LoadBillSearchViewModelMessageForBillVM));
         }
 
         public bool CanSwitchToEditMode()

@@ -68,7 +68,7 @@ namespace EpAccounting.UI.State
         {
             if (await this.billEditViewModel.SaveOrUpdateBillAsync())
             {
-                this.billEditViewModel.Load(null, this.billEditViewModel.GetBillLoadedState());
+                this.billEditViewModel.ChangeToLoadedMode();
             }
         }
 
@@ -79,8 +79,8 @@ namespace EpAccounting.UI.State
 
         public void Cancel()
         {
-            this.billEditViewModel.Load(new Bill() { Client = new Client()}, this.billEditViewModel.GetBillEmptyState());
-            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_LoadBillSearchViewModelMessageForBillVM));
+            this.billEditViewModel.ChangeToEmptyMode();
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_LoadBillSearchViewModelMessageForBillVM));
         }
 
         public bool CanDelete()

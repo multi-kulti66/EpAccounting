@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEditViewModel.cs
-// Last Change: 14.08.2017  10:08
+// Last Change: 31.08.2017  20:21
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -16,6 +16,7 @@ namespace EpAccounting.UI.ViewModel
     using System.Threading.Tasks;
     using EpAccounting.Business;
     using EpAccounting.Model;
+    using EpAccounting.UI.Enum;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.Service;
     using EpAccounting.UI.State;
@@ -34,7 +35,15 @@ namespace EpAccounting.UI.ViewModel
 
         private Bill currentBill;
         private BillDetailViewModel _currentBillDetailViewModel;
+
         private IBillState _currentBillState;
+        private BillEmptyState _billEmptyState;
+        private BillSearchState _billSearchState;
+        private BillCreationState _billCreationState;
+        private BillLoadedState _billLoadedState;
+        private BillEditState _billEditState;
+
+        private RelayCommand _clearFieldsCommand;
 
         #endregion
 
@@ -53,6 +62,7 @@ namespace EpAccounting.UI.ViewModel
 
             this._currentBillState = this.GetBillEmptyState();
 
+            Messenger.Default.Register<NotificationMessage<Client>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
 
@@ -61,8 +71,6 @@ namespace EpAccounting.UI.ViewModel
 
 
         #region Properties
-
-        public List<ImageCommandViewModel> BillCommands { get; private set; }
 
         public BillDetailViewModel CurrentBillDetailViewModel
         {
@@ -76,7 +84,7 @@ namespace EpAccounting.UI.ViewModel
             private set { this.SetProperty(ref this._currentBillState, value); }
         }
 
-        public bool IsInSearchMode
+        public bool CanInsertIDs
         {
             get
             {
@@ -89,7 +97,7 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        public bool CanEditBillData
+        public bool CanEditData
         {
             get
             {
@@ -102,7 +110,17 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        private List<IBillState> BillStates { get; set; }
+        public RelayCommand ClearFieldsCommand
+        {
+            get
+            {
+                if (this._clearFieldsCommand == null)
+                {
+                    this._clearFieldsCommand = new RelayCommand(this.ClearFields, this.CanClearFields);
+                }
+                return this._clearFieldsCommand;
+            }
+        }
 
         private PropertyInfo[] PropertyInfos { get; set; }
 
@@ -110,23 +128,37 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        public virtual void Load(Bill bill, IBillState billState)
+        public virtual void ChangeToEmptyMode()
+        {
+            this.LoadBill(new Bill() { Client = new Client() });
+            this.LoadBillState(this.GetBillEmptyState());
+            this.UpdateViewModel();
+        }
+
+        public virtual void ChangeToSearchMode()
+        {
+            this.LoadBill(new Bill() { Client = new Client() });
+            this.LoadBillState(this.GetBillSearchState());
+            this.UpdateViewModel();
+        }
+
+        public virtual void ChangeToLoadedMode(Bill bill = null)
         {
             this.LoadBill(bill);
-            this.LoadBillState(billState);
-            this.UpdateCommands();
-            this.UpdateProperties();
-            this.SendEnableStateForBillItemEditing();
+            this.LoadBillState(this.GetBillLoadedState());
+            this.UpdateViewModel();
+            this.SendLoadBillItemEditViewModelMessage(this.currentBill);
+        }
 
-            if (this.CurrentBillState == this.GetBillLoadedState())
-            {
-                this.SendLoadBillItemEditViewModelMessage(this.currentBill);
-            }
+        public virtual void ChangeToEditMode()
+        {
+            this.LoadBillState(this.GetBillEditState());
+            this.UpdateViewModel();
         }
 
         public virtual void Reload()
         {
-            this.Load(this.repository.GetById<Bill>(this.currentBill.BillId), this.GetBillLoadedState());
+            this.ChangeToLoadedMode(this.repository.GetById<Bill>(this.currentBill.BillId));
         }
 
         public virtual async Task<bool> SaveOrUpdateBillAsync()
@@ -134,6 +166,7 @@ namespace EpAccounting.UI.ViewModel
             try
             {
                 this.repository.SaveOrUpdate(this.currentBill);
+                this.SendUpdateClientMessage();
                 return true;
             }
             catch (Exception e)
@@ -166,58 +199,20 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        public virtual void SendBillSearchCriterionMessage()
+        private void ChangeToCreationMode(int clientId)
         {
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(this.GetBillSearchCriterion(), Resources.Messenger_Message_BillSearchCriteriaForBillSearchVM));
-        }
+            Bill bill = new Bill
+                        {
+                            Client = this.repository.GetById<Client>(clientId),
+                            KindOfBill = KindOfBill.Rechnung.ToString(),
+                            KindOfVat = KindOfVat.inkl_MwSt.ToString(),
+                            Date = DateTime.Now.ToShortDateString()
+                        };
 
-        public virtual void SendUpdateBillValuesMessage()
-        {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.BillId, Resources.Messenger_Message_UpdateBillValuesMessageForBillSearchVM));
-        }
-
-        public virtual void SendRemoveBillMessage()
-        {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.BillId, Resources.Messenger_Message_RemoveBillMessageForBillSearchVM));
-            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_RemoveBillMessageForBillVM));
-        }
-
-        private void SendLoadBillItemEditViewModelMessage(Bill bill)
-        {
-            Messenger.Default.Send(new NotificationMessage<Bill>(bill, Resources.Messenger_Message_LoadBillItemEditViewModelMessageForBillVM));
-        }
-
-        private void SendEnableStateForBillItemEditing()
-        {
-            if (this.CurrentBillState.GetType() == typeof(BillEditState) || this.CurrentBillState.GetType() == typeof(BillCreationState))
-            {
-                Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
-            }
-            else
-            {
-                Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
-            }
-        }
-
-        private void ExecuteNotificationMessage(NotificationMessage<int> message)
-        {
-            if (message.Notification == Resources.Messenger_Message_LoadSelectedBillForBillEditVM)
-            {
-                this.Load(this.repository.GetById<Bill>(message.Content), this.GetBillLoadedState());
-            }
-            else if (message.Notification == Resources.Messenger_Message_CreateNewBillMessageForBillEditVM)
-            {
-                Bill bill = new Bill() { Client = this.repository.GetById<Client>(message.Content) };
-                this.Load(bill, this.GetBillCreationState());
-                this.SendLoadBillItemEditViewModelMessage(bill);
-            }
-            else if (message.Notification == Resources.Messenger_Message_UpdateClientValuesMessageForBillEditVM)
-            {
-                if (message.Content == this.currentBill?.Client.ClientId)
-                {
-                    this.Reload();
-                }
-            }
+            this.LoadBill(bill);
+            this.LoadBillState(this.GetBillCreationState());
+            this.UpdateViewModel();
+            this.SendLoadBillItemEditViewModelMessage(bill);
         }
 
         private void LoadBill(Bill bill)
@@ -230,14 +225,22 @@ namespace EpAccounting.UI.ViewModel
             this.SetCurrentBill(bill);
         }
 
+        private void SetCurrentBill(Bill bill)
+        {
+            this.currentBill = bill;
+            this.CurrentBillDetailViewModel = new BillDetailViewModel(this.currentBill);
+        }
+
         private void LoadBillState(IBillState billState)
         {
-            if (billState == null)
-            {
-                return;
-            }
-
             this.CurrentBillState = billState;
+        }
+
+        private void UpdateViewModel()
+        {
+            this.UpdateCommands();
+            this.UpdateProperties();
+            this.SendEnableStateForBillItemEditing();
         }
 
         private void UpdateCommands()
@@ -246,6 +249,8 @@ namespace EpAccounting.UI.ViewModel
             {
                 command.RelayCommand.RaiseCanExecuteChanged();
             }
+
+            this.ClearFieldsCommand.RaiseCanExecuteChanged();
         }
 
         private void UpdateProperties()
@@ -256,10 +261,16 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        private void SetCurrentBill(Bill bill)
+        private void InsertClientData(Client messageContent)
         {
-            this.currentBill = bill;
-            this.CurrentBillDetailViewModel = new BillDetailViewModel(this.currentBill);
+            this.CurrentBillDetailViewModel.ClientId = messageContent.ClientId;
+            this.CurrentBillDetailViewModel.Title = messageContent.Title;
+            this.CurrentBillDetailViewModel.FirstName = messageContent.FirstName;
+            this.CurrentBillDetailViewModel.LastName = messageContent.LastName;
+            this.CurrentBillDetailViewModel.Street = messageContent.Street;
+            this.CurrentBillDetailViewModel.HouseNumber = messageContent.HouseNumber;
+            this.CurrentBillDetailViewModel.PostalCode = messageContent.PostalCode;
+            this.CurrentBillDetailViewModel.City = messageContent.City;
         }
 
         private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> GetBillSearchCriterion()
@@ -329,6 +340,22 @@ namespace EpAccounting.UI.ViewModel
             return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
         }
 
+        private bool CanClearFields()
+        {
+            if (this.CurrentBillState == this.GetBillLoadedState())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void ClearFields()
+        {
+            this.ChangeToEmptyMode();
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_LoadBillSearchViewModelMessageForBillVM));
+        }
+
         private void InitPropertyInfos()
         {
             this.PropertyInfos = this.GetType()
@@ -344,46 +371,137 @@ namespace EpAccounting.UI.ViewModel
 
         private void InitBillStateList()
         {
-            this.BillStates = new List<IBillState>
-                              {
-                                  new BillEmptyState(this),
-                                  new BillSearchState(this),
-                                  new BillCreationState(this),
-                                  new BillLoadedState(this),
-                                  new BillEditState(this)
-                              };
+            this._billEmptyState = new BillEmptyState(this);
+            this._billSearchState = new BillSearchState(this);
+            this._billCreationState = new BillCreationState(this);
+            this._billLoadedState = new BillLoadedState(this);
+            this._billEditState = new BillEditState(this);
         }
 
         public IBillState GetBillEmptyState()
         {
-            return this.BillStates.Find(x => x.GetType() == typeof(BillEmptyState));
+            return this._billEmptyState;
         }
 
         public IBillState GetBillSearchState()
         {
-            return this.BillStates.Find(x => x.GetType() == typeof(BillSearchState));
+            return this._billSearchState;
         }
 
         public IBillState GetBillCreationState()
         {
-            return this.BillStates.Find(x => x.GetType() == typeof(BillCreationState));
+            return this._billCreationState;
         }
 
         public IBillState GetBillLoadedState()
         {
-            return this.BillStates.Find(x => x.GetType() == typeof(BillLoadedState));
+            return this._billLoadedState;
         }
 
         public IBillState GetBillEditState()
         {
-            return this.BillStates.Find(x => x.GetType() == typeof(BillEditState));
+            return this._billEditState;
         }
 
         #endregion
 
 
 
-        #region Command Methods
+        #region Messenger
+
+        private void ExecuteNotificationMessage(NotificationMessage<Client> message)
+        {
+            if (message.Notification == Resources.Message_SwitchToSearchModeAndLoadClientDataForBillEditVM)
+            {
+                this.CurrentBillState.SwitchToSearchMode();
+                this.InsertClientData(message.Content);
+            }
+        }
+
+        private void ExecuteNotificationMessage(NotificationMessage<int> message)
+        {
+            if (message.Notification == Resources.Message_LoadSelectedBillForBillEditVM)
+            {
+                this.ChangeToLoadedMode(this.repository.GetById<Bill>(message.Content));
+            }
+            else if (message.Notification == Resources.Message_CreateNewBillForBillEditVM)
+            {
+                this.ChangeToCreationMode(message.Content);
+            }
+            else if (message.Notification == Resources.Message_UpdateClientValuesForBillEditVM)
+            {
+                if (message.Content == this.currentBill.Client.ClientId)
+                {
+                    this.Reload();
+                }
+            }
+            else if (message.Notification == Resources.Message_RemoveClientForBillEditVM)
+            {
+                if (message.Content == this.CurrentBillDetailViewModel.ClientId)
+                {
+                    this.ChangeToEmptyMode();
+                }
+            }
+        }
+
+        public virtual void SendBillSearchCriterionMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion,
+                                       Expression<Func<Bill, Client>>,
+                                       ICriterion>>(this.GetBillSearchCriterion(),
+                                                    Resources.Message_BillSearchCriteriaForBillSearchVM));
+        }
+
+        public virtual void SendUpdateBillValuesMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.BillId,
+                                                                Resources.Message_UpdateBillValuesMessageForBillSearchVM));
+        }
+
+        public virtual void SendRemoveBillMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.BillId,
+                                                                Resources.Message_RemoveBillForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_ResetBillItemEditVMAndChangeToSearchWorkspaceForBillVM));
+        }
+
+        private void SendUpdateClientMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage<int>(this.currentBill.Client.ClientId,
+                                                                Resources.Message_UpdateClientForClientEditVM));
+        }
+
+        private void SendLoadBillItemEditViewModelMessage(Bill bill)
+        {
+            Messenger.Default.Send(new NotificationMessage<Bill>(bill,
+                                                                 Resources.Message_LoadBillItemEditViewModelForBillVM));
+        }
+
+        private void SendEnableStateForBillItemEditing()
+        {
+            if (this.CurrentBillState == this.GetBillEditState() || this.CurrentBillState == this.GetBillCreationState())
+            {
+                Messenger.Default.Send(new NotificationMessage<bool>(true,
+                                                                     Resources.Message_EnableStateForBillItemEditVM));
+                Messenger.Default.Send(new NotificationMessage<bool>(false,
+                                                                     Resources.Message_WorkspaceEnableStateForMainVM));
+            }
+            else
+            {
+                Messenger.Default.Send(new NotificationMessage<bool>(false,
+                                                                     Resources.Message_EnableStateForBillItemEditVM));
+                Messenger.Default.Send(new NotificationMessage<bool>(true,
+                                                                     Resources.Message_WorkspaceEnableStateForMainVM));
+            }
+        }
+
+        #endregion
+
+
+
+        #region State Commands
+
+        public List<ImageCommandViewModel> BillCommands { get; private set; }
 
         private void InitBillCommands()
         {

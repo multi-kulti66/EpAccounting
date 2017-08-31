@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditViewModelTest.cs
-// Last Change: 05.07.2017  20:32
+// Last Change: 22.08.2017  20:59
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,9 +8,9 @@
 
 namespace EpAccounting.Test.UI.ViewModel
 {
+    using System;
     using System.ComponentModel;
     using EpAccounting.Model;
-    using EpAccounting.Test.Model;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
@@ -22,6 +22,33 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class BillItemEditViewModelTest
     {
+        #region Fields
+
+        private BillItemEditViewModel billItemEditViewModel;
+
+        #endregion
+
+
+
+        #region Setup/Teardown
+
+        [SetUp]
+        public void Init()
+        {
+            this.billItemEditViewModel = new BillItemEditViewModel();
+        }
+
+        [TearDown]
+        public void Cleanup()
+        {
+            this.billItemEditViewModel = null;
+            GC.Collect();
+        }
+
+        #endregion
+
+
+
         #region Test Methods
 
         [Test]
@@ -34,131 +61,114 @@ namespace EpAccounting.Test.UI.ViewModel
         public void LoadBillItemDetailViewModelsViaPassedBill()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             Bill bill = ModelFactory.GetDefaultBill();
 
             // Act
-            billItemEditViewModel.LoadBill(bill);
+            this.billItemEditViewModel.LoadBill(bill);
 
             // Assert
-            billItemEditViewModel.BillItemDetailViewModels.Should().HaveCount(1);
-            billItemEditViewModel.BillItemDetailViewModels[0].Description.Should().Be(ModelFactory.DefaultBillItemDescription);
+            this.billItemEditViewModel.BillItemDetailViewModels.Should().HaveCount(1);
+            this.billItemEditViewModel.BillItemDetailViewModels[0].Description.Should().Be(ModelFactory.DefaultBillItemDescription);
         }
 
         [Test]
         public void LoadBillItemDetailViewModelsSortedByPositionViaPassedBill()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             Bill bill = ModelFactory.GetDefaultBill();
             bill.BillItems.Clear();
 
-            BillItem billItem1 = new BillItem() {Position = 2};
-            BillItem billItem2 = new BillItem() {Position = 1};
+            BillItem billItem1 = new BillItem() { Position = 2 };
+            BillItem billItem2 = new BillItem() { Position = 1 };
 
             bill.AddBillItem(billItem1);
             bill.AddBillItem(billItem2);
 
             // Act
-            billItemEditViewModel.LoadBill(bill);
+            this.billItemEditViewModel.LoadBill(bill);
 
             // Assert
-            billItemEditViewModel.BillItemDetailViewModels.Should().HaveCount(2);
-            billItemEditViewModel.BillItemDetailViewModels[0].Position.Should().Be(1);
-            billItemEditViewModel.BillItemDetailViewModels[1].Position.Should().Be(2);
+            this.billItemEditViewModel.BillItemDetailViewModels.Should().HaveCount(2);
+            this.billItemEditViewModel.BillItemDetailViewModels[0].Position.Should().Be(1);
+            this.billItemEditViewModel.BillItemDetailViewModels[1].Position.Should().Be(2);
         }
 
         [Test]
         public void EnableEditingOnEnableEditingMessage()
         {
-            // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
-
             // Act
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
 
             // Assert
-            billItemEditViewModel.IsEditingEnabled.Should().BeTrue();
+            this.billItemEditViewModel.IsEditingEnabled.Should().BeTrue();
         }
 
         [Test]
         public void DisableEditingOnDisableEditingMessage()
         {
-            // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
-
             // Act
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
-            Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
+            Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Message_EnableStateForBillItemEditVM));
 
             // Assert
-            billItemEditViewModel.IsEditingEnabled.Should().BeFalse();
+            this.billItemEditViewModel.IsEditingEnabled.Should().BeFalse();
         }
 
         [Test]
         public void ClearsCurrentlyLoadedBillAndBillItems()
         {
             // Arrange
-            BillItemEditViewModel billItemDetailViewModel = this.GetDefaultViewModel();
-            billItemDetailViewModel.LoadBill(ModelFactory.GetDefaultBill());
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
 
             // Act
-            billItemDetailViewModel.Clear();
+            this.billItemEditViewModel.Clear();
 
             // Assert
-            billItemDetailViewModel.BillItemDetailViewModels.Should().HaveCount(0);
+            this.billItemEditViewModel.BillItemDetailViewModels.Should().HaveCount(0);
         }
 
         [Test]
         public void AddsNewBillItem()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
-            billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
 
             // Act
-            billItemEditViewModel.AddItemCommand.RelayCommand.Execute(null);
+            this.billItemEditViewModel.AddItemCommand.RelayCommand.Execute(null);
 
             // Assert
-            billItemEditViewModel.BillItemDetailViewModels.Count.Should().Be(2);
+            this.billItemEditViewModel.BillItemDetailViewModels.Count.Should().Be(2);
         }
 
         [Test]
         public void CanNotAddNewBillItemWhenEditingNotEnabled()
         {
-            // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
-
             // Act
-            billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
 
             // Assert
-            billItemEditViewModel.AddItemCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this.billItemEditViewModel.AddItemCommand.RelayCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void DeletesBillItem()
         {
-            // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
-
             // Act
-            billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
-            billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[0];
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
-            billItemEditViewModel.DeleteItemCommand.RelayCommand.Execute(null);
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+            this.billItemEditViewModel.SelectedBillItemDetailViewModel = this.billItemEditViewModel.BillItemDetailViewModels[0];
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
+            this.billItemEditViewModel.DeleteItemCommand.RelayCommand.Execute(null);
 
             // Assert
-            billItemEditViewModel.SelectedBillItemDetailViewModel.Should().BeNull();
-            billItemEditViewModel.BillItemDetailViewModels.Count.Should().Be(0);
+            this.billItemEditViewModel.SelectedBillItemDetailViewModel.Should().BeNull();
+            this.billItemEditViewModel.BillItemDetailViewModels.Count.Should().Be(0);
         }
 
         [Test]
         public void UpdatesPositionsWhenBillItemWasDeleted()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             Bill bill = new Bill();
 
             for (int i = 0; i < 5; i++)
@@ -169,67 +179,61 @@ namespace EpAccounting.Test.UI.ViewModel
             }
 
             // Act
-            billItemEditViewModel.LoadBill(bill);
-            billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[2];
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
-            billItemEditViewModel.DeleteItemCommand.RelayCommand.Execute(null);
+            this.billItemEditViewModel.LoadBill(bill);
+            this.billItemEditViewModel.SelectedBillItemDetailViewModel = this.billItemEditViewModel.BillItemDetailViewModels[2];
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
+            this.billItemEditViewModel.DeleteItemCommand.RelayCommand.Execute(null);
 
             // Assert
-            for (int i = 0; i < billItemEditViewModel.BillItemDetailViewModels.Count; i++)
+            for (int i = 0; i < this.billItemEditViewModel.BillItemDetailViewModels.Count; i++)
             {
                 int currentPosition = i + 1;
-                billItemEditViewModel.BillItemDetailViewModels[i].Position.Should().Be(currentPosition);
+                this.billItemEditViewModel.BillItemDetailViewModels[i].Position.Should().Be(currentPosition);
             }
         }
 
         [Test]
         public void CanNotDeleteBillItemWhenEditingNotEnabled()
         {
-            // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
-
             // Act
-            billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
 
             // Assert
-            billItemEditViewModel.DeleteItemCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this.billItemEditViewModel.DeleteItemCommand.RelayCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void CanNotDeleteBillItemWhenNoItemIsSelected()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
-            billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
 
             // Assert
-            billItemEditViewModel.DeleteItemCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this.billItemEditViewModel.DeleteItemCommand.RelayCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void RaisesPropertyChangedWhenSelectedBillItemChanges()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
-            billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
-            billItemEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+            this.billItemEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            billItemEditViewModel.SelectedBillItemDetailViewModel = new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem());
+            this.billItemEditViewModel.SelectedBillItemDetailViewModel = new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem());
 
             // Assert
-            billItemEditViewModel.SelectedBillItemDetailViewModel.Should().NotBeNull();
-            billItemEditViewModel.ShouldRaisePropertyChangeFor(x => x.SelectedBillItemDetailViewModel);
+            this.billItemEditViewModel.SelectedBillItemDetailViewModel.Should().NotBeNull();
+            this.billItemEditViewModel.ShouldRaisePropertyChangeFor(x => x.SelectedBillItemDetailViewModel);
         }
 
         [Test]
         public void MovesItemUp()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             Bill bill = new Bill();
 
             for (int i = 0; i < 5; i++)
@@ -241,23 +245,22 @@ namespace EpAccounting.Test.UI.ViewModel
             }
 
             // Act
-            billItemEditViewModel.LoadBill(bill);
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
-            billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[2];
-            billItemEditViewModel.MoveItemUpCommand.RelayCommand.Execute(null);
+            this.billItemEditViewModel.LoadBill(bill);
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
+            this.billItemEditViewModel.SelectedBillItemDetailViewModel = this.billItemEditViewModel.BillItemDetailViewModels[2];
+            this.billItemEditViewModel.MoveItemUpCommand.RelayCommand.Execute(null);
 
             // Assert
-            billItemEditViewModel.BillItemDetailViewModels[1].Position.Should().Be(2);
-            billItemEditViewModel.BillItemDetailViewModels[1].Amount.Should().Be(3);
-            billItemEditViewModel.BillItemDetailViewModels[2].Position.Should().Be(3);
-            billItemEditViewModel.BillItemDetailViewModels[2].Amount.Should().Be(2);
+            this.billItemEditViewModel.BillItemDetailViewModels[1].Position.Should().Be(2);
+            this.billItemEditViewModel.BillItemDetailViewModels[1].Amount.Should().Be(3);
+            this.billItemEditViewModel.BillItemDetailViewModels[2].Position.Should().Be(3);
+            this.billItemEditViewModel.BillItemDetailViewModels[2].Amount.Should().Be(2);
         }
 
         [Test]
         public void CanNotMoveItemUpWhenEditingNotEnabled()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             Bill bill = new Bill();
 
             for (int i = 0; i < 5; i++)
@@ -269,19 +272,17 @@ namespace EpAccounting.Test.UI.ViewModel
             }
 
             // Act
-            billItemEditViewModel.LoadBill(bill);
-            billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[2];
-            
+            this.billItemEditViewModel.LoadBill(bill);
+            this.billItemEditViewModel.SelectedBillItemDetailViewModel = this.billItemEditViewModel.BillItemDetailViewModels[2];
 
             // Assert
-            billItemEditViewModel.MoveItemUpCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this.billItemEditViewModel.MoveItemUpCommand.RelayCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void CanNotMoveItemUpWhenNoItemIsSelected()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             Bill bill = new Bill();
 
             for (int i = 0; i < 5; i++)
@@ -293,18 +294,17 @@ namespace EpAccounting.Test.UI.ViewModel
             }
 
             // Act
-            billItemEditViewModel.LoadBill(bill);
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
+            this.billItemEditViewModel.LoadBill(bill);
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
 
             // Assert
-            billItemEditViewModel.MoveItemUpCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this.billItemEditViewModel.MoveItemUpCommand.RelayCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void CanNotMoveItemUpWhenOnFirstPosition()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             Bill bill = new Bill();
 
             for (int i = 0; i < 5; i++)
@@ -316,19 +316,18 @@ namespace EpAccounting.Test.UI.ViewModel
             }
 
             // Act
-            billItemEditViewModel.LoadBill(bill);
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
-            billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[0];
+            this.billItemEditViewModel.LoadBill(bill);
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
+            this.billItemEditViewModel.SelectedBillItemDetailViewModel = this.billItemEditViewModel.BillItemDetailViewModels[0];
 
             // Assert
-            billItemEditViewModel.MoveItemUpCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this.billItemEditViewModel.MoveItemUpCommand.RelayCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void MovesItemDown()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             Bill bill = new Bill();
 
             for (int i = 0; i < 5; i++)
@@ -340,23 +339,22 @@ namespace EpAccounting.Test.UI.ViewModel
             }
 
             // Act
-            billItemEditViewModel.LoadBill(bill);
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
-            billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[2];
-            billItemEditViewModel.MoveItemDownCommand.RelayCommand.Execute(null);
+            this.billItemEditViewModel.LoadBill(bill);
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
+            this.billItemEditViewModel.SelectedBillItemDetailViewModel = this.billItemEditViewModel.BillItemDetailViewModels[2];
+            this.billItemEditViewModel.MoveItemDownCommand.RelayCommand.Execute(null);
 
             // Assert
-            billItemEditViewModel.BillItemDetailViewModels[2].Position.Should().Be(3);
-            billItemEditViewModel.BillItemDetailViewModels[2].Amount.Should().Be(4);
-            billItemEditViewModel.BillItemDetailViewModels[3].Position.Should().Be(4);
-            billItemEditViewModel.BillItemDetailViewModels[3].Amount.Should().Be(3);
+            this.billItemEditViewModel.BillItemDetailViewModels[2].Position.Should().Be(3);
+            this.billItemEditViewModel.BillItemDetailViewModels[2].Amount.Should().Be(4);
+            this.billItemEditViewModel.BillItemDetailViewModels[3].Position.Should().Be(4);
+            this.billItemEditViewModel.BillItemDetailViewModels[3].Amount.Should().Be(3);
         }
 
         [Test]
         public void CanNotMoveItemDownWhenEditingNotEnabled()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             Bill bill = new Bill();
 
             for (int i = 0; i < 5; i++)
@@ -368,19 +366,17 @@ namespace EpAccounting.Test.UI.ViewModel
             }
 
             // Act
-            billItemEditViewModel.LoadBill(bill);
-            billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[2];
-
+            this.billItemEditViewModel.LoadBill(bill);
+            this.billItemEditViewModel.SelectedBillItemDetailViewModel = this.billItemEditViewModel.BillItemDetailViewModels[2];
 
             // Assert
-            billItemEditViewModel.MoveItemDownCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this.billItemEditViewModel.MoveItemDownCommand.RelayCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void CanNotMoveItemDownWhenNoItemIsSelected()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             Bill bill = new Bill();
 
             for (int i = 0; i < 5; i++)
@@ -392,18 +388,17 @@ namespace EpAccounting.Test.UI.ViewModel
             }
 
             // Act
-            billItemEditViewModel.LoadBill(bill);
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
+            this.billItemEditViewModel.LoadBill(bill);
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
 
             // Assert
-            billItemEditViewModel.MoveItemDownCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this.billItemEditViewModel.MoveItemDownCommand.RelayCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void CanNotMoveItemDownWhenOnLastPosition()
         {
             // Arrange
-            BillItemEditViewModel billItemEditViewModel = this.GetDefaultViewModel();
             Bill bill = new Bill();
 
             for (int i = 0; i < 5; i++)
@@ -415,21 +410,27 @@ namespace EpAccounting.Test.UI.ViewModel
             }
 
             // Act
-            billItemEditViewModel.LoadBill(bill);
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForBillItemEditVM));
-            billItemEditViewModel.SelectedBillItemDetailViewModel = billItemEditViewModel.BillItemDetailViewModels[4];
+            this.billItemEditViewModel.LoadBill(bill);
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
+            this.billItemEditViewModel.SelectedBillItemDetailViewModel = this.billItemEditViewModel.BillItemDetailViewModels[4];
 
             // Assert
-            billItemEditViewModel.MoveItemDownCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this.billItemEditViewModel.MoveItemDownCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+        }
+
+        [Test]
+        public void ClearBillWhenContainingClientWasDeleted()
+        {
+            // Arrange
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Message_RemoveClientForBillItemEditVM));
+
+            // Assert
+            this.billItemEditViewModel.BillItemDetailViewModels.Count.Should().Be(0);
         }
 
         #endregion
-
-
-
-        private BillItemEditViewModel GetDefaultViewModel()
-        {
-            return new BillItemEditViewModel();
-        }
     }
 }

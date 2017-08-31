@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: UnitToDoubleConverter.cs
-// Last Change: 06.08.2017  15:08
+// Last Change: 16.08.2017  18:32
 // Author: Andre Multerer
 // ///////////////////////////////////
 

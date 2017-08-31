@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BindableViewModelBaseTest.cs
-// Last Change: 19.03.2017  20:11
+// Last Change: 23.08.2017  20:18
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -19,6 +19,8 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class BindableViewModelBaseTest
     {
+        #region Test Methods
+
         [Test]
         public void DerivesFromViewModelBase()
         {
@@ -91,12 +93,24 @@ namespace EpAccounting.Test.UI.ViewModel
             testClass.ShouldNotRaisePropertyChangeFor(x => x.Name);
         }
 
+        #endregion
+
+
+
         private class BindableTestClass : BindableViewModelBase
         {
+            #region Fields
+
             private readonly SubTestClass subTestClass = new SubTestClass();
 
             private string _title;
             private int _number;
+
+            #endregion
+
+
+
+            #region Constructors / Destructor
 
             public BindableTestClass(string title = "", int number = 0, string name = "")
             {
@@ -104,6 +118,12 @@ namespace EpAccounting.Test.UI.ViewModel
                 this._number = number;
                 this.subTestClass.Name = name;
             }
+
+            #endregion
+
+
+
+            #region Properties
 
             public string Title
             {
@@ -123,10 +143,22 @@ namespace EpAccounting.Test.UI.ViewModel
                 set { this.SetProperty(this.subTestClass.Name, value, () => this.subTestClass.Name = value); }
             }
 
+            #endregion
+
+
+
+            #region Nested type: SubTestClass
+
             private class SubTestClass
             {
+                #region Properties
+
                 public string Name { get; set; }
+
+                #endregion
             }
+
+            #endregion
         }
     }
 }

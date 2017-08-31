@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientDetailViewModel.cs
-// Last Change: 21.04.2017  20:22
+// Last Change: 23.08.2017  20:23
 // Author: Andre Multerer
 // ///////////////////////////////////
 

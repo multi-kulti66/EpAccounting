@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemDetailViewModelTest.cs
-// Last Change: 21.06.2017  15:24
+// Last Change: 22.08.2017  20:54
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,9 +8,9 @@
 
 namespace EpAccounting.Test.UI.ViewModel
 {
+    using System;
     using System.ComponentModel;
     using EpAccounting.Model;
-    using EpAccounting.Test.Model;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
     using NUnit.Framework;
@@ -20,22 +20,46 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class BillItemDetailViewModelTest
     {
+        #region Fields
+
+        private BillItemDetailViewModel billItemDetailViewModel;
+
+        #endregion
+
+
+
+        #region Setup/Teardown
+
+        [SetUp]
+        public void Init()
+        {
+            this.billItemDetailViewModel = new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem());
+        }
+
+        [TearDown]
+        public void Cleanup()
+        {
+            this.billItemDetailViewModel = null;
+            GC.Collect();
+        }
+
+        #endregion
+
+
+
         #region Test Methods
 
         [Test]
         public void CanReadVariableValues()
         {
-            // Act
-            BillItemDetailViewModel billItemDetailViewModel = this.GetDefaultViewModel();
-
             // Assert
-            billItemDetailViewModel.Id.Should().Be(0);
-            billItemDetailViewModel.Position.Should().Be(ModelFactory.DefaultBillItemPosition);
-            billItemDetailViewModel.ArticleNumber.Should().Be(ModelFactory.DefaultBillItemArticleNumber);
-            billItemDetailViewModel.Description.Should().Be(ModelFactory.DefaultBillItemDescription);
-            billItemDetailViewModel.Amount.Should().Be(ModelFactory.DefaultBillItemAmount);
-            billItemDetailViewModel.Price.Should().Be(ModelFactory.DefaultBillItemPrice);
-            billItemDetailViewModel.Discount.Should().Be(ModelFactory.DefaultBillItemDiscount);
+            this.billItemDetailViewModel.Id.Should().Be(0);
+            this.billItemDetailViewModel.Position.Should().Be(ModelFactory.DefaultBillItemPosition);
+            this.billItemDetailViewModel.ArticleNumber.Should().Be(ModelFactory.DefaultBillItemArticleNumber);
+            this.billItemDetailViewModel.Description.Should().Be(ModelFactory.DefaultBillItemDescription);
+            this.billItemDetailViewModel.Amount.Should().Be(ModelFactory.DefaultBillItemAmount);
+            this.billItemDetailViewModel.Price.Should().Be(ModelFactory.DefaultBillItemPrice);
+            this.billItemDetailViewModel.Discount.Should().Be(ModelFactory.DefaultBillItemDiscount);
         }
 
         [Test]
@@ -51,10 +75,10 @@ namespace EpAccounting.Test.UI.ViewModel
             billItem.Price = Price;
 
             // Act
-            BillItemDetailViewModel billItemDetailViewModel = new BillItemDetailViewModel(billItem);
+            this.billItemDetailViewModel = new BillItemDetailViewModel(billItem);
 
             // Assert
-            billItemDetailViewModel.Sum.Should().Be(Sum);
+            this.billItemDetailViewModel.Sum.Should().Be(Sum);
         }
 
         [Test]
@@ -72,10 +96,10 @@ namespace EpAccounting.Test.UI.ViewModel
             billItem.Price = Price;
             billItem.Discount = Discount;
 
-            BillItemDetailViewModel billItemDetailViewModel = new BillItemDetailViewModel(billItem);
+            this.billItemDetailViewModel = new BillItemDetailViewModel(billItem);
 
             // Assert
-            billItemDetailViewModel.Sum.Should().Be(Sum);
+            this.billItemDetailViewModel.Sum.Should().Be(Sum);
         }
 
         [Test]
@@ -89,23 +113,21 @@ namespace EpAccounting.Test.UI.ViewModel
             const double Price = 55;
             const double Discount = 50;
 
-            BillItemDetailViewModel billItemDetailViewModel = this.GetDefaultViewModel();
-
             // Act
-            billItemDetailViewModel.Position = Position;
-            billItemDetailViewModel.ArticleNumber = ArticleNumber;
-            billItemDetailViewModel.Description = Description;
-            billItemDetailViewModel.Amount = Amount;
-            billItemDetailViewModel.Price = Price;
-            billItemDetailViewModel.Discount = Discount;
+            this.billItemDetailViewModel.Position = Position;
+            this.billItemDetailViewModel.ArticleNumber = ArticleNumber;
+            this.billItemDetailViewModel.Description = Description;
+            this.billItemDetailViewModel.Amount = Amount;
+            this.billItemDetailViewModel.Price = Price;
+            this.billItemDetailViewModel.Discount = Discount;
 
             // Assert
-            billItemDetailViewModel.Position.Should().Be(Position);
-            billItemDetailViewModel.ArticleNumber.Should().Be(ArticleNumber);
-            billItemDetailViewModel.Description.Should().Be(Description);
-            billItemDetailViewModel.Amount.Should().Be(Amount);
-            billItemDetailViewModel.Price.Should().Be(Price);
-            billItemDetailViewModel.Discount.Should().Be(Discount);
+            this.billItemDetailViewModel.Position.Should().Be(Position);
+            this.billItemDetailViewModel.ArticleNumber.Should().Be(ArticleNumber);
+            this.billItemDetailViewModel.Description.Should().Be(Description);
+            this.billItemDetailViewModel.Amount.Should().Be(Amount);
+            this.billItemDetailViewModel.Price.Should().Be(Price);
+            this.billItemDetailViewModel.Discount.Should().Be(Discount);
         }
 
         [Test]
@@ -119,75 +141,64 @@ namespace EpAccounting.Test.UI.ViewModel
             const double Price = 55;
             const double Discount = 50;
 
-            BillItemDetailViewModel billItemDetailViewModel = this.GetDefaultViewModel();
-            billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            billItemDetailViewModel.Position = Position;
-            billItemDetailViewModel.ArticleNumber = ArticleNumber;
-            billItemDetailViewModel.Description = Description;
-            billItemDetailViewModel.Amount = Amount;
-            billItemDetailViewModel.Price = Price;
-            billItemDetailViewModel.Discount = Discount;
+            this.billItemDetailViewModel.Position = Position;
+            this.billItemDetailViewModel.ArticleNumber = ArticleNumber;
+            this.billItemDetailViewModel.Description = Description;
+            this.billItemDetailViewModel.Amount = Amount;
+            this.billItemDetailViewModel.Price = Price;
+            this.billItemDetailViewModel.Discount = Discount;
 
             // Assert
-            billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Position);
-            billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.ArticleNumber);
-            billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Description);
-            billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Amount);
-            billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Price);
-            billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Discount);
+            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Position);
+            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.ArticleNumber);
+            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Description);
+            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Amount);
+            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Price);
+            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Discount);
         }
 
         [Test]
         public void RaisePropertyChangedForSumWhenAmountChanges()
         {
             // Arrange
-            BillItemDetailViewModel billItemDetailViewModel = this.GetDefaultViewModel();
-            billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            billItemDetailViewModel.Amount = 10;
+            this.billItemDetailViewModel.Amount = 10;
 
             // Assert
-            billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
+            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
         }
 
         [Test]
         public void RaisePropertyChangedForSumWhenPriceChanges()
         {
             // Arrange
-            BillItemDetailViewModel billItemDetailViewModel = this.GetDefaultViewModel();
-            billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            billItemDetailViewModel.Price = 10;
+            this.billItemDetailViewModel.Price = 10;
 
             // Assert
-            billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
+            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
         }
 
         [Test]
         public void RaisePropertyChangedForSumWhenDiscountChanges()
         {
             // Arrange
-            BillItemDetailViewModel billItemDetailViewModel = this.GetDefaultViewModel();
-            billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            billItemDetailViewModel.Discount = 50;
+            this.billItemDetailViewModel.Discount = 50;
 
             // Assert
-            billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
+            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
         }
 
         #endregion
-
-
-
-        private BillItemDetailViewModel GetDefaultViewModel()
-        {
-            return new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem());
-        }
     }
 }

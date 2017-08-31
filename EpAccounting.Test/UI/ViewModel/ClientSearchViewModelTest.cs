@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientSearchViewModelTest.cs
-// Last Change: 28.07.2017  19:14
+// Last Change: 23.08.2017  20:33
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,11 +8,11 @@
 
 namespace EpAccounting.Test.UI.ViewModel
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using EpAccounting.Business;
     using EpAccounting.Model;
-    using EpAccounting.Test.Model;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
@@ -26,6 +26,36 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class ClientSearchViewModelTest
     {
+        #region Fields
+
+        private Mock<IRepository> mockRepository;
+        private ClientSearchViewModel clientSearchViewModel;
+
+        #endregion
+
+
+
+        #region Setup/Teardown
+
+        [SetUp]
+        public void Init()
+        {
+            this.mockRepository = new Mock<IRepository>();
+            this.clientSearchViewModel = new ClientSearchViewModel(this.mockRepository.Object);
+        }
+
+        [TearDown]
+        public void Cleanup()
+        {
+            this.mockRepository = null;
+            this.clientSearchViewModel = null;
+            GC.Collect();
+        }
+
+        #endregion
+
+
+
         #region Test Methods
 
         [Test]
@@ -38,11 +68,8 @@ namespace EpAccounting.Test.UI.ViewModel
         [Test]
         public void GetEmptyListAfterCreation()
         {
-            // Arrange
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel();
-
             // Assert
-            clientSearchViewModel.FoundClients.Should().HaveCount(0);
+            this.clientSearchViewModel.FoundClients.Should().HaveCount(0);
         }
 
         [Test]
@@ -51,39 +78,33 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const string ExpectedFirstName = "Andre";
             const string ExpectedLastName = "Multerer";
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
-                          .Returns(new List<Client> { new Client { FirstName = ExpectedFirstName, LastName = ExpectedLastName } });
-
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Client> { new Client { FirstName = ExpectedFirstName, LastName = ExpectedLastName } });
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
 
             // Assert
-            clientSearchViewModel.FoundClients.Should().HaveCount(1);
-            clientSearchViewModel.FoundClients[0].FirstName.Should().Be(ExpectedFirstName);
-            clientSearchViewModel.FoundClients[0].LastName.Should().Be(ExpectedLastName);
+            this.clientSearchViewModel.FoundClients.Should().HaveCount(1);
+            this.clientSearchViewModel.FoundClients[0].FirstName.Should().Be(ExpectedFirstName);
+            this.clientSearchViewModel.FoundClients[0].LastName.Should().Be(ExpectedLastName);
         }
 
         [Test]
         public void SetsNumberOfPageAndCurrentPageWhenSingleClientIsLoadedViaCriteria()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
-                          .Returns(new List<Client>());
-            mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
-                          .Returns(1);
-
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(1);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
 
             // Assert
-            clientSearchViewModel.CurrentPage.Should().Be(1);
-            clientSearchViewModel.NumberOfAllPages.Should().Be(1);
+            this.clientSearchViewModel.CurrentPage.Should().Be(1);
+            this.clientSearchViewModel.NumberOfAllPages.Should().Be(1);
         }
 
         [Test]
@@ -92,44 +113,37 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int NumberOfElements = 55;
 
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
-                          .Returns(new List<Client>());
-            mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
-                          .Returns(NumberOfElements);
-
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
 
             // Assert
-            clientSearchViewModel.CurrentPage.Should().Be(1);
-            clientSearchViewModel.NumberOfAllPages.Should().Be(2);
+            this.clientSearchViewModel.CurrentPage.Should().Be(1);
+            this.clientSearchViewModel.NumberOfAllPages.Should().Be(2);
         }
 
         [Test]
         public void SelectedClientReturnsNullAfterCreation()
         {
-            // Act
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel();
-
             // Assert
-            clientSearchViewModel.SelectedClientDetailViewModel.Should().BeNull();
+            this.clientSearchViewModel.SelectedClientDetailViewModel.Should().BeNull();
         }
 
         [Test]
         public void RaisePropertyChangedWhenSelectedClientChanges()
         {
             // Arrange
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel();
-            clientSearchViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.clientSearchViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            clientSearchViewModel.SelectedClientDetailViewModel = new ClientDetailViewModel(new Client());
+            this.clientSearchViewModel.SelectedClientDetailViewModel = new ClientDetailViewModel(new Client());
 
             // Assert
-            clientSearchViewModel.ShouldRaisePropertyChangeFor(x => x.SelectedClientDetailViewModel);
+            this.clientSearchViewModel.ShouldRaisePropertyChangeFor(x => x.SelectedClientDetailViewModel);
         }
 
         [Test]
@@ -139,20 +153,18 @@ namespace EpAccounting.Test.UI.ViewModel
             const string PreviousFirstName = "Andre";
             const string ExpectedFirstName = "Stefanie";
             Client expectedClient = new Client { ClientId = 1, FirstName = ExpectedFirstName, LastName = "Multerer" };
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(expectedClient);
+            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(expectedClient);
 
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel(mockRepository);
-            clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client { ClientId = 1, FirstName = PreviousFirstName, LastName = "Multerer" }));
-            clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client { ClientId = 2, FirstName = PreviousFirstName, LastName = "Multerer" }));
+            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client { ClientId = 1, FirstName = PreviousFirstName, LastName = "Multerer" }));
+            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client { ClientId = 2, FirstName = PreviousFirstName, LastName = "Multerer" }));
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Messenger_Message_UpdateClientValuesMessageForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_UpdateClientValuesForClientSearchVM));
 
             // Assert
-            clientSearchViewModel.FoundClients.Should().HaveCount(2);
-            clientSearchViewModel.FoundClients[0].FirstName.Should().Be(ExpectedFirstName);
-            clientSearchViewModel.FoundClients[1].FirstName.Should().Be(PreviousFirstName);
+            this.clientSearchViewModel.FoundClients.Should().HaveCount(2);
+            this.clientSearchViewModel.FoundClients[0].FirstName.Should().Be(ExpectedFirstName);
+            this.clientSearchViewModel.FoundClients[1].FirstName.Should().Be(PreviousFirstName);
         }
 
         [Test]
@@ -164,84 +176,69 @@ namespace EpAccounting.Test.UI.ViewModel
             const string LastName = "Multerer";
 
             Client expectedClient = new Client { ClientId = Id, FirstName = FirstName, LastName = LastName };
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(expectedClient);
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>())).Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(expectedClient);
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>())).Returns(new List<Client>());
 
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel(mockRepository);
-            clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(expectedClient));
+            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(expectedClient));
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Messenger_Message_RemoveClientMessageForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_RemoveClientForClientSearchVM));
 
             // Assert
-            clientSearchViewModel.FoundClients.Should().HaveCount(0);
+            this.clientSearchViewModel.FoundClients.Should().HaveCount(0);
         }
 
         [Test]
         public void EnableClientLoading()
         {
-            // Arrange
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel();
-
             // Act
-            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForClientSearchVM));
 
             // Assert
-            clientSearchViewModel.IsClientLoadingEnabled.Should().BeTrue();
+            this.clientSearchViewModel.IsClientLoadingEnabled.Should().BeTrue();
         }
 
         [Test]
         public void DisableClientLoading()
         {
-            // Arrange
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel();
-
             // Act
-            Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Messenger_Message_EnableStateMessageForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Message_EnableStateForClientSearchVM));
 
             // Assert
-            clientSearchViewModel.IsClientLoadingEnabled.Should().BeFalse();
+            this.clientSearchViewModel.IsClientLoadingEnabled.Should().BeFalse();
         }
 
         [Test]
         public void CanNotLoadClient()
         {
-            // Act
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel();
-
             // Assert
-            clientSearchViewModel.LoadSelectedClientCommand.CanExecute(null).Should().BeFalse();
+            this.clientSearchViewModel.LoadSelectedClientCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void CanLoadClient()
         {
-            // Arrange
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel();
-
             // Act
-            clientSearchViewModel.SelectedClientDetailViewModel = new ClientDetailViewModel(ModelFactory.GetDefaultClient());
+            this.clientSearchViewModel.SelectedClientDetailViewModel = new ClientDetailViewModel(ModelFactory.GetDefaultClient());
 
             // Assert
-            clientSearchViewModel.LoadSelectedClientCommand.CanExecute(null).Should().BeTrue();
+            this.clientSearchViewModel.LoadSelectedClientCommand.CanExecute(null).Should().BeTrue();
         }
 
         [Test]
         public void SendsLoadClientMessage()
         {
             // Arrange
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel();
-            clientSearchViewModel.SelectedClientDetailViewModel = new ClientDetailViewModel(ModelFactory.GetDefaultClient());
+            this.clientSearchViewModel.SelectedClientDetailViewModel = new ClientDetailViewModel(ModelFactory.GetDefaultClient());
             string message = null;
 
             Messenger.Default.Register<NotificationMessage<int>>(this, x => message = x.Notification);
 
             // Act
-            clientSearchViewModel.LoadSelectedClientCommand.Execute(null);
+            this.clientSearchViewModel.LoadSelectedClientCommand.Execute(null);
 
             // Assert
-            message.Should().Be(Resources.Messenger_Message_LoadSelectedClientMessageForClientEditVM);
+            message.Should().Be(Resources.Message_LoadClientForClientEditVM);
         }
 
         [Test]
@@ -250,19 +247,16 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int NumberOfElements = 10;
 
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
-                          .Returns(new List<Client>());
-            mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
-                          .Returns(NumberOfElements);
-
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
 
             // Assert
-            clientSearchViewModel.LoadNextPageCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this.clientSearchViewModel.LoadNextPageCommand.RelayCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
@@ -271,19 +265,16 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int NumberOfElements = 55;
 
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
-                          .Returns(new List<Client>());
-            mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
-                          .Returns(NumberOfElements);
-
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
 
             // Assert
-            clientSearchViewModel.LoadNextPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
+            this.clientSearchViewModel.LoadNextPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
         }
 
         [Test]
@@ -292,20 +283,17 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int NumberOfElements = 55;
 
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>()))
-                          .Returns(new List<Client>());
-            mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
-                          .Returns(NumberOfElements);
-
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>()))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
-            clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
+            this.clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
 
             // Assert
-            clientSearchViewModel.CurrentPage.Should().Be(2);
+            this.clientSearchViewModel.CurrentPage.Should().Be(2);
         }
 
         [Test]
@@ -314,19 +302,16 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int NumberOfElements = 55;
 
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
-                          .Returns(new List<Client>());
-            mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
-                          .Returns(NumberOfElements);
-
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
 
             // Assert
-            clientSearchViewModel.LoadPreviousPageCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this.clientSearchViewModel.LoadPreviousPageCommand.RelayCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
@@ -335,20 +320,17 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int NumberOfElements = 55;
 
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>()))
-                          .Returns(new List<Client>());
-            mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
-                          .Returns(NumberOfElements);
-
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>()))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
-            clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
+            this.clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
 
             // Assert
-            clientSearchViewModel.LoadPreviousPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
+            this.clientSearchViewModel.LoadPreviousPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
         }
 
         [Test]
@@ -357,21 +339,18 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int NumberOfElements = 55;
 
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>()))
-                          .Returns(new List<Client>());
-            mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
-                          .Returns(NumberOfElements);
-
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>()))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
-            clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
-            clientSearchViewModel.LoadPreviousPageCommand.RelayCommand.Execute(null);
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
+            this.clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this.clientSearchViewModel.LoadPreviousPageCommand.RelayCommand.Execute(null);
 
             // Assert
-            clientSearchViewModel.CurrentPage.Should().Be(1);
+            this.clientSearchViewModel.CurrentPage.Should().Be(1);
         }
 
         [Test]
@@ -380,39 +359,24 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int NumberOfElements = 51;
 
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>()))
-                          .Returns(new List<Client>());
-            mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
-                          .Returns(NumberOfElements);
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>()))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
 
-            ClientSearchViewModel clientSearchViewModel = this.GetDefaultClientSearchViewModel(mockRepository);
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
+            this.clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(NumberOfElements - 1);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
-            clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
-            mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
-                          .Returns(NumberOfElements - 1);
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
+
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
 
             // Assert
-            clientSearchViewModel.CurrentPage.Should().Be(1);
-            clientSearchViewModel.NumberOfAllPages.Should().Be(1);
+            this.clientSearchViewModel.CurrentPage.Should().Be(1);
+            this.clientSearchViewModel.NumberOfAllPages.Should().Be(1);
         }
 
         #endregion
-
-
-
-        private ClientSearchViewModel GetDefaultClientSearchViewModel()
-        {
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            return new ClientSearchViewModel(mockRepository.Object);
-        }
-
-        private ClientSearchViewModel GetDefaultClientSearchViewModel(Mock<IRepository> repository)
-        {
-            return new ClientSearchViewModel(repository.Object);
-        }
     }
 }

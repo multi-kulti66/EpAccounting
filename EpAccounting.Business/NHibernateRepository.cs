@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: NHibernateRepository.cs
-// Last Change: 09.08.2017  19:49
+// Last Change: 16.08.2017  18:21
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -51,9 +51,9 @@ namespace EpAccounting.Business
             get { return this.sessionManager.FilePath; }
         }
 
-        public void CreateDatabase(string folderPath)
+        public void CreateDatabase(string filePath)
         {
-            this.sessionManager.CreateDatabase(folderPath);
+            this.sessionManager.CreateDatabase(filePath);
         }
 
         public void LoadDatabase(string filePath)
@@ -140,7 +140,9 @@ namespace EpAccounting.Business
             }
         }
 
-        public int GetQuantityByCriteria<T, U>(ICriterion criterion1, Expression<Func<T, U>> combinationCriterion, ICriterion criterion2) where T : class
+        public int GetQuantityByCriteria<T, U>(ICriterion criterion1,
+                                               Expression<Func<T, U>> combinationCriterion,
+                                               ICriterion criterion2) where T : class
         {
             using (ISession session = this.sessionManager.OpenSession())
             {
@@ -156,7 +158,9 @@ namespace EpAccounting.Business
             }
         }
 
-        public ICollection<T> GetByCriteria<T, U>(ICriterion criterion1, Expression<Func<T, U>> combinationCriterion, ICriterion criterion2, int page) where T : class
+        public ICollection<T> GetByCriteria<T, U>(ICriterion criterion1,
+                                                  Expression<Func<T, U>>combinationCriterion,
+                                                  ICriterion criterion2, int page) where T : class
         {
             using (ISession session = this.sessionManager.OpenSession())
             {

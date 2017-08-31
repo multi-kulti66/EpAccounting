@@ -65,7 +65,7 @@ namespace EpAccounting.UI.State
         {
             if (await this.billEditViewModel.SaveOrUpdateBillAsync())
             {
-                this.billEditViewModel.Load(null, this.billEditViewModel.GetBillLoadedState());
+                this.billEditViewModel.ChangeToLoadedMode();
                 this.billEditViewModel.SendUpdateBillValuesMessage();
             }
         }

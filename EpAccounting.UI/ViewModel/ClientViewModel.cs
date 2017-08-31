@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientViewModel.cs
-// Last Change: 19.04.2017  19:39
+// Last Change: 23.08.2017  20:37
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -34,6 +34,8 @@ namespace EpAccounting.UI.ViewModel
         {
             this.repository = repository;
             this.dialogService = dialogService;
+
+            this.InitClientViewModels();
         }
 
         #endregion
@@ -44,29 +46,22 @@ namespace EpAccounting.UI.ViewModel
 
         public ClientEditViewModel ClientEditViewModel
         {
-            get
-            {
-                if (this._clientEditViewModel == null)
-                {
-                    this._clientEditViewModel = new ClientEditViewModel(this.repository, this.dialogService);
-                }
-
-                return this._clientEditViewModel;
-            }
+            get { return this._clientEditViewModel; }
         }
 
         public ClientSearchViewModel ClientSearchViewModel
         {
-            get
-            {
-                if (this._clientSearchViewModel == null)
-                {
-                    this._clientSearchViewModel = new ClientSearchViewModel(this.repository);
-                }
-                return this._clientSearchViewModel;
-            }
+            get { return this._clientSearchViewModel; }
         }
 
         #endregion
+
+
+
+        private void InitClientViewModels()
+        {
+            this._clientEditViewModel = new ClientEditViewModel(this.repository, this.dialogService);
+            this._clientSearchViewModel = new ClientSearchViewModel(this.repository);
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditViewModel.cs
-// Last Change: 03.08.2017  20:39
+// Last Change: 29.08.2017  18:49
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -33,9 +33,17 @@ namespace EpAccounting.UI.ViewModel
 
         private Client currentClient;
         private ClientDetailViewModel _currentClientDetailViewModel;
+
         private IClientState _currentClientState;
+        private ClientEmptyState _clientEmptyState;
+        private ClientSearchState _clientSearchState;
+        private ClientCreationState _clientCreationState;
+        private ClientLoadedState _clientLoadedState;
+        private ClientEditState _clientEditState;
 
         private RelayCommand _createNewBillCommand;
+        private RelayCommand _loadBillsFromClientCommand;
+        private RelayCommand _clearFieldsCommand;
 
         #endregion
 
@@ -49,7 +57,7 @@ namespace EpAccounting.UI.ViewModel
             this.dialogService = dialogService;
 
             this.InitPropertyInfos();
-            this.InitClientStateList();
+            this.InitClientStates();
             this.InitClientCommands();
 
             this._currentClientState = this.GetClientEmptyState();
@@ -64,8 +72,6 @@ namespace EpAccounting.UI.ViewModel
 
         #region Properties
 
-        public List<ImageCommandViewModel> ClientCommands { get; private set; }
-
         public ClientDetailViewModel CurrentClientDetailViewModel
         {
             get { return this._currentClientDetailViewModel; }
@@ -76,19 +82,6 @@ namespace EpAccounting.UI.ViewModel
         {
             get { return this._currentClientState; }
             private set { this.SetProperty(ref this._currentClientState, value); }
-        }
-
-        public RelayCommand CreateNewBillCommand
-        {
-            get
-            {
-                if (this._createNewBillCommand == null)
-                {
-                    this._createNewBillCommand = new RelayCommand(this.SendCreateNewBillMessage, this.CanCreateNewBill);
-                }
-
-                return this._createNewBillCommand;
-            }
         }
 
         public bool CanInsertClientId
@@ -117,7 +110,7 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        public bool CanDoBillAction
+        public bool CanLoadBills
         {
             get
             {
@@ -130,26 +123,54 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        private List<IClientState> ClientStates { get; set; }
-
         private PropertyInfo[] PropertyInfos { get; set; }
 
         #endregion
 
 
 
-        public virtual void Load(Client client, IClientState clientState)
+        public virtual void ChangeToEmptyMode()
+        {
+            this.LoadClient(new Client());
+            this.LoadClientState(this.GetClientEmptyState());
+            this.UpdateViewModel();
+        }
+
+        public virtual void ChangeToCreationMode()
+        {
+            this.LoadClient(new Client());
+            this.LoadClientState(this.GetClientCreationState());
+            this.UpdateViewModel();
+        }
+
+        public virtual void ChangeToSearchMode()
+        {
+            this.LoadClient(new Client());
+            this.LoadClientState(this.GetClientSearchState());
+            this.UpdateViewModel();
+        }
+
+        public virtual void ChangeToLoadedMode(Client client = null)
         {
             this.LoadClient(client);
-            this.LoadClientState(clientState);
-            this.UpdateProperties();
-            this.UpdateCommands();
-            this.SendEnableStateForClientLoadingMessage();
+            this.LoadClientState(this.GetClientLoadedState());
+            this.UpdateViewModel();
+        }
+
+        public virtual void ChangeToEditMode()
+        {
+            if (this.CurrentClientState != this.GetClientLoadedState())
+            {
+                return;
+            }
+
+            this.LoadClientState(this.GetClientEditState());
+            this.UpdateViewModel();
         }
 
         public virtual void Reload()
         {
-            this.Load(this.repository.GetById<Client>(this.currentClient.ClientId), this.GetClientLoadedState());
+            this.ChangeToLoadedMode(this.repository.GetById<Client>(this.currentClient.ClientId));
         }
 
         public virtual async Task<bool> SaveOrUpdateClientAsync()
@@ -209,43 +230,6 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        public virtual void SendClientSearchCriterionMessage()
-        {
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(this.GetClientSearchCriterion(), Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM));
-        }
-
-        public virtual void SendUpdateClientValuesMessage()
-        {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Messenger_Message_UpdateClientValuesMessageForClientSearchVM));
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Messenger_Message_UpdateClientValuesMessageForBillEditVM));
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Messenger_Message_UpdateClientValuesMessageForBillSearchVM));
-        }
-
-        private void SendRemoveClientMessage()
-        {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Messenger_Message_RemoveClientMessageForClientSearchVM));
-        }
-
-        private void SendEnableStateForClientLoadingMessage()
-        {
-            if (this.CurrentClientState.GetType() == typeof(ClientEditState) || this.CurrentClientState.GetType() == typeof(ClientCreationState))
-            {
-                Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Messenger_Message_EnableStateMessageForClientSearchVM));
-            }
-            else
-            {
-                Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Messenger_Message_EnableStateMessageForClientSearchVM));
-            }
-        }
-
-        private void ExecuteNotificationMessage(NotificationMessage<int> message)
-        {
-            if (message.Notification == Resources.Messenger_Message_LoadSelectedClientMessageForClientEditVM)
-            {
-                this.Load(this.repository.GetById<Client>(message.Content), this.GetClientLoadedState());
-            }
-        }
-
         private void LoadClient(Client client)
         {
             if (client == null)
@@ -256,14 +240,22 @@ namespace EpAccounting.UI.ViewModel
             this.SetCurrentClient(client);
         }
 
+        private void SetCurrentClient(Client client)
+        {
+            this.currentClient = client;
+            this.CurrentClientDetailViewModel = new ClientDetailViewModel(this.currentClient);
+        }
+
         private void LoadClientState(IClientState clientState)
         {
-            if (clientState == null)
-            {
-                return;
-            }
-
             this.CurrentClientState = clientState;
+        }
+
+        private void UpdateViewModel()
+        {
+            this.UpdateCommands();
+            this.UpdateProperties();
+            this.SendEnableStateForClientSearchAndWorkspaceMessage();
         }
 
         private void UpdateCommands()
@@ -274,6 +266,8 @@ namespace EpAccounting.UI.ViewModel
             }
 
             this.CreateNewBillCommand.RaiseCanExecuteChanged();
+            this.LoadBillsFromClientCommand.RaiseCanExecuteChanged();
+            this.ClearFieldsCommand.RaiseCanExecuteChanged();
         }
 
         private void UpdateProperties()
@@ -282,12 +276,6 @@ namespace EpAccounting.UI.ViewModel
             {
                 this.RaisePropertyChanged(propertyInfo.Name);
             }
-        }
-
-        private void SetCurrentClient(Client client)
-        {
-            this.currentClient = client;
-            this.CurrentClientDetailViewModel = new ClientDetailViewModel(this.currentClient);
         }
 
         private Client GetEqualClient()
@@ -370,9 +358,163 @@ namespace EpAccounting.UI.ViewModel
 
         private void InitPropertyInfos()
         {
-            this.PropertyInfos = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(prop => prop.DeclaringType == this.GetType() &&
-                                                                                                                         prop.CanRead && prop.GetMethod.IsPublic &&
-                                                                                                                         prop.PropertyType != typeof(RelayCommand)).ToArray();
+            this.PropertyInfos = this.GetType()
+                                     .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                     .Where(prop => prop.DeclaringType == this.GetType() &&
+                                                    prop.CanRead && prop.GetMethod.IsPublic &&
+                                                    prop.PropertyType != typeof(RelayCommand)).ToArray();
+        }
+
+
+
+        #region ClientState Methods
+
+        private void InitClientStates()
+        {
+            this._clientEmptyState = new ClientEmptyState(this);
+            this._clientSearchState = new ClientSearchState(this);
+            this._clientCreationState = new ClientCreationState(this);
+            this._clientLoadedState = new ClientLoadedState(this);
+            this._clientEditState = new ClientEditState(this);
+        }
+
+        public IClientState GetClientEmptyState()
+        {
+            return this._clientEmptyState;
+        }
+
+        public IClientState GetClientSearchState()
+        {
+            return this._clientSearchState;
+        }
+
+        public IClientState GetClientCreationState()
+        {
+            return this._clientCreationState;
+        }
+
+        public IClientState GetClientLoadedState()
+        {
+            return this._clientLoadedState;
+        }
+
+        public IClientState GetClientEditState()
+        {
+            return this._clientEditState;
+        }
+
+        #endregion
+
+
+
+        #region Messenger
+
+        private void ExecuteNotificationMessage(NotificationMessage<int> message)
+        {
+            if (message.Notification == Resources.Message_LoadClientForClientEditVM)
+            {
+                this.ChangeToLoadedMode(this.repository.GetById<Client>(message.Content));
+            }
+            else if (message.Notification == Resources.Message_UpdateClientForClientEditVM)
+            {
+                if (this.currentClient.ClientId == message.Content)
+                {
+                    this.Reload();
+                }
+            }
+        }
+
+        public virtual void SendClientSearchCriterionMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(this.GetClientSearchCriterion(),
+                                                                       Resources.Message_ClientSearchCriteriaForClientSearchVM));
+        }
+
+        public virtual void SendUpdateClientValuesMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+                                                                Resources.Message_UpdateClientValuesForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+                                                                Resources.Message_UpdateClientValuesForBillEditVM));
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+                                                                Resources.Message_UpdateClientValuesForBillSearchVM));
+        }
+
+        private void SendRemoveClientMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+                                                                Resources.Message_RemoveClientForClientSearchVM));
+
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+                                                                Resources.Message_RemoveClientForBillEditVM));
+
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+                                                                Resources.Message_RemoveClientForBillSearchVM));
+
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+                                                                Resources.Message_RemoveClientForBillItemEditVM));
+        }
+
+        private void SendEnableStateForClientSearchAndWorkspaceMessage()
+        {
+            if (this.CurrentClientState == this.GetClientEditState() || this.CurrentClientState == this.GetClientCreationState())
+            {
+                Messenger.Default.Send(new NotificationMessage<bool>(false,
+                                                                     Resources.Message_EnableStateForClientSearchVM));
+                Messenger.Default.Send(new NotificationMessage<bool>(false,
+                                                                     Resources.Message_WorkspaceEnableStateForMainVM));
+            }
+            else
+            {
+                Messenger.Default.Send(new NotificationMessage<bool>(true,
+                                                                     Resources.Message_EnableStateForClientSearchVM));
+                Messenger.Default.Send(new NotificationMessage<bool>(true,
+                                                                     Resources.Message_WorkspaceEnableStateForMainVM));
+            }
+        }
+
+        #endregion
+
+
+
+        #region Commands
+
+        public RelayCommand CreateNewBillCommand
+        {
+            get
+            {
+                if (this._createNewBillCommand == null)
+                {
+                    this._createNewBillCommand = new RelayCommand(this.SendCreateNewBillMessage, this.CanCreateNewBill);
+                }
+
+                return this._createNewBillCommand;
+            }
+        }
+
+        public RelayCommand LoadBillsFromClientCommand
+        {
+            get
+            {
+                if (this._loadBillsFromClientCommand == null)
+                {
+                    this._loadBillsFromClientCommand = new RelayCommand(this.SendLoadBillsFromClientMessage, this.CanSendLoadBillsFromClientMessage);
+                }
+
+                return this._loadBillsFromClientCommand;
+            }
+        }
+
+        public RelayCommand ClearFieldsCommand
+        {
+            get {
+                if (this._clearFieldsCommand == null)
+                {
+                    this._clearFieldsCommand = new RelayCommand(this.ClearFields, this.CanClearFields);
+                }
+
+                return this._clearFieldsCommand;
+            }
         }
 
         private bool CanCreateNewBill()
@@ -387,56 +529,49 @@ namespace EpAccounting.UI.ViewModel
 
         private void SendCreateNewBillMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Messenger_Message_CreateNewBillMessageForBillEditVM));
-            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_CreateNewBillMessageForMainVM));
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_ChangeToBillWorkspaceForMainVM));
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Message_CreateNewBillForBillEditVM));
         }
 
-
-
-        #region ClientState Methods
-
-        private void InitClientStateList()
+        private bool CanSendLoadBillsFromClientMessage()
         {
-            this.ClientStates = new List<IClientState>
-                                {
-                                    new ClientEmptyState(this),
-                                    new ClientSearchState(this),
-                                    new ClientCreationState(this),
-                                    new ClientLoadedState(this),
-                                    new ClientEditState(this)
-                                };
+            if (this.CurrentClientState == this.GetClientLoadedState())
+            {
+                return true;
+            }
+
+            return false;
         }
 
-        public IClientState GetClientEmptyState()
+        private void SendLoadBillsFromClientMessage()
         {
-            return this.ClientStates.Find(x => x.GetType() == typeof(ClientEmptyState));
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_ChangeToBillWorkspaceForMainVM));
+            Messenger.Default.Send(new NotificationMessage<int>(this.currentClient.ClientId, Resources.Message_LoadBillsFromClientForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Client>(this.currentClient, Resources.Message_SwitchToSearchModeAndLoadClientDataForBillEditVM));
         }
 
-        public IClientState GetClientSearchState()
+        private bool CanClearFields()
         {
-            return this.ClientStates.Find(x => x.GetType() == typeof(ClientSearchState));
+            if (this.CurrentClientState == this.GetClientLoadedState())
+            {
+                return true;
+            }
+
+            return false;
         }
 
-        public IClientState GetClientCreationState()
+        private void ClearFields()
         {
-            return this.ClientStates.Find(x => x.GetType() == typeof(ClientCreationState));
-        }
-
-        public IClientState GetClientLoadedState()
-        {
-            return this.ClientStates.Find(x => x.GetType() == typeof(ClientLoadedState));
-        }
-
-        public IClientState GetClientEditState()
-        {
-            return this.ClientStates.Find(x => x.GetType() == typeof(ClientEditState));
+            this.ChangeToEmptyMode();
         }
 
         #endregion
 
 
 
-        #region Command Methods
+        #region State Commands
+
+        public List<ImageCommandViewModel> ClientCommands { get; private set; }
 
         private void InitClientCommands()
         {

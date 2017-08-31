@@ -81,6 +81,7 @@
         <Setter Property="TextAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="behavior:SelectAllTextOnFocusBehavior.SelectTextOnFocus" Value="True" />
     </Style>
 
     <Style x:Key="LeftTextAlignTextBoxStyle" BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox">

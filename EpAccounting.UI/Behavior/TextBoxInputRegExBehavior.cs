@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: TextBoxInputRegExBehavior.cs
-// Last Change: 12.07.2017  17:09
+// Last Change: 16.08.2017  18:30
 // Author: Andre Multerer
 // ///////////////////////////////////
 

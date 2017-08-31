@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditViewModel.cs
-// Last Change: 22.07.2017  19:38
+// Last Change: 22.08.2017  20:56
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -45,6 +45,7 @@ namespace EpAccounting.UI.ViewModel
             this.InitCommands();
 
             Messenger.Default.Register<NotificationMessage<bool>>(this, this.ExecuteNotificationMessage);
+            Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
 
         #endregion
@@ -76,8 +77,6 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        public List<ImageCommandViewModel> Commands { get; private set; }
-
         public bool IsEditingEnabled
         {
             get { return this._isEditingEnabled; }
@@ -103,14 +102,6 @@ namespace EpAccounting.UI.ViewModel
             this.BillItemDetailViewModels.Clear();
         }
 
-        private void ExecuteNotificationMessage(NotificationMessage<bool> message)
-        {
-            if (message.Notification == Resources.Messenger_Message_EnableStateMessageForBillItemEditVM)
-            {
-                this.IsEditingEnabled = message.Content;
-            }
-        }
-
         private void LoadBillItems(Bill bill)
         {
             this.currentBill = bill;
@@ -125,7 +116,34 @@ namespace EpAccounting.UI.ViewModel
 
 
 
+        #region Messenger
+
+        private void ExecuteNotificationMessage(NotificationMessage<bool> message)
+        {
+            if (message.Notification == Resources.Message_EnableStateForBillItemEditVM)
+            {
+                this.IsEditingEnabled = message.Content;
+            }
+        }
+
+        private void ExecuteNotificationMessage(NotificationMessage<int> message)
+        {
+            if (message.Notification == Resources.Message_RemoveClientForBillItemEditVM)
+            {
+                if (this.currentBill.Client.ClientId == message.Content)
+                {
+                    this.Clear();
+                }
+            }
+        }
+
+        #endregion
+
+
+
         #region Command Methods
+
+        public List<ImageCommandViewModel> Commands { get; private set; }
 
         private void InitCommands()
         {

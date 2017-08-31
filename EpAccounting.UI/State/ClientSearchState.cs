@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientSearchState.cs
-// Last Change: 14.08.2017  09:57
+// Last Change: 20.08.2017  16:02
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,7 +9,6 @@
 namespace EpAccounting.UI.State
 {
     using System.Threading.Tasks;
-    using EpAccounting.Model;
     using EpAccounting.UI.ViewModel;
 
 
@@ -85,7 +84,7 @@ namespace EpAccounting.UI.State
 
         public void Cancel()
         {
-            this.clientEditViewModel.Load(new Client(), this.clientEditViewModel.GetClientEmptyState());
+            this.clientEditViewModel.ChangeToEmptyMode();
         }
 
         public bool CanDelete()

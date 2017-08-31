@@ -117,3 +117,5 @@ C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAc
 C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Business\obj\Debug\EpAccounting.Business.csprojResolveAssemblyReference.cache
 C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Business\obj\Debug\EpAccounting.Business.dll
 C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Business\obj\Debug\EpAccounting.Business.pdb
+C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Business\obj\Debug\EpAccounting.Business.csproj.CoreCompileInputs.cache
+D:\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Business\obj\Debug\EpAccounting.Business.csproj.CoreCompileInputs.cache

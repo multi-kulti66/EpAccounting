@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillViewModel.cs
-// Last Change: 03.08.2017  20:50
+// Last Change: 24.08.2017  20:29
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -77,11 +77,11 @@ namespace EpAccounting.UI.ViewModel
 
         private void ExecuteNotificationMessage(NotificationMessage message)
         {
-            if (message.Notification == Resources.Messenger_Message_LoadBillSearchViewModelMessageForBillVM)
+            if (message.Notification == Resources.Message_LoadBillSearchViewModelMessageForBillVM)
             {
                 this.BillWorkspaceViewModel = this.BillSearchViewModel;
             }
-            else if (message.Notification == Resources.Messenger_Message_RemoveBillMessageForBillVM)
+            else if (message.Notification == Resources.Message_ResetBillItemEditVMAndChangeToSearchWorkspaceForBillVM)
             {
                 this.BillItemEditViewModel.Clear();
                 this.BillWorkspaceViewModel = this.BillSearchViewModel;
@@ -90,7 +90,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void ExecuteNotificationMessage(NotificationMessage<Bill> message)
         {
-            if (message.Notification == Resources.Messenger_Message_LoadBillItemEditViewModelMessageForBillVM)
+            if (message.Notification == Resources.Message_LoadBillItemEditViewModelForBillVM)
             {
                 this.BillWorkspaceViewModel = this.BillItemEditViewModel;
                 this.BillItemEditViewModel.LoadBill(message.Content);

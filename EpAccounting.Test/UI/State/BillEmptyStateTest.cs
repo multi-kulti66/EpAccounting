@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEmptyStateTest.cs
-// Last Change: 19.06.2017  20:13
+// Last Change: 22.08.2017  20:45
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,7 +9,6 @@
 namespace EpAccounting.Test.UI.State
 {
     using EpAccounting.Business;
-    using EpAccounting.Model;
     using EpAccounting.UI.Service;
     using EpAccounting.UI.State;
     using EpAccounting.UI.ViewModel;
@@ -66,7 +65,7 @@ namespace EpAccounting.Test.UI.State
             billCreationState.SwitchToSearchMode();
 
             // Assert
-            mockBillEditViewModel.Verify(x => x.Load(new Bill() { Client = new Client() }, It.IsAny<BillSearchState>()), Times.Once);
+            mockBillEditViewModel.Verify(x => x.ChangeToSearchMode(), Times.Once);
         }
 
         #endregion

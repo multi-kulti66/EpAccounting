@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEditViewModelTest.cs
-// Last Change: 21.06.2017  16:46
+// Last Change: 31.08.2017  20:26
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,12 +9,12 @@
 namespace EpAccounting.Test.UI.ViewModel
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
     using EpAccounting.Business;
     using EpAccounting.Model;
-    using EpAccounting.Test.Model;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.Service;
     using EpAccounting.UI.State;
@@ -30,6 +30,39 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class BillEditViewModelTest
     {
+        #region Fields
+
+        private Mock<IRepository> mockRepository;
+        private Mock<IDialogService> mockDialogService;
+        private BillEditViewModel billEditViewModel;
+
+        #endregion
+
+
+
+        #region Setup/Teardown
+
+        [SetUp]
+        public void Init()
+        {
+            this.mockRepository = new Mock<IRepository>();
+            this.mockDialogService = new Mock<IDialogService>();
+            this.billEditViewModel = new BillEditViewModel(this.mockRepository.Object, this.mockDialogService.Object);
+        }
+
+        [TearDown]
+        public void Cleanup()
+        {
+            this.mockRepository = null;
+            this.mockDialogService = null;
+            this.billEditViewModel = null;
+            GC.Collect();
+        }
+
+        #endregion
+
+
+
         #region Test Methods
 
         [Test]
@@ -41,251 +74,206 @@ namespace EpAccounting.Test.UI.ViewModel
         [Test]
         public void CanCreateBillEditViewModelObject()
         {
-            // Act
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
-
             // Assert
-            billEditViewModel.Should().NotBeNull();
+            this.billEditViewModel.Should().NotBeNull();
         }
 
         [Test]
         public void CurrentBillDetailViewModelShouldBeNullAfterCreation()
         {
-            // Act
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
-
             // Assert
-            billEditViewModel.CurrentBillDetailViewModel.Should().BeNull();
+            this.billEditViewModel.CurrentBillDetailViewModel.Should().BeNull();
         }
 
         [Test]
         public void BillStateShouldBeNullAfterCreation()
         {
-            // Act
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
-
             // Assert
-            billEditViewModel.CurrentBillDetailViewModel.Should().BeNull();
+            this.billEditViewModel.CurrentBillDetailViewModel.Should().BeNull();
         }
 
         [Test]
         public void IsInSearchModeShouldReturnTrue()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.IsConnected).Returns(true);
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
 
             // Act
-            billEditViewModel.Load(null, billEditViewModel.GetBillSearchState());
+            this.billEditViewModel.ChangeToSearchMode();
 
             // Assert
-            billEditViewModel.IsInSearchMode.Should().BeTrue();
+            this.billEditViewModel.CanInsertIDs.Should().BeTrue();
         }
 
         [Test]
         public void IsInSearchModeShouldReturnFalseWhenBillStateNotSearchState()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.IsConnected).Returns(true);
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
 
             // Assert
-            billEditViewModel.IsInSearchMode.Should().BeFalse();
+            this.billEditViewModel.CanInsertIDs.Should().BeFalse();
         }
 
         [Test]
         public void IsInSearchModeShouldReturnFalseWhenNotConnectedToDatabase()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.IsConnected).Returns(false);
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.IsConnected).Returns(false);
 
             // Assert
-            billEditViewModel.IsInSearchMode.Should().BeFalse();
+            this.billEditViewModel.CanInsertIDs.Should().BeFalse();
         }
 
         [Test]
         public void CanEditBillDataShouldReturnTrue()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.IsConnected).Returns(true);
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
 
             // Act
-            billEditViewModel.Load(null, billEditViewModel.GetBillSearchState());
+            this.billEditViewModel.ChangeToSearchMode();
 
             // Assert
-            billEditViewModel.CanEditBillData.Should().BeTrue();
+            this.billEditViewModel.CanEditData.Should().BeTrue();
         }
 
         [Test]
         public void CanEditBillDataShouldReturnFalseWhenBillStateCanNotCommit()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.IsConnected).Returns(true);
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
 
             // Assert
-            billEditViewModel.CanEditBillData.Should().BeFalse();
+            this.billEditViewModel.CanEditData.Should().BeFalse();
         }
 
         [Test]
         public void CanEditBillDataShouldReturnFalseWhenNotConnectedToDatabase()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.IsConnected).Returns(false);
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.IsConnected).Returns(false);
 
             // Act
-            billEditViewModel.Load(null, billEditViewModel.GetBillSearchState());
+            this.billEditViewModel.ChangeToSearchMode();
 
             // Assert
-            billEditViewModel.CanEditBillData.Should().BeFalse();
+            this.billEditViewModel.CanEditData.Should().BeFalse();
         }
 
         [Test]
         public void CanChangeCurrentBillDetailViewModel()
         {
-            // Arrange
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
-
             // Act
-            billEditViewModel.Load(ModelFactory.GetDefaultBill(), billEditViewModel.GetBillLoadedState());
+            this.billEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultBill());
 
             // Assert
-            billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(ModelFactory.DefaultBillDate);
+            this.billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(ModelFactory.DefaultBillDate);
         }
 
         [Test]
         public void RaisesPropertyChangedWhenCurrentBillDetailViewModelChanges()
         {
             // Arrange
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
-            billEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.billEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            billEditViewModel.Load(ModelFactory.GetDefaultBill(), billEditViewModel.GetBillLoadedState());
+            this.billEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultBill());
 
             // Assert
-            billEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentBillDetailViewModel);
+            this.billEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentBillDetailViewModel);
         }
 
         [Test]
         public void RaisePropertyChangedEventWhenEqualBillDetailViewModelWillBeSet()
         {
             // Arrange
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
             Bill bill = ModelFactory.GetDefaultBill();
-            billEditViewModel.Load(bill, billEditViewModel.GetBillLoadedState());
-            billEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.billEditViewModel.ChangeToLoadedMode(bill);
+            this.billEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            billEditViewModel.Load(bill, billEditViewModel.GetBillLoadedState());
+            this.billEditViewModel.ChangeToLoadedMode(bill);
 
             // Assert
-            billEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentBillDetailViewModel);
+            this.billEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentBillDetailViewModel);
         }
 
         [Test]
         public void CanChangeCurrentBillState()
         {
-            // Arrange
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
-
             // Act
-            billEditViewModel.Load(new Bill(), billEditViewModel.GetBillCreationState());
+            this.billEditViewModel.ChangeToSearchMode();
 
             // Assert
-            billEditViewModel.CurrentBillState.Should().BeOfType<BillCreationState>();
+            this.billEditViewModel.CurrentBillState.Should().BeOfType<BillSearchState>();
+        }
+
+        [Test]
+        public void CanChangeToLoadedModeWhenBillIsNull()
+        {
+            // Act
+            this.billEditViewModel.ChangeToLoadedMode();
+
+            // Assert
+            this.billEditViewModel.CurrentBillState.Should().BeOfType<BillLoadedState>();
         }
 
         [Test]
         public void RaisesPropertyChangedWhenCurrentBillStateChanges()
         {
             // Arrange
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
-            billEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.billEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            billEditViewModel.Load(new Bill(), billEditViewModel.GetBillCreationState());
+            this.billEditViewModel.ChangeToSearchMode();
 
             // Assert
-            billEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentBillState);
+            this.billEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentBillState);
         }
 
         [Test]
         public void RaisesPropertyChangedWhenBillWillBeReloaded()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultBill);
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModelWithBillDetailViewModelValues(mockRepository,
-                                                                                                                ModelFactory.DefaultBillDate,
-                                                                                                                ModelFactory.DefaultBillKindOfBill);
-            billEditViewModel.CurrentBillDetailViewModel.Date = "--.--.----";
-            billEditViewModel.CurrentBillDetailViewModel.KindOfBill = "Gutschein";
-            billEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultBill);
+            this.billEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultBill());
+
+            this.billEditViewModel.CurrentBillDetailViewModel.Date = "--.--.----";
+            this.billEditViewModel.CurrentBillDetailViewModel.KindOfBill = "Gutschein";
+            this.billEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            billEditViewModel.Reload();
+            this.billEditViewModel.Reload();
 
             // Assert
-            billEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentBillDetailViewModel);
-            billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(ModelFactory.DefaultBillDate);
-            billEditViewModel.CurrentBillDetailViewModel.KindOfBill.Should().Be(ModelFactory.DefaultBillKindOfBill);
+            this.billEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentBillDetailViewModel);
+            this.billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(ModelFactory.DefaultBillDate);
+            this.billEditViewModel.CurrentBillDetailViewModel.KindOfBill.Should().Be(ModelFactory.DefaultBillKindOfBill);
         }
 
         [Test]
         public void RaisePropertyChangedEvenWhenEqualBillStateWillBeSet()
         {
             // Arrange
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
-            billEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.billEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            billEditViewModel.Load(new Bill(), billEditViewModel.GetBillEmptyState());
+            this.billEditViewModel.ChangeToEmptyMode();
 
             // Assert
-            billEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentBillState);
-        }
-
-        [Test]
-        public void DoNotChangeBillAndBillStateWhenParametersAreNull()
-        {
-            // Arrange
-            const string ExpectedDate = "07.01.2015";
-            const string ExpectedKindOfBill = "Gutschein";
-            BillEditViewModel BillEditViewModel = this.GetDefaultBillEditViewModel();
-
-            BillEditViewModel.Load(new Bill { Date = ExpectedDate, KindOfBill = ExpectedKindOfBill }, BillEditViewModel.GetBillLoadedState());
-
-            // Act
-            BillEditViewModel.Load(null, null);
-
-            // Assert
-            BillEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(ExpectedDate);
-            BillEditViewModel.CurrentBillDetailViewModel.KindOfBill.Should().Be(ExpectedKindOfBill);
-            BillEditViewModel.CurrentBillState.Should().Be(BillEditViewModel.GetBillLoadedState());
+            this.billEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentBillState);
         }
 
         [Test]
         public void GetInstancesOfBillStates()
         {
-            // Arrange
-            BillEditViewModel bill = this.GetDefaultBillEditViewModel();
-
             // Act
-            IBillState billEmptyState = bill.GetBillEmptyState();
-            IBillState billCreationState = bill.GetBillCreationState();
-            IBillState billSearchState = bill.GetBillSearchState();
-            IBillState billLoadedState = bill.GetBillLoadedState();
-            IBillState billEditState = bill.GetBillEditState();
+            IBillState billEmptyState = this.billEditViewModel.GetBillEmptyState();
+            IBillState billCreationState = this.billEditViewModel.GetBillCreationState();
+            IBillState billSearchState = this.billEditViewModel.GetBillSearchState();
+            IBillState billLoadedState = this.billEditViewModel.GetBillLoadedState();
+            IBillState billEditState = this.billEditViewModel.GetBillEditState();
 
             // Assert
             billEmptyState.Should().BeOfType<BillEmptyState>();
@@ -298,95 +286,99 @@ namespace EpAccounting.Test.UI.ViewModel
         [Test]
         public void BillCommandsAreInitialized()
         {
-            // Arrange
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
-
             // Assert
-            billEditViewModel.BillCommands.Should().HaveCount(5);
+            this.billEditViewModel.BillCommands.Should().HaveCount(5);
         }
 
         [Test]
         public async Task UpdatesBill()
         {
             // Arrange
-            Mock<IRepository> mockRepsoitory = new Mock<IRepository>();
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModelWithBillDetailViewModelValues(mockRepsoitory, "01", "Gutschien");
+            this.billEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultBill());
 
             // Act
-            bool result = await billEditViewModel.SaveOrUpdateBillAsync();
+            bool result = await this.billEditViewModel.SaveOrUpdateBillAsync();
 
             // Assert
             result.Should().BeTrue();
-            mockRepsoitory.Verify(x => x.SaveOrUpdate(It.IsAny<Bill>()), Times.Once());
+            this.mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Bill>()), Times.Once());
+        }
+
+        [Test]
+        public async Task SendUpdateClientMessageWhenBillWillBeSavedOrUpdated()
+        {
+            // Arrange
+            this.billEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultBill());
+
+            string messenerMessage = string.Empty;
+            Messenger.Default.Register<NotificationMessage<int>>(this, x => messenerMessage = x.Notification);
+
+            // Act
+            await this.billEditViewModel.SaveOrUpdateBillAsync();
+
+            // Assert
+            this.mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Bill>()), Times.Once());
+            messenerMessage.Should().Be(Resources.Message_UpdateClientForClientEditVM);
         }
 
         [Test]
         public async Task ShowMessageWhenBillCouldNotBeAddedToDatabaseBecauseOfAnException()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.SaveOrUpdate(It.IsAny<Bill>())).Throws(new Exception());
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository, mockDialogService);
+            this.mockRepository.Setup(x => x.SaveOrUpdate(It.IsAny<Bill>())).Throws(new Exception());
 
             // Act
-            bool result = await billEditViewModel.SaveOrUpdateBillAsync();
+            bool result = await this.billEditViewModel.SaveOrUpdateBillAsync();
 
             // Assert
             result.Should().BeFalse();
-            mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Bill>()), Times.Once());
-            mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateBill, It.IsAny<string>()), Times.Once);
+            this.mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Bill>()), Times.Once());
+            this.mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateBill, It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public async Task DoNotDeleteBillWhenDialogResultIsNo()
         {
             // Arrange
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(false));
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockDialogService);
+            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(false));
 
             // Act
-            bool result = await billEditViewModel.DeleteBillAsync();
+            bool result = await this.billEditViewModel.DeleteBillAsync();
 
             // Assert
             result.Should().BeFalse();
-            mockDialogService.Verify(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            this.mockDialogService.Verify(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public async Task DeleteBillWhenDialogResultIsYes()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModelWithBillDetailViewModelValues(mockRepository, mockDialogService,
-                                                                                                                "01.02.2017", "Rechnung");
+            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+            Bill bill = new Bill { Date = "01.02.2017", KindOfBill = "Rechnung" };
+            this.billEditViewModel.ChangeToLoadedMode(bill);
 
             // Act
-            bool result = await billEditViewModel.DeleteBillAsync();
+            bool result = await this.billEditViewModel.DeleteBillAsync();
 
             // Assert
             result.Should().BeTrue();
-            mockDialogService.Verify(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-            mockRepository.Verify(x => x.Delete(It.IsAny<Bill>()), Times.Once);
+            this.mockDialogService.Verify(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            this.mockRepository.Verify(x => x.Delete(It.IsAny<Bill>()), Times.Once);
         }
 
         [Test]
         public async Task ShowMessageWhenBillCouldNotBeDeletedBecauseOfAnException()
         {
             // Arrange
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-            mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockDialogService);
+            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
 
             // Act
-            bool result = await billEditViewModel.DeleteBillAsync();
+            bool result = await this.billEditViewModel.DeleteBillAsync();
 
             // Assert
             result.Should().BeFalse();
-            mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotDeleteBill, It.IsAny<string>()), Times.Once);
+            this.mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotDeleteBill, It.IsAny<string>()), Times.Once);
         }
 
         [Test]
@@ -394,9 +386,8 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             const int ExpectedId = 2;
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
             Bill bill = new Bill { BillId = ExpectedId, Date = "01.02.2017", KindOfBill = "Gutschein" };
-            billEditViewModel.Load(bill, billEditViewModel.GetBillLoadedState());
+            this.billEditViewModel.ChangeToLoadedMode(bill);
 
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> criterion = null;
             Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>>(this, x => criterion = x.Content);
@@ -406,7 +397,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, null, null);
 
             // Act
-            billEditViewModel.SendBillSearchCriterionMessage();
+            this.billEditViewModel.SendBillSearchCriterionMessage();
 
             // Assert
             criterion.Should().NotBeNull();
@@ -420,10 +411,9 @@ namespace EpAccounting.Test.UI.ViewModel
             const int ExpectedId = 2;
             const string KindOfBill = "Gutschein";
             const string Date = "01.02.2017";
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
             Client client = new Client() { ClientId = ExpectedId };
             Bill bill = new Bill { KindOfBill = KindOfBill, Date = Date, Client = client };
-            billEditViewModel.Load(bill, billEditViewModel.GetBillLoadedState());
+            this.billEditViewModel.ChangeToLoadedMode(bill);
 
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> criterion = null;
             Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>>(this, x => criterion = x.Content);
@@ -438,7 +428,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
 
             // Act
-            billEditViewModel.SendBillSearchCriterionMessage();
+            this.billEditViewModel.SendBillSearchCriterionMessage();
 
             // Assert
             criterion.Should().NotBeNull();
@@ -449,9 +439,8 @@ namespace EpAccounting.Test.UI.ViewModel
         public void SendBillSearchCriterionThatSearchesWithAllEnteredBillValues()
         {
             // Arrange
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
             Bill bill = ModelFactory.GetDefaultBill();
-            billEditViewModel.Load(bill, billEditViewModel.GetBillLoadedState());
+            this.billEditViewModel.ChangeToLoadedMode(bill);
 
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> criterion = null;
             Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>>(this, x => criterion = x.Content);
@@ -473,104 +462,11 @@ namespace EpAccounting.Test.UI.ViewModel
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
 
             // Act
-            billEditViewModel.SendBillSearchCriterionMessage();
+            this.billEditViewModel.SendBillSearchCriterionMessage();
 
             // Assert
             criterion.Should().NotBeNull();
             criterion.ToString().Should().Be(expectedTuple.ToString());
-        }
-
-        [Test]
-        public void ExecutesCommandsWhenCanConditionsMet()
-        {
-            // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.IsConnected).Returns(true);
-
-            Mock<IBillState> mockBillState = new Mock<IBillState>();
-            mockBillState.Setup(x => x.CanSwitchToSearchMode()).Returns(true);
-            mockBillState.Setup(x => x.CanSwitchToEditMode()).Returns(true);
-            mockBillState.Setup(x => x.CanCommit()).Returns(true);
-            mockBillState.Setup(x => x.CanCancel()).Returns(true);
-            mockBillState.Setup(x => x.CanDelete()).Returns(true);
-
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository);
-            billEditViewModel.Load(new Bill(), mockBillState.Object);
-
-            // Act
-            foreach (ImageCommandViewModel command in billEditViewModel.BillCommands)
-            {
-                command.RelayCommand.Execute(this);
-            }
-
-            // Assert
-            mockBillState.Verify(x => x.SwitchToSearchMode(), Times.Once);
-            mockBillState.Verify(x => x.SwitchToEditMode(), Times.Once);
-            mockBillState.Verify(x => x.Commit(), Times.Once);
-            mockBillState.Verify(x => x.Cancel(), Times.Once);
-            mockBillState.Verify(x => x.Delete(), Times.Once);
-        }
-
-        [Test]
-        public void DoesNotExecuteCommandsWhenCanConditionsDoNotMet()
-        {
-            // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.IsConnected).Returns(true);
-
-            Mock<IBillState> mockBillState = new Mock<IBillState>();
-            mockBillState.Setup(x => x.CanSwitchToSearchMode()).Returns(false);
-            mockBillState.Setup(x => x.CanSwitchToEditMode()).Returns(false);
-            mockBillState.Setup(x => x.CanCommit()).Returns(false);
-            mockBillState.Setup(x => x.CanCancel()).Returns(false);
-            mockBillState.Setup(x => x.CanDelete()).Returns(false);
-
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository);
-            billEditViewModel.Load(new Bill(), mockBillState.Object);
-
-            // Act
-            foreach (ImageCommandViewModel command in billEditViewModel.BillCommands)
-            {
-                command.RelayCommand.Execute(this);
-            }
-
-            // Assert
-            mockBillState.Verify(x => x.SwitchToSearchMode(), Times.Never);
-            mockBillState.Verify(x => x.SwitchToEditMode(), Times.Never);
-            mockBillState.Verify(x => x.Commit(), Times.Never);
-            mockBillState.Verify(x => x.Cancel(), Times.Never);
-            mockBillState.Verify(x => x.Delete(), Times.Never);
-        }
-
-        [Test]
-        public void DoesNotExecuteCommandsWhenRepositoryNotInitialized()
-        {
-            // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.IsConnected).Returns(false);
-
-            Mock<IBillState> mockBillState = new Mock<IBillState>();
-            mockBillState.Setup(x => x.CanSwitchToSearchMode()).Returns(true);
-            mockBillState.Setup(x => x.CanSwitchToEditMode()).Returns(true);
-            mockBillState.Setup(x => x.CanCommit()).Returns(true);
-            mockBillState.Setup(x => x.CanCancel()).Returns(true);
-            mockBillState.Setup(x => x.CanDelete()).Returns(true);
-
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository);
-            billEditViewModel.Load(new Bill(), mockBillState.Object);
-
-            // Act
-            foreach (ImageCommandViewModel command in billEditViewModel.BillCommands)
-            {
-                command.RelayCommand.Execute(this);
-            }
-
-            // Assert
-            mockBillState.Verify(x => x.SwitchToSearchMode(), Times.Never);
-            mockBillState.Verify(x => x.SwitchToEditMode(), Times.Never);
-            mockBillState.Verify(x => x.Commit(), Times.Never);
-            mockBillState.Verify(x => x.Cancel(), Times.Never);
-            mockBillState.Verify(x => x.Delete(), Times.Never);
         }
 
         [Test]
@@ -579,15 +475,13 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int ExpectedId = 2;
             const string Date = "01.01.2017";
-            Mock<IRepository> mockRepsoitory = new Mock<IRepository>();
-            mockRepsoitory.Setup(x => x.GetById<Bill>(ExpectedId)).Returns(new Bill() { Date = Date});
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepsoitory);
+            this.mockRepository.Setup(x => x.GetById<Bill>(ExpectedId)).Returns(new Bill() { Date = Date });
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<int>(ExpectedId, Resources.Messenger_Message_LoadSelectedBillForBillEditVM));
+            Messenger.Default.Send(new NotificationMessage<int>(ExpectedId, Resources.Message_LoadSelectedBillForBillEditVM));
 
             // Assert
-            billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(Date);
+            this.billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(Date);
         }
 
         [Test]
@@ -595,20 +489,19 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             const string Date = "01.01.2017";
-            Bill bill = new Bill() { Date = Date };
+            Bill bill = new Bill { Date = Date };
 
-            Mock<IRepository> mockRepsoitory = new Mock<IRepository>();
-            mockRepsoitory.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(new Bill() {Date = Date});
-            mockRepsoitory.Setup(x => x.IsConnected).Returns(true);
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepsoitory);
-            billEditViewModel.Load(bill, billEditViewModel.GetBillEditState());
+            this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(new Bill() { Date = Date });
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this.billEditViewModel.ChangeToLoadedMode(bill);
+            this.billEditViewModel.ChangeToEditMode();
 
             // Act
-            billEditViewModel.CurrentBillDetailViewModel.Date = "02.02.2016";
-            billEditViewModel.BillCommands.Find(x => x.CommandMessage == Resources.Command_Message_Bill_Cancel).RelayCommand.Execute(null);
-            
+            this.billEditViewModel.CurrentBillDetailViewModel.Date = "02.02.2016";
+            this.billEditViewModel.BillCommands.Find(x => x.CommandMessage == Resources.Command_Message_Bill_Cancel).RelayCommand.Execute(null);
+
             // Assert
-            billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(Date);
+            this.billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(Date);
         }
 
         [Test]
@@ -619,18 +512,14 @@ namespace EpAccounting.Test.UI.ViewModel
             Bill bill = ModelFactory.GetDefaultBill();
             bill.Client.FirstName = FirstName;
 
-            Mock<IRepository> mockRepsoitory = new Mock<IRepository>();
-            mockRepsoitory.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(bill);
-
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepsoitory);
-            billEditViewModel.Load(ModelFactory.GetDefaultBill(), billEditViewModel.GetBillLoadedState());
+            this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(bill);
+            this.billEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultBill());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Messenger_Message_UpdateClientValuesMessageForBillEditVM));
+            Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Message_UpdateClientValuesForBillEditVM));
 
             // Assert
-            billEditViewModel.CurrentBillDetailViewModel.FirstName.Should().Be(FirstName);
-
+            this.billEditViewModel.CurrentBillDetailViewModel.FirstName.Should().Be(FirstName);
         }
 
         [Test]
@@ -639,13 +528,12 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int ExpectedId = 10;
             int billId = 0;
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
 
-            billEditViewModel.Load(new Bill { BillId = ExpectedId }, billEditViewModel.GetBillLoadedState());
+            this.billEditViewModel.ChangeToLoadedMode(new Bill { BillId = ExpectedId });
             Messenger.Default.Register<NotificationMessage<int>>(this, x => billId = x.Content);
 
             // Act
-            billEditViewModel.SendUpdateBillValuesMessage();
+            this.billEditViewModel.SendUpdateBillValuesMessage();
 
             // Assert
             billId.Should().Be(ExpectedId);
@@ -655,93 +543,154 @@ namespace EpAccounting.Test.UI.ViewModel
         public void SendNotEnabledStateForBillItemEditing()
         {
             // Arrange
-            bool enableState = true;
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
-            Messenger.Default.Register<NotificationMessage<bool>>(this, x => enableState = x.Content);
+            List<bool> areEnabled = new List<bool>();
+            Messenger.Default.Register<NotificationMessage<bool>>(this, x => areEnabled.Add(x.Content));
 
             // Act
-            billEditViewModel.Load(null, billEditViewModel.GetBillEmptyState());
+            this.billEditViewModel.ChangeToEmptyMode();
 
             // Assert
-            enableState.Should().BeFalse();
+            areEnabled.Should().HaveCount(2);
+            areEnabled[0].Should().BeFalse();
         }
 
         [Test]
         public void SendEnabledStateForBillItemEditing()
         {
             // Arrange
-            bool enableState = true;
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
-            Messenger.Default.Register<NotificationMessage<bool>>(this, x => enableState = x.Content);
+            List<bool> areEnabled = new List<bool>();
+            Messenger.Default.Register<NotificationMessage<bool>>(this, x => areEnabled.Add(x.Content));
 
             // Act
-            billEditViewModel.Load(null, billEditViewModel.GetBillEditState());
+            this.billEditViewModel.ChangeToEditMode();
 
             // Assert
-            enableState.Should().BeTrue();
+            areEnabled.Should().HaveCount(2);
+            areEnabled[0].Should().BeTrue();
+        }
+
+        [Test]
+        public void SendEnabledStateForWorkspaceChange()
+        {
+            // Arrange
+            List<bool> areEnabled = new List<bool>();
+            Messenger.Default.Register<NotificationMessage<bool>>(this, x => areEnabled.Add(x.Content));
+
+            // Act
+            this.billEditViewModel.ChangeToEmptyMode();
+
+            // Assert
+            areEnabled.Should().HaveCount(2);
+            areEnabled[1].Should().BeTrue();
+        }
+
+        [Test]
+        public void SendNotEnabledStateForWorkspaceChange()
+        {
+            // Arrange
+            this.billEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultBill());
+            List<bool> areEnabled = new List<bool>();
+            Messenger.Default.Register<NotificationMessage<bool>>(this, x => areEnabled.Add(x.Content));
+
+            // Act
+            this.billEditViewModel.ChangeToEditMode();
+
+            // Assert
+            areEnabled.Should().HaveCount(2);
+            areEnabled[1].Should().BeFalse();
         }
 
         [Test]
         public void CreatesNewBillWithSpecificClientByCreateBillMessage()
         {
             // Arrange
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient);
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository);
+            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Messenger_Message_CreateNewBillMessageForBillEditVM));
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_CreateNewBillForBillEditVM));
 
             // Assert
-            mockRepository.Verify(x => x.GetById<Client>(It.IsAny<int>()), Times.Once);
+            this.mockRepository.Verify(x => x.GetById<Client>(It.IsAny<int>()), Times.Once);
+        }
+
+        [Test]
+        public void SwitchesToSearchModeAndInsertsClientDataWhenMessageReceived()
+        {
+            // Act
+            Messenger.Default.Send(new NotificationMessage<Client>(ModelFactory.GetDefaultClient(), Resources.Message_SwitchToSearchModeAndLoadClientDataForBillEditVM));
+
+            // Assert
+            this.billEditViewModel.CurrentBillState.Should().BeOfType<BillSearchState>();
+            this.billEditViewModel.CurrentBillDetailViewModel.ClientId.Should().Be(0);
+            this.billEditViewModel.CurrentBillDetailViewModel.Title.Should().Be(ModelFactory.DefaultClientTitle);
+            this.billEditViewModel.CurrentBillDetailViewModel.FirstName.Should().Be(ModelFactory.DefaultClientFirstName);
+            this.billEditViewModel.CurrentBillDetailViewModel.LastName.Should().Be(ModelFactory.DefaultClientLastName);
+            this.billEditViewModel.CurrentBillDetailViewModel.Street.Should().Be(ModelFactory.DefaultClientStreet);
+            this.billEditViewModel.CurrentBillDetailViewModel.HouseNumber.Should().Be(ModelFactory.DefaultClientHouseNumber);
+            this.billEditViewModel.CurrentBillDetailViewModel.PostalCode.Should().Be(ModelFactory.DefaultClientPostalCode);
+            this.billEditViewModel.CurrentBillDetailViewModel.City.Should().Be(ModelFactory.DefaultClientCity);
+        }
+
+        [Test]
+        public void ChangeToEmptyModeWhenLoadedClientWasDeleted()
+        {
+            // Arrange
+            this.billEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultBill());
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Message_RemoveClientForBillEditVM));
+
+            // Assert
+            this.billEditViewModel.CurrentBillState.Should().BeOfType<BillEmptyState>();
+        }
+
+        [Test]
+        public void CanNotClearFieldsWhenNotInLoadedState()
+        {
+            // Assert
+            this.billEditViewModel.ClearFieldsCommand.CanExecute(null).Should().BeFalse();
+        }
+
+        [Test]
+        public void CanClearFieldsWhenInLoadedState()
+        {
+            // Act
+            this.billEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultBill());
+
+            // Assert
+            this.billEditViewModel.ClearFieldsCommand.CanExecute(null).Should().BeTrue();
+        }
+
+        [Test]
+        public void ClearsFields()
+        {
+            // Arrange
+            this.billEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultBill());
+
+            // Act
+            this.billEditViewModel.ClearFieldsCommand.Execute(null);
+
+            // Assert
+            this.billEditViewModel.CurrentBillDetailViewModel.KindOfBill.Should().BeNullOrEmpty();
+            this.billEditViewModel.CurrentBillDetailViewModel.KindOfVat.Should().BeNullOrEmpty();
+            this.billEditViewModel.CurrentBillDetailViewModel.Date.Should().BeNullOrEmpty();
+        }
+
+        [Test]
+        public void SendsChangeToBillSearchViewMessageWhenFieldsAreCleared()
+        {
+            // Arrange
+            List<string> notificationMessages = new List<string>();
+            this.billEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultBill());
+            Messenger.Default.Register<NotificationMessage>(this, x => notificationMessages.Add(x.Notification));
+
+            // Act
+            this.billEditViewModel.ClearFieldsCommand.Execute(null);
+
+            // Assert
+            notificationMessages.Should().Contain(Resources.Message_LoadBillSearchViewModelMessageForBillVM);
         }
 
         #endregion
-
-
-
-        private BillEditViewModel GetDefaultBillEditViewModel()
-        {
-            return new BillEditViewModel(new Mock<IRepository>().Object, new Mock<IDialogService>().Object);
-        }
-
-        private BillEditViewModel GetDefaultBillEditViewModel(Mock<IRepository> mockRepository)
-        {
-            return new BillEditViewModel(mockRepository.Object, new Mock<IDialogService>().Object);
-        }
-
-        private BillEditViewModel GetDefaultBillEditViewModel(Mock<IDialogService> mockDialogService)
-        {
-            return new BillEditViewModel(new Mock<IRepository>().Object, mockDialogService.Object);
-        }
-
-        private BillEditViewModel GetDefaultBillEditViewModel(Mock<IRepository> mockRepository, Mock<IDialogService> mockDialogService)
-        {
-            return new BillEditViewModel(mockRepository.Object, mockDialogService.Object);
-        }
-
-        private BillEditViewModel GetDefaultBillEditViewModelWithBillDetailViewModelValues(string date, string kindOfBill)
-        {
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel();
-            billEditViewModel.Load(new Bill() { Date = date, KindOfBill = kindOfBill }, billEditViewModel.GetBillLoadedState());
-
-            return billEditViewModel;
-        }
-
-        private BillEditViewModel GetDefaultBillEditViewModelWithBillDetailViewModelValues(Mock<IRepository> mockRepository, string date, string kindOfBill)
-        {
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository);
-            billEditViewModel.Load(new Bill() { Date = date, KindOfBill = kindOfBill }, billEditViewModel.GetBillLoadedState());
-
-            return billEditViewModel;
-        }
-
-        private BillEditViewModel GetDefaultBillEditViewModelWithBillDetailViewModelValues(Mock<IRepository> mockRepository, Mock<IDialogService> mockDialogService, string date, string kindOfBill)
-        {
-            BillEditViewModel billEditViewModel = this.GetDefaultBillEditViewModel(mockRepository, mockDialogService);
-            billEditViewModel.Load(new Bill() { Date = date, KindOfBill = kindOfBill }, billEditViewModel.GetBillLoadedState());
-
-            return billEditViewModel;
-        }
     }
 }

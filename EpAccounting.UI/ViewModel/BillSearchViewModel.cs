@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModel.cs
-// Last Change: 14.08.2017  07:47
+// Last Change: 22.08.2017  21:10
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -29,7 +29,6 @@ namespace EpAccounting.UI.ViewModel
 
         private int _numberOfAllPages;
         private int _currentPage;
-        private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> _lastCriterion;
         private ObservableCollection<BillDetailViewModel> _foundBills;
         private BillDetailViewModel _selectedBillDetailViewModel;
 
@@ -88,134 +87,27 @@ namespace EpAccounting.UI.ViewModel
             set { this.SetProperty(ref this._selectedBillDetailViewModel, value); }
         }
 
-        public RelayCommand LoadSelectedBillCommand
-        {
-            get
-            {
-                if (this._loadSelectedBillCommand == null)
-                {
-                    this._loadSelectedBillCommand = new RelayCommand(this.SendLoadSelectedBillMessage, this.CanLoadSelectedBill);
-                }
-
-                return this._loadSelectedBillCommand;
-            }
-        }
-
-        public ImageCommandViewModel LoadNextPageCommand
-        {
-            get
-            {
-                if (this._loadNextPageCommand == null)
-                {
-                    this._loadNextPageCommand = new ImageCommandViewModel(Resources.img_arrow_right,
-                                                                          Resources.Command_DisplayName_Next_Page,
-                                                                          Resources.Command_Message_Next_Page,
-                                                                          new RelayCommand(this.LoadNextPage, this.CanLoadNextPage));
-                }
-
-                return this._loadNextPageCommand;
-            }
-        }
-
-        public ImageCommandViewModel LoadPreviousPageCommand
-        {
-            get
-            {
-                if (this._loadPreviousPageCommand == null)
-                {
-                    this._loadPreviousPageCommand = new ImageCommandViewModel(Resources.img_arrow_left,
-                                                                              Resources.Command_DisplayName_Previous_Page,
-                                                                              Resources.Command_Message_Previous_Page,
-                                                                              new RelayCommand(this.LoadPreviousPage, this.CanLoadPreviousPage));
-                }
-
-                return this._loadPreviousPageCommand;
-            }
-        }
-
-        private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> LastCriterion
-        {
-            get { return this._lastCriterion; }
-            set { this._lastCriterion = value; }
-        }
+        private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> LastCriterion { get; set; }
 
         #endregion
 
 
 
-        private bool CanLoadSelectedBill()
+        private void LoadBillsFromClient(int clientId)
         {
-            if (this.SelectedBillDetailViewModel == null)
-            {
-                return false;
-            }
+            Conjunction billConjunction = Restrictions.Conjunction();
+            Expression<Func<Bill, Client>> expression = x => x.Client;
+            Conjunction clientConjunction = Restrictions.Conjunction();
+            clientConjunction.Add(Restrictions.Where<Client>(client => client.ClientId == clientId));
 
-            return true;
+            this.LoadSearchedBills(new Tuple<ICriterion,
+                                       Expression<Func<Bill, Client>>,
+                                       ICriterion>(billConjunction, expression, clientConjunction));
         }
 
-        private void SendLoadSelectedBillMessage()
-        {
-            Messenger.Default.Send(new NotificationMessage<int>(this.SelectedBillDetailViewModel.BillId, Resources.Messenger_Message_LoadSelectedBillForBillEditVM));
-        }
-
-        private bool CanLoadNextPage()
-        {
-            if (this.CurrentPage < this.NumberOfAllPages)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private void LoadNextPage()
-        {
-            this.CurrentPage++;
-            this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
-        }
-
-        private bool CanLoadPreviousPage()
-        {
-            if (this.CurrentPage > 1)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private void LoadPreviousPage()
-        {
-            this.CurrentPage--;
-            this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
-        }
-
-        private void ExecuteNotificationMessage(NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>> message)
-        {
-            if (message.Notification == Resources.Messenger_Message_BillSearchCriteriaForBillSearchVM)
-            {
-                this.LastCriterion = message.Content;
-                this.LoadSearchedBills(message.Content, 1);
-            }
-        }
-
-        private void ExecuteNotificationMessage(NotificationMessage<int> message)
-        {
-            if (message.Notification == Resources.Messenger_Message_UpdateBillValuesMessageForBillSearchVM)
-            {
-                this.UpdateBillViaBillId(message.Content);
-            }
-            else if (message.Notification == Resources.Messenger_Message_UpdateClientValuesMessageForBillSearchVM)
-            {
-                this.UpdateBillViaClientId(message.Content);
-            }
-            else if (message.Notification == Resources.Messenger_Message_RemoveBillMessageForBillSearchVM)
-            {
-                this.RemoveBill(message.Content);
-            }
-        }
-
-        private void LoadSearchedBills(Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> tupleCriterion, int page)
+        private void LoadSearchedBills(Tuple<ICriterion,
+                                           Expression<Func<Bill, Client>>,
+                                           ICriterion> tupleCriterion, int page = 1)
         {
             // ReSharper disable once PossibleLossOfFraction
             int numberOfBills;
@@ -277,7 +169,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void RemoveBill(int id)
         {
-            for (int i = 0; i < this.FoundBills.Count; i++)
+            for (int i = this.FoundBills.Count - 1; i >= 0; i--)
             {
                 if (this.FoundBills[i].BillId == id)
                 {
@@ -288,10 +180,160 @@ namespace EpAccounting.UI.ViewModel
             this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
         }
 
+        private void RemoveBillsViaClientId(int id)
+        {
+            for (int i = this.FoundBills.Count - 1; i >= 0; i--)
+            {
+                if (this.FoundBills[i].ClientId == id)
+                {
+                    this.FoundBills.RemoveAt(i);
+                }
+            }
+        }
+
         private void ReloadCommands()
         {
             this.LoadPreviousPageCommand.RelayCommand.RaiseCanExecuteChanged();
             this.LoadNextPageCommand.RelayCommand.RaiseCanExecuteChanged();
         }
+
+
+
+        #region Messenger
+
+        private void ExecuteNotificationMessage(NotificationMessage<Tuple<ICriterion,
+                                                    Expression<Func<Bill, Client>>,
+                                                    ICriterion>> message)
+        {
+            if (message.Notification == Resources.Message_BillSearchCriteriaForBillSearchVM)
+            {
+                this.LastCriterion = message.Content;
+                this.LoadSearchedBills(message.Content);
+            }
+        }
+
+        private void ExecuteNotificationMessage(NotificationMessage<int> message)
+        {
+            if (message.Notification == Resources.Message_UpdateBillValuesMessageForBillSearchVM)
+            {
+                this.UpdateBillViaBillId(message.Content);
+            }
+            else if (message.Notification == Resources.Message_UpdateClientValuesForBillSearchVM)
+            {
+                this.UpdateBillViaClientId(message.Content);
+            }
+            else if (message.Notification == Resources.Message_RemoveBillForBillSearchVM)
+            {
+                this.RemoveBill(message.Content);
+            }
+            else if (message.Notification == Resources.Message_LoadBillsFromClientForBillSearchVM)
+            {
+                this.LoadBillsFromClient(message.Content);
+            }
+            else if (message.Notification == Resources.Message_RemoveClientForBillSearchVM)
+            {
+                this.RemoveBillsViaClientId(message.Content);
+            }
+        }
+
+        #endregion
+
+
+
+        #region Commands
+
+        public RelayCommand LoadSelectedBillCommand
+        {
+            get
+            {
+                if (this._loadSelectedBillCommand == null)
+                {
+                    this._loadSelectedBillCommand = new RelayCommand(this.SendLoadSelectedBillMessage, this.CanLoadSelectedBill);
+                }
+
+                return this._loadSelectedBillCommand;
+            }
+        }
+
+        private bool CanLoadSelectedBill()
+        {
+            if (this.SelectedBillDetailViewModel == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void SendLoadSelectedBillMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage<int>(this.SelectedBillDetailViewModel.BillId, Resources.Message_LoadSelectedBillForBillEditVM));
+        }
+
+        public ImageCommandViewModel LoadNextPageCommand
+        {
+            get
+            {
+                if (this._loadNextPageCommand == null)
+                {
+                    this._loadNextPageCommand = new ImageCommandViewModel(Resources.img_arrow_right,
+                                                                          Resources.Command_DisplayName_Next_Page,
+                                                                          Resources.Command_Message_Next_Page,
+                                                                          new RelayCommand(this.LoadNextPage, this.CanLoadNextPage));
+                }
+
+                return this._loadNextPageCommand;
+            }
+        }
+
+        private bool CanLoadNextPage()
+        {
+            if (this.CurrentPage < this.NumberOfAllPages)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void LoadNextPage()
+        {
+            this.CurrentPage++;
+            this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
+        }
+
+        public ImageCommandViewModel LoadPreviousPageCommand
+        {
+            get
+            {
+                if (this._loadPreviousPageCommand == null)
+                {
+                    this._loadPreviousPageCommand = new ImageCommandViewModel(Resources.img_arrow_left,
+                                                                              Resources.Command_DisplayName_Previous_Page,
+                                                                              Resources.Command_Message_Previous_Page,
+                                                                              new RelayCommand(this.LoadPreviousPage, this.CanLoadPreviousPage));
+                }
+
+                return this._loadPreviousPageCommand;
+            }
+        }
+
+        private bool CanLoadPreviousPage()
+        {
+            if (this.CurrentPage > 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void LoadPreviousPage()
+        {
+            this.CurrentPage--;
+            this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
+        }
+
+        #endregion
     }
 }

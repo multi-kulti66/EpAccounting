@@ -1,6 +1,6 @@
 // ///////////////////////////////////
 // File: MainViewModel.cs
-// Last Change: 14.08.2017  09:39
+// Last Change: 29.08.2017  19:05
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,7 +9,6 @@
 namespace EpAccounting.UI.ViewModel
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.IO;
     using System.Linq;
@@ -31,7 +30,12 @@ namespace EpAccounting.UI.ViewModel
         private readonly IRepository repository;
         private readonly IDialogService dialogService;
 
-        private WorkspaceViewModel _currentWorkspaceViewModel;
+        private bool _canChangeWorkspace = true;
+
+        private WorkspaceViewModel _currentWorkspace;
+        private ClientViewModel _clientWorkspace;
+        private BillViewModel _billWorkspace;
+        private OptionViewModel _optionWorkspace;
 
         #endregion
 
@@ -45,10 +49,10 @@ namespace EpAccounting.UI.ViewModel
             this.dialogService = dialogService;
 
             this.InitWorkspaces();
-            this.CurrentWorkspaceViewModel = this.WorkspaceViewModels[0];
             this.TryConnectingAtStartup();
 
             Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
+            Messenger.Default.Register<NotificationMessage<bool>>(this, this.ExecuteNotificationMessage);
         }
 
         #endregion
@@ -62,44 +66,26 @@ namespace EpAccounting.UI.ViewModel
             get { return this.repository.IsConnected; }
         }
 
-        public WorkspaceViewModel CurrentWorkspaceViewModel
+        public bool CanChangeWorkspace
         {
-            get { return this._currentWorkspaceViewModel; }
-            set { this.SetProperty(ref this._currentWorkspaceViewModel, value); }
+            get { return this._canChangeWorkspace; }
+            private set { this.SetProperty(ref this._canChangeWorkspace, value); }
         }
-
-        public ObservableCollection<WorkspaceViewModel> WorkspaceViewModels { get; private set; }
 
         #endregion
 
 
 
-        private void InitWorkspaces()
-        {
-            this.WorkspaceViewModels = new ObservableCollection<WorkspaceViewModel>
-                                       {
-                                           new ClientViewModel(Resources.Workspace_Title_Clients, Resources.img_clients, this.repository, this.dialogService),
-                                           new BillViewModel(Resources.Workspace_Title_Bills, Resources.img_bills, this.repository, this.dialogService),
-                                           new OptionViewModel(Resources.Workspace_Title_Options, Resources.img_options, this.repository, this.dialogService)
-                                       };
-        }
-
         private void TryConnectingAtStartup()
         {
             try
             {
-                /* new section */
+                // TODO: can be deleted after testing is finished
                 DatabaseFactory.DeleteTestFolderAndFile();
                 DatabaseFactory.CreateTestFile();
                 DatabaseFactory.SetSavedFilePath();
                 this.repository.LoadDatabase(Settings.Default.DatabaseFilePath);
                 this.LoadXmlData();
-
-                foreach (Client client in this.clients)
-                {
-                    this.repository.SaveOrUpdate(client);
-                }
-                /* new section */
 
                 // TODO: change back
                 //this.repository.LoadDatabase(Settings.Default.DatabaseFilePath);
@@ -113,29 +99,123 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        private void ExecuteNotificationMessage(NotificationMessage message)
-        {
-            if (message.Notification == Resources.Messenger_Message_UpdateConnectionStateMessageForMainVM)
-            {
-                this.UpdateConnectionState();
-            }
-            else if (message.Notification == Resources.Messenger_Message_CreateNewBillMessageForMainVM)
-            {
-                this.CurrentWorkspaceViewModel = this.WorkspaceViewModels.First(x => x.Title == Resources.Workspace_Title_Bills);
-            }
-        }
-
         private void UpdateConnectionState()
         {
             this.RaisePropertyChanged(() => this.IsConnected);
         }
 
+        private void ChangeToBillWorkspace()
+        {
+            this.CurrentWorkspace = this.BillWorkspace;
+        }
 
 
-        #region TestData
 
-        private readonly List<Client> clients = new List<Client>();
+        #region Messenger
 
+        private void ExecuteNotificationMessage(NotificationMessage message)
+        {
+            if (message.Notification == Resources.Message_UpdateConnectionStateForMainVM)
+            {
+                this.UpdateConnectionState();
+            }
+            else if (message.Notification == Resources.Message_ChangeToBillWorkspaceForMainVM)
+            {
+                this.ChangeToBillWorkspace();
+            }
+            else if (message.Notification == Resources.Messenger_Message_CreateNewBillMessageForMainVM)
+            {
+                this.CurrentWorkspace = this.WorkspaceViewModels.First(x => x.Title == Resources.Workspace_Title_Bills);
+            }
+            else if (message.Notification == Resources.Message_ChangeToBillWorkspaceForMainVM)
+            {
+                this.CurrentWorkspace = this.WorkspaceViewModels.First(x => x.Title == Resources.Workspace_Title_Bills);
+            }
+        }
+
+        private void ExecuteNotificationMessage(NotificationMessage<bool> message)
+        {
+            if (message.Notification == Resources.Message_WorkspaceEnableStateForMainVM)
+            {
+                this.CanChangeWorkspace = message.Content;
+            }
+        }
+
+        #endregion
+
+
+
+        #region Workspaces
+
+        public ObservableCollection<WorkspaceViewModel> WorkspaceViewModels { get; private set; }
+
+        public WorkspaceViewModel CurrentWorkspace
+        {
+            get { return this._currentWorkspace; }
+            set { this.SetProperty(ref this._currentWorkspace, value); }
+        }
+
+        private ClientViewModel ClientWorkspace
+        {
+            get
+            {
+                if (this._clientWorkspace == null)
+                {
+                    this._clientWorkspace = new ClientViewModel(Resources.Workspace_Title_Clients, Resources.img_clients,
+                                                                this.repository, this.dialogService);
+                }
+
+                return this._clientWorkspace;
+            }
+        }
+
+        private BillViewModel BillWorkspace
+        {
+            get
+            {
+                if (this._billWorkspace == null)
+                {
+                    this._billWorkspace = new BillViewModel(Resources.Workspace_Title_Bills, Resources.img_bills,
+                                                            this.repository, this.dialogService);
+                }
+
+                return this._billWorkspace;
+            }
+        }
+
+        private OptionViewModel OptionWorkspace
+        {
+            get
+            {
+                if (this._optionWorkspace == null)
+                {
+                    this._optionWorkspace = new OptionViewModel(Resources.Workspace_Title_Options, Resources.img_options,
+                                                                this.repository, this.dialogService);
+                }
+
+                return this._optionWorkspace;
+            }
+        }
+
+        private void InitWorkspaces()
+        {
+            this.WorkspaceViewModels = new ObservableCollection<WorkspaceViewModel>
+                                       {
+                                           this.ClientWorkspace,
+                                           this.BillWorkspace,
+                                           this.OptionWorkspace
+                                       };
+
+            this.CurrentWorkspace = this.ClientWorkspace;
+        }
+
+        #endregion
+
+
+
+        #region TestData 
+
+        // TODO: region can be commented out after testing is finished
         private void LoadXmlData()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -171,20 +251,10 @@ namespace EpAccounting.UI.ViewModel
                             client.AddBill(bill);
                         }
 
-                        this.clients.Add(client);
+                        this.repository.SaveOrUpdate(client);
                     }
                 }
             }
-
-            Client testClient = new Client();
-
-            for (int i = 0; i < 100; i++)
-            {
-                Bill bill = new Bill();
-                testClient.AddBill(bill);
-            }
-
-            this.clients.Add(testClient);
         }
 
         private Client CreateXmlClient(XElement clientElement)
@@ -229,7 +299,7 @@ namespace EpAccounting.UI.ViewModel
         {
             int billID = Convert.ToInt32(billElement.Attribute("BillId")?.Value.Trim());
             string kindOfBill = billElement.Attribute("KindOfBill")?.Value.Trim();
-            string kindOfVAT = billElement.Attribute("KindOfVat")?.Value.Trim();
+            string kindOfVAT = billElement.Attribute("KindOfVAT")?.Value.Trim();
             double VATPercentage = Convert.ToDouble(billElement.Attribute("VatPercentage")?.Value.Trim());
             string date = billElement.Attribute("Date")?.Value.Trim();
 

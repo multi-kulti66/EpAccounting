@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: WorkspaceViewModel.cs
-// Last Change: 13.03.2017  15:45
+// Last Change: 23.08.2017  20:49
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -28,9 +28,9 @@ namespace EpAccounting.UI.ViewModel
 
         #region Properties
 
-        public string Title { get; private set; }
+        public string Title { get; }
 
-        public Bitmap Image { get; private set; }
+        public Bitmap Image { get; }
 
         #endregion
     }

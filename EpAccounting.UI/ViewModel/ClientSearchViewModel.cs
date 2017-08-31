@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientSearchViewModel.cs
-// Last Change: 28.07.2017  20:19
+// Last Change: 23.08.2017  20:25
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -95,51 +95,6 @@ namespace EpAccounting.UI.ViewModel
             set { this.SetProperty(ref this._selectedClientDetailViewModel, value); }
         }
 
-        public RelayCommand LoadSelectedClientCommand
-        {
-            get
-            {
-                if (this._loadSelectedClientCommand == null)
-                {
-                    this._loadSelectedClientCommand = new RelayCommand(this.SendLoadSelectedClientMessage, this.CanLoadSelectedClient);
-                }
-
-                return this._loadSelectedClientCommand;
-            }
-        }
-
-        public ImageCommandViewModel LoadNextPageCommand
-        {
-            get
-            {
-                if (this._loadNextPageCommand == null)
-                {
-                    this._loadNextPageCommand = new ImageCommandViewModel(Resources.img_arrow_right,
-                                                                          Resources.Command_DisplayName_Next_Page,
-                                                                          Resources.Command_Message_Next_Page,
-                                                                          new RelayCommand(this.LoadNextPage, this.CanLoadNextPage));
-                }
-
-                return this._loadNextPageCommand;
-            }
-        }
-
-        public ImageCommandViewModel LoadPreviousPageCommand
-        {
-            get
-            {
-                if (this._loadPreviousPageCommand == null)
-                {
-                    this._loadPreviousPageCommand = new ImageCommandViewModel(Resources.img_arrow_left,
-                                                                              Resources.Command_DisplayName_Previous_Page,
-                                                                              Resources.Command_Message_Previous_Page,
-                                                                              new RelayCommand(this.LoadPreviousPage, this.CanLoadPreviousPage));
-                }
-
-                return this._loadPreviousPageCommand;
-            }
-        }
-
         private ICriterion LastCriterion
         {
             get { return this._lastCriterion; }
@@ -150,83 +105,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        private bool CanLoadSelectedClient()
-        {
-            if (this.SelectedClientDetailViewModel == null)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private void SendLoadSelectedClientMessage()
-        {
-            Messenger.Default.Send(new NotificationMessage<int>(this.SelectedClientDetailViewModel.ClientId, Resources.Messenger_Message_LoadSelectedClientMessageForClientEditVM));
-        }
-
-        private bool CanLoadNextPage()
-        {
-            if (this.CurrentPage < this.NumberOfAllPages)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private void LoadNextPage()
-        {
-            this.CurrentPage++;
-            this.LoadSearchedClients(this.LastCriterion, this.CurrentPage);
-        }
-
-        private bool CanLoadPreviousPage()
-        {
-            if (this.CurrentPage > 1)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private void LoadPreviousPage()
-        {
-            this.CurrentPage--;
-            this.LoadSearchedClients(this.LastCriterion, this.CurrentPage);
-        }
-
-        private void ExecuteNotificationMessage(NotificationMessage<ICriterion> message)
-        {
-            if (message.Notification == Resources.Messenger_Message_ClientSearchCriteriaForClientSearchVM)
-            {
-                this.LastCriterion = message.Content;
-                this.LoadSearchedClients(message.Content, 1);
-            }
-        }
-
-        private void ExecuteNotificationMessage(NotificationMessage<int> message)
-        {
-            if (message.Notification == Resources.Messenger_Message_UpdateClientValuesMessageForClientSearchVM)
-            {
-                this.UpdateClient(message.Content);
-            }
-            else if (message.Notification == Resources.Messenger_Message_RemoveClientMessageForClientSearchVM)
-            {
-                this.RemoveClient(message.Content);
-            }
-        }
-
-        private void ExecuteNotificationMessage(NotificationMessage<bool> message)
-        {
-            if (message.Notification == Resources.Messenger_Message_EnableStateMessageForClientSearchVM)
-            {
-                this.IsClientLoadingEnabled = message.Content;
-            }
-        }
-
-        private void LoadSearchedClients(ICriterion criterion, int page)
+        private void LoadSearchedClients(ICriterion criterion, int page = 1)
         {
             // ReSharper disable once PossibleLossOfFraction
             int numberOfClients = this.repository.GetQuantityByCriteria<Client>(criterion);
@@ -272,5 +151,138 @@ namespace EpAccounting.UI.ViewModel
             this.LoadPreviousPageCommand.RelayCommand.RaiseCanExecuteChanged();
             this.LoadNextPageCommand.RelayCommand.RaiseCanExecuteChanged();
         }
+
+
+
+        #region Messenger
+
+        private void ExecuteNotificationMessage(NotificationMessage<ICriterion> message)
+        {
+            if (message.Notification == Resources.Message_ClientSearchCriteriaForClientSearchVM)
+            {
+                this.LastCriterion = message.Content;
+                this.LoadSearchedClients(message.Content);
+            }
+        }
+
+        private void ExecuteNotificationMessage(NotificationMessage<int> message)
+        {
+            if (message.Notification == Resources.Message_UpdateClientValuesForClientSearchVM)
+            {
+                this.UpdateClient(message.Content);
+            }
+            else if (message.Notification == Resources.Message_RemoveClientForClientSearchVM)
+            {
+                this.RemoveClient(message.Content);
+            }
+        }
+
+        private void ExecuteNotificationMessage(NotificationMessage<bool> message)
+        {
+            if (message.Notification == Resources.Message_EnableStateForClientSearchVM)
+            {
+                this.IsClientLoadingEnabled = message.Content;
+            }
+        }
+
+        #endregion
+
+
+
+        #region Commands
+
+        public RelayCommand LoadSelectedClientCommand
+        {
+            get
+            {
+                if (this._loadSelectedClientCommand == null)
+                {
+                    this._loadSelectedClientCommand = new RelayCommand(this.SendLoadSelectedClientMessage, this.CanLoadSelectedClient);
+                }
+
+                return this._loadSelectedClientCommand;
+            }
+        }
+
+        private bool CanLoadSelectedClient()
+        {
+            if (this.SelectedClientDetailViewModel == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void SendLoadSelectedClientMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage<int>(this.SelectedClientDetailViewModel.ClientId, Resources.Message_LoadClientForClientEditVM));
+        }
+
+        public ImageCommandViewModel LoadNextPageCommand
+        {
+            get
+            {
+                if (this._loadNextPageCommand == null)
+                {
+                    this._loadNextPageCommand = new ImageCommandViewModel(Resources.img_arrow_right,
+                                                                          Resources.Command_DisplayName_Next_Page,
+                                                                          Resources.Command_Message_Next_Page,
+                                                                          new RelayCommand(this.LoadNextPage, this.CanLoadNextPage));
+                }
+
+                return this._loadNextPageCommand;
+            }
+        }
+
+        private bool CanLoadNextPage()
+        {
+            if (this.CurrentPage < this.NumberOfAllPages)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void LoadNextPage()
+        {
+            this.CurrentPage++;
+            this.LoadSearchedClients(this.LastCriterion, this.CurrentPage);
+        }
+
+        public ImageCommandViewModel LoadPreviousPageCommand
+        {
+            get
+            {
+                if (this._loadPreviousPageCommand == null)
+                {
+                    this._loadPreviousPageCommand = new ImageCommandViewModel(Resources.img_arrow_left,
+                                                                              Resources.Command_DisplayName_Previous_Page,
+                                                                              Resources.Command_Message_Previous_Page,
+                                                                              new RelayCommand(this.LoadPreviousPage, this.CanLoadPreviousPage));
+                }
+
+                return this._loadPreviousPageCommand;
+            }
+        }
+
+        private bool CanLoadPreviousPage()
+        {
+            if (this.CurrentPage > 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void LoadPreviousPage()
+        {
+            this.CurrentPage--;
+            this.LoadSearchedClients(this.LastCriterion, this.CurrentPage);
+        }
+
+        #endregion
     }
 }

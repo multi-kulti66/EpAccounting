@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: IRepository.cs
-// Last Change: 14.08.2017  07:45
+// Last Change: 16.08.2017  18:19
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -27,7 +27,7 @@ namespace EpAccounting.Business
 
 
 
-        void CreateDatabase(string folderPath);
+        void CreateDatabase(string filePath);
 
         void LoadDatabase(string filePath);
 
@@ -45,10 +45,14 @@ namespace EpAccounting.Business
 
         int GetQuantityByCriteria<T>(ICriterion criterion) where T : class;
 
-        int GetQuantityByCriteria<T, U>(ICriterion criterion1, Expression<Func<T, U>> combinationCriterion, ICriterion criterion2) where T : class;
+        int GetQuantityByCriteria<T, U>(ICriterion criterion1,
+                                        Expression<Func<T, U>>combinationCriterion,
+                                        ICriterion criterion2) where T : class;
 
         ICollection<T> GetByCriteria<T>(ICriterion criterion, int page) where T : class;
 
-        ICollection<T> GetByCriteria<T, U>(ICriterion criterion1, Expression<Func<T, U>> combinationCriterion, ICriterion criterion2, int page) where T : class;
+        ICollection<T> GetByCriteria<T, U>(ICriterion criterion1,
+                                           Expression<Func<T, U>> combinationCriterion,
+                                           ICriterion criterion2, int page) where T : class;
     }
 }

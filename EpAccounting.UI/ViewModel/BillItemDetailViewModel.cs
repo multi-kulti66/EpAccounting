@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemDetailViewModel.cs
-// Last Change: 05.07.2017  20:26
+// Last Change: 22.08.2017  21:00
 // Author: Andre Multerer
 // ///////////////////////////////////
 

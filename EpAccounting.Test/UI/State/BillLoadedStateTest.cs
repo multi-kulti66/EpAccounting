@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillLoadedStateTest.cs
-// Last Change: 18.06.2017  19:07
+// Last Change: 22.08.2017  20:45
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -10,7 +10,6 @@ namespace EpAccounting.Test.UI.State
 {
     using System.Threading.Tasks;
     using EpAccounting.Business;
-    using EpAccounting.Model;
     using EpAccounting.UI.Service;
     using EpAccounting.UI.State;
     using EpAccounting.UI.ViewModel;
@@ -68,7 +67,7 @@ namespace EpAccounting.Test.UI.State
             billLoadedState.SwitchToSearchMode();
 
             // Assert
-            mockBillEditViewModel.Verify(x => x.Load(new Bill() { Client = new Client() }, It.IsAny<BillSearchState>()), Times.Once);
+            mockBillEditViewModel.Verify(x => x.ChangeToSearchMode(), Times.Once);
         }
 
         [Test]
@@ -82,7 +81,7 @@ namespace EpAccounting.Test.UI.State
             billLoadedState.SwitchToEditMode();
 
             // Assert
-            mockBillEditViewModel.Verify(x => x.Load(null, It.IsAny<BillEditState>()), Times.Once);
+            mockBillEditViewModel.Verify(x => x.ChangeToEditMode(), Times.Once);
         }
 
         [Test]
@@ -99,7 +98,7 @@ namespace EpAccounting.Test.UI.State
 
             // Assert
             mockBillEditViewModel.Verify(x => x.DeleteBillAsync(), Times.Once);
-            mockBillEditViewModel.Verify(x => x.Load(new Bill() {Client = new Client()}, It.IsAny<BillEmptyState>()), Times.Once);
+            mockBillEditViewModel.Verify(x => x.ChangeToEmptyMode(), Times.Once);
         }
 
         [Test]
@@ -116,7 +115,7 @@ namespace EpAccounting.Test.UI.State
 
             // Assert
             mockBillEditViewModel.Verify(x => x.DeleteBillAsync(), Times.Once);
-            mockBillEditViewModel.Verify(x => x.Load(new Bill() {Client = new Client()}, It.IsAny<BillEmptyState>()), Times.Never);
+            mockBillEditViewModel.Verify(x => x.ChangeToEmptyMode(), Times.Never);
         }
 
         #endregion

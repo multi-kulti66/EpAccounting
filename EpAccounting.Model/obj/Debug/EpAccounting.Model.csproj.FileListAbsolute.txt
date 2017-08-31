@@ -96,3 +96,5 @@ C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAc
 C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Model\obj\Debug\EpAccounting.Model.csproj.GenerateResource.Cache
 C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Model\obj\Debug\EpAccounting.Model.dll
 C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Model\obj\Debug\EpAccounting.Model.pdb
+C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Model\obj\Debug\EpAccounting.Model.csproj.CoreCompileInputs.cache
+D:\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Model\obj\Debug\EpAccounting.Model.csproj.CoreCompileInputs.cache

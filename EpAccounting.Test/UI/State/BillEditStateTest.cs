@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEditStateTest.cs
-// Last Change: 18.06.2017  19:09
+// Last Change: 22.08.2017  20:44
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -68,7 +68,7 @@ namespace EpAccounting.Test.UI.State
             await billEditState.Commit();
 
             // Assert
-            mockBillEditViewModel.Verify(x => x.Load(null, It.IsAny<BillLoadedState>()), Times.Once);
+            mockBillEditViewModel.Verify(x => x.ChangeToLoadedMode(null), Times.Once);
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace EpAccounting.Test.UI.State
             await billEditState.Commit();
 
             // Assert
-            mockBillEditViewModel.Verify(x => x.Load(null, It.IsAny<BillLoadedState>()), Times.Never);
+            mockBillEditViewModel.Verify(x => x.ChangeToLoadedMode(null), Times.Never);
         }
 
         [Test]

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientLoadedState.cs
-// Last Change: 21.04.2017  21:16
+// Last Change: 20.08.2017  16:08
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,7 +9,6 @@
 namespace EpAccounting.UI.State
 {
     using System.Threading.Tasks;
-    using EpAccounting.Model;
     using EpAccounting.UI.ViewModel;
 
 
@@ -44,7 +43,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToSearchMode()
         {
-            this.clientEditViewModel.Load(new Client(), this.clientEditViewModel.GetClientSearchState());
+            this.clientEditViewModel.ChangeToSearchMode();
         }
 
         public bool CanSwitchToAddMode()
@@ -54,7 +53,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToAddMode()
         {
-            this.clientEditViewModel.Load(new Client(), this.clientEditViewModel.GetClientCreationState());
+            this.clientEditViewModel.ChangeToCreationMode();
         }
 
         public bool CanSwitchToEditMode()
@@ -64,7 +63,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToEditMode()
         {
-            this.clientEditViewModel.Load(null, this.clientEditViewModel.GetClientEditState());
+            this.clientEditViewModel.ChangeToEditMode();
         }
 
         public bool CanCommit()
@@ -96,7 +95,7 @@ namespace EpAccounting.UI.State
         {
             if (await this.clientEditViewModel.DeleteClientAsync())
             {
-                this.clientEditViewModel.Load(new Client(), this.clientEditViewModel.GetClientEmptyState());
+                this.clientEditViewModel.ChangeToEmptyMode();
             }
         }
 

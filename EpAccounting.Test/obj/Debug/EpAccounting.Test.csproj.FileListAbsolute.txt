@@ -404,3 +404,5 @@ C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAc
 C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Test\obj\Debug\EpAccounting.Test.csprojResolveAssemblyReference.cache
 C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Test\obj\Debug\EpAccounting.Test.dll
 C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Test\obj\Debug\EpAccounting.Test.pdb
+C:\Users\Andre\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Test\obj\Debug\EpAccounting.Test.csproj.CoreCompileInputs.cache
+D:\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Test\obj\Debug\EpAccounting.Test.csproj.CoreCompileInputs.cache

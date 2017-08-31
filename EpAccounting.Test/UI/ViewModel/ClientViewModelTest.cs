@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientViewModelTest.cs
-// Last Change: 18.03.2017  21:33
+// Last Change: 23.08.2017  20:36
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,6 +8,7 @@
 
 namespace EpAccounting.Test.UI.ViewModel
 {
+    using System;
     using EpAccounting.Business;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.Service;
@@ -21,6 +22,42 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class ClientViewModelTest
     {
+        #region Fields
+
+        private Mock<IRepository> mockRepository;
+        private Mock<IDialogService> mockDialogService;
+        private ClientViewModel clientViewModel;
+
+        #endregion
+
+
+
+        #region Setup/Teardown
+
+        [SetUp]
+        public void Init()
+        {
+            this.mockRepository = new Mock<IRepository>();
+            this.mockDialogService = new Mock<IDialogService>();
+            this.clientViewModel = new ClientViewModel(Resources.Workspace_Title_Clients, Resources.img_clients,
+                                                       this.mockRepository.Object, this.mockDialogService.Object);
+        }
+
+        [TearDown]
+        public void Cleanup()
+        {
+            this.mockRepository = null;
+            this.mockDialogService = null;
+            this.clientViewModel = null;
+            GC.Collect();
+        }
+
+        #endregion
+
+
+
+        #region Test Methods
+
         [Test]
         public void DerivesFromWorkspaceViewModel()
         {
@@ -31,29 +68,17 @@ namespace EpAccounting.Test.UI.ViewModel
         [Test]
         public void GetInitializedClientEditViewModelAfterCreation()
         {
-            // Act
-            ClientViewModel clientViewModel = this.GetClientViewModel();
-
             // Assert
-            clientViewModel.ClientEditViewModel.Should().NotBeNull();
+            this.clientViewModel.ClientEditViewModel.Should().NotBeNull();
         }
 
         [Test]
         public void GetInitializedClientSearchViewModelAfterCreation()
         {
-            // Act
-            ClientViewModel clientViewModel = this.GetClientViewModel();
-
             // Assert
-            clientViewModel.ClientSearchViewModel.Should().NotBeNull();
+            this.clientViewModel.ClientSearchViewModel.Should().NotBeNull();
         }
 
-        private ClientViewModel GetClientViewModel()
-        {
-            Mock<IRepository> mockRepository = new Mock<IRepository>();
-            Mock<IDialogService> mockDialogService = new Mock<IDialogService>();
-
-            return new ClientViewModel("Kunde", Resources.img_clients, mockRepository.Object, mockDialogService.Object);
-        }
+        #endregion
     }
 }

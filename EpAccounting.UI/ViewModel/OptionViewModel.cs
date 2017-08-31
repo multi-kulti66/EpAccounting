@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: OptionViewModel.cs
-// Last Change: 14.03.2017  20:07
+// Last Change: 17.08.2017  19:07
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -35,7 +35,8 @@ namespace EpAccounting.UI.ViewModel
 
         #region Constructors / Destructor
 
-        public OptionViewModel(string title, Bitmap image, IRepository repository, IDialogService dialogService) : base(title, image)
+        public OptionViewModel(string title, Bitmap image,
+                               IRepository repository, IDialogService dialogService) : base(title, image)
         {
             this.repository = repository;
             this.dialogService = dialogService;
@@ -58,6 +59,12 @@ namespace EpAccounting.UI.ViewModel
                 }
             }
         }
+
+        #endregion
+
+
+
+        #region Commands
 
         public RelayCommand CreateDatabaseCommand
         {
@@ -85,10 +92,6 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        #endregion
-
-
-
         private async void CreateDatabase()
         {
             string databaseFolderPath = this.dialogService.ShowFolderDialog();
@@ -114,8 +117,7 @@ namespace EpAccounting.UI.ViewModel
                 }
 
                 this.repository.CreateDatabase(databaseFilePath);
-                this.FilePath = databaseFilePath;
-                this.SendUpdateConnectionStateMessage();
+                this.UpdatePathAndConnectionState(databaseFilePath);
             }
             catch (Exception e)
             {
@@ -135,8 +137,7 @@ namespace EpAccounting.UI.ViewModel
             try
             {
                 this.repository.LoadDatabase(databaseFilePath);
-                this.FilePath = databaseFilePath;
-                this.SendUpdateConnectionStateMessage();
+                this.UpdatePathAndConnectionState(databaseFilePath);
             }
             catch (Exception e)
             {
@@ -144,9 +145,12 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        private void SendUpdateConnectionStateMessage()
+        private void UpdatePathAndConnectionState(string databaseFilePath)
         {
-            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_UpdateConnectionStateMessageForMainVM));
+            this.FilePath = databaseFilePath;
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_UpdateConnectionStateForMainVM));
         }
+
+        #endregion
     }
 }
