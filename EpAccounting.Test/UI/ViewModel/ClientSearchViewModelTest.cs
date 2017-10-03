@@ -152,11 +152,11 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const string PreviousFirstName = "Andre";
             const string ExpectedFirstName = "Stefanie";
-            Client expectedClient = new Client { ClientId = 1, FirstName = ExpectedFirstName, LastName = "Multerer" };
+            Client expectedClient = new Client { Id = 1, FirstName = ExpectedFirstName, LastName = "Multerer" };
             this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(expectedClient);
 
-            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client { ClientId = 1, FirstName = PreviousFirstName, LastName = "Multerer" }));
-            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client { ClientId = 2, FirstName = PreviousFirstName, LastName = "Multerer" }));
+            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client { Id = 1, FirstName = PreviousFirstName, LastName = "Multerer" }));
+            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client { Id = 2, FirstName = PreviousFirstName, LastName = "Multerer" }));
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_UpdateClientValuesForClientSearchVM));
@@ -175,7 +175,7 @@ namespace EpAccounting.Test.UI.ViewModel
             const string FirstName = "Stefanie";
             const string LastName = "Multerer";
 
-            Client expectedClient = new Client { ClientId = Id, FirstName = FirstName, LastName = LastName };
+            Client expectedClient = new Client { Id = Id, FirstName = FirstName, LastName = LastName };
             this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(expectedClient);
             this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>())).Returns(new List<Client>());
 

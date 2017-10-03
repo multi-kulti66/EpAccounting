@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientDetailViewModelTest.cs
-// Last Change: 23.08.2017  20:22
+// Last Change: 18.09.2017  20:58
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -63,7 +63,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.clientDetailViewModel.ClientId = 5;
+            this.clientDetailViewModel.Id = 5;
             this.clientDetailViewModel.Title = ModelFactory.DefaultClientTitle;
             this.clientDetailViewModel.FirstName = ModelFactory.DefaultClientFirstName;
             this.clientDetailViewModel.LastName = ModelFactory.DefaultClientLastName;
@@ -79,7 +79,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientDetailViewModel.Email = ModelFactory.DefaultClientEmail;
 
             // Assert
-            this.clientDetailViewModel.ShouldRaisePropertyChangeFor(x => x.ClientId);
+            this.clientDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Id);
             this.clientDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Title);
             this.clientDetailViewModel.ShouldRaisePropertyChangeFor(x => x.FirstName);
             this.clientDetailViewModel.ShouldRaisePropertyChangeFor(x => x.LastName);
@@ -137,7 +137,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientDetailViewModel = new ClientDetailViewModel(client);
 
             // Assert
-            this.clientDetailViewModel.Sales.Should().BeApproximately(66.11, 0.005);
+            this.clientDetailViewModel.Sales.Should().BeApproximately(66.11m, 0.05m);
         }
 
         [Test]
@@ -179,7 +179,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             Client client = ModelFactory.GetDefaultClient();
-            client.ClientId = ExpectedId;
+            client.Id = ExpectedId;
             this.clientDetailViewModel = new ClientDetailViewModel(client);
 
             // Assert

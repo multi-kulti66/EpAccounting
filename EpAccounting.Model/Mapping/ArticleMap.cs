@@ -18,8 +18,11 @@ namespace EpAccounting.Model.Mapping
 
         public ArticleMap()
         {
-            this.Id(x => x.ArticleId);
+            this.Id(x => x.Id);
+            this.Map(x => x.ArticleNumber);
             this.Map(x => x.Description);
+            this.Map(x => x.Amount);
+            this.Map(x => x.Price);
         }
 
         #endregion

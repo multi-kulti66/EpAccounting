@@ -1,6 +1,6 @@
 // ///////////////////////////////////
 // File: MainViewModel.cs
-// Last Change: 29.08.2017  19:05
+// Last Change: 18.09.2017  20:48
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -17,6 +17,7 @@ namespace EpAccounting.UI.ViewModel
     using System.Xml.Linq;
     using EpAccounting.Business;
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.Service;
     using GalaSoft.MvvmLight.Messaging;
@@ -35,6 +36,7 @@ namespace EpAccounting.UI.ViewModel
         private WorkspaceViewModel _currentWorkspace;
         private ClientViewModel _clientWorkspace;
         private BillViewModel _billWorkspace;
+        private ArticlesOptionViewModel _articleWorkspace;
         private OptionViewModel _optionWorkspace;
 
         #endregion
@@ -48,8 +50,8 @@ namespace EpAccounting.UI.ViewModel
             this.repository = repository;
             this.dialogService = dialogService;
 
-            this.InitWorkspaces();
             this.TryConnectingAtStartup();
+            this.InitWorkspaces();
 
             Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<bool>>(this, this.ExecuteNotificationMessage);
@@ -123,7 +125,7 @@ namespace EpAccounting.UI.ViewModel
             {
                 this.ChangeToBillWorkspace();
             }
-            else if (message.Notification == Resources.Messenger_Message_CreateNewBillMessageForMainVM)
+            else if (message.Notification == Resources.Message_CreateNewBillMessageForMainVM)
             {
                 this.CurrentWorkspace = this.WorkspaceViewModels.First(x => x.Title == Resources.Workspace_Title_Bills);
             }
@@ -183,6 +185,20 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
+        private ArticlesOptionViewModel ArticleWorkspace
+        {
+            get
+            {
+                if (this._articleWorkspace == null)
+                {
+                    this._articleWorkspace = new ArticlesOptionViewModel(Resources.Workspace_Title_Articles, Resources.img_articles,
+                                                                         this.repository, this.dialogService);
+                }
+
+                return this._articleWorkspace;
+            }
+        }
+
         private OptionViewModel OptionWorkspace
         {
             get
@@ -203,6 +219,7 @@ namespace EpAccounting.UI.ViewModel
                                        {
                                            this.ClientWorkspace,
                                            this.BillWorkspace,
+                                           this.ArticleWorkspace,
                                            this.OptionWorkspace
                                        };
 
@@ -219,7 +236,7 @@ namespace EpAccounting.UI.ViewModel
         private void LoadXmlData()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
-            string resourceName = "EpAccounting.UI.Resources.TestData.xml";
+            string resourceName = "EpAccounting.UI.Resources.testdata.xml";
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             {
@@ -253,13 +270,18 @@ namespace EpAccounting.UI.ViewModel
 
                         this.repository.SaveOrUpdate(client);
                     }
+
+                    foreach (XElement articleElement in rootElement.Elements("Article"))
+                    {
+                        Article article = this.CreateXmlArticle(articleElement);
+                        this.repository.SaveOrUpdate(article);
+                    }
                 }
             }
         }
 
         private Client CreateXmlClient(XElement clientElement)
         {
-            int clientID = Convert.ToInt32(clientElement.Attribute("ClientId")?.Value.Trim());
             string title = clientElement.Attribute("Title")?.Value.Trim();
             string firstName = clientElement.Attribute("FirstName")?.Value.Trim();
             string lastName = clientElement.Attribute("LastName")?.Value.Trim();
@@ -276,8 +298,7 @@ namespace EpAccounting.UI.ViewModel
 
             Client client = new Client
                             {
-                                ClientId = clientID,
-                                Title = title,
+                                Title = (ClientTitle)Enum.Parse(typeof(ClientTitle), title, true),
                                 FirstName = firstName,
                                 LastName = lastName,
                                 Street = street,
@@ -297,7 +318,6 @@ namespace EpAccounting.UI.ViewModel
 
         private Bill CreateXmlBill(XElement billElement)
         {
-            int billID = Convert.ToInt32(billElement.Attribute("BillId")?.Value.Trim());
             string kindOfBill = billElement.Attribute("KindOfBill")?.Value.Trim();
             string kindOfVAT = billElement.Attribute("KindOfVAT")?.Value.Trim();
             double VATPercentage = Convert.ToDouble(billElement.Attribute("VatPercentage")?.Value.Trim());
@@ -305,9 +325,11 @@ namespace EpAccounting.UI.ViewModel
 
             Bill bill = new Bill
                         {
-                            BillId = billID,
-                            KindOfBill = kindOfBill,
-                            KindOfVat = kindOfVAT,
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            KindOfBill = (KindOfBill)Enum.Parse(typeof(KindOfBill), kindOfBill, true),
+
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            KindOfVat = (KindOfVat)Enum.Parse(typeof(KindOfVat), kindOfVAT, true),
                             VatPercentage = VATPercentage,
                             Date = date
                         };
@@ -317,17 +339,15 @@ namespace EpAccounting.UI.ViewModel
 
         private BillItem CreateXmlBillItem(XElement billDetailElement)
         {
-            int billDetailID = Convert.ToInt32(billDetailElement.Attribute("Id")?.Value.Trim());
             int position = Convert.ToInt32(billDetailElement.Attribute("Position")?.Value.Trim());
             int articleNumber = Convert.ToInt32(billDetailElement.Attribute("ArticleNumber")?.Value.Trim());
             string description = billDetailElement.Attribute("Description")?.Value.Trim();
             double amount = Convert.ToDouble(billDetailElement.Attribute("Amount")?.Value.Trim());
-            double price = Convert.ToDouble(billDetailElement.Attribute("Price")?.Value.Trim());
+            decimal price = Convert.ToDecimal(billDetailElement.Attribute("Price")?.Value.Trim());
             double discount = Convert.ToDouble(billDetailElement.Attribute("Discount")?.Value.Trim());
 
             BillItem billItem = new BillItem
                                 {
-                                    Id = billDetailID,
                                     Position = position,
                                     ArticleNumber = articleNumber,
                                     Description = description,
@@ -337,6 +357,24 @@ namespace EpAccounting.UI.ViewModel
                                 };
 
             return billItem;
+        }
+
+        private Article CreateXmlArticle(XElement articleElement)
+        {
+            int articleNumber = Convert.ToInt32(articleElement.Attribute("ArticleNumber")?.Value.Trim());
+            string description = articleElement.Attribute("Description")?.Value.Trim();
+            double amount = Convert.ToDouble(articleElement.Attribute("Amount")?.Value.Trim());
+            decimal price = Convert.ToDecimal(articleElement.Attribute("Price")?.Value.Trim());
+
+            Article article = new Article
+                              {
+                                  ArticleNumber = articleNumber,
+                                  Description = description,
+                                  Amount = amount,
+                                  Price = price
+                              };
+
+            return article;
         }
 
         #endregion

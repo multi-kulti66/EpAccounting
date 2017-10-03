@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillCreationState.cs
-// Last Change: 09.05.2017  19:04
+// Last Change: 02.09.2017  10:30
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,7 +9,6 @@
 namespace EpAccounting.UI.State
 {
     using System.Threading.Tasks;
-    using EpAccounting.Model;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.ViewModel;
     using GalaSoft.MvvmLight.Messaging;

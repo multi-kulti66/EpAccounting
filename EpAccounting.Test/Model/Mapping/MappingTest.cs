@@ -41,8 +41,11 @@ namespace EpAccounting.Test.Model.Mapping
 
             // Assert
             new PersistenceSpecification<Article>(sessionManager.OpenSession())
-                .CheckProperty(c => c.ArticleId, ModelFactory.DefaultId)
+                .CheckProperty(c => c.Id, ModelFactory.DefaultId)
+                .CheckProperty(c => c.ArticleNumber, ModelFactory.DefaultArticleNumber)
                 .CheckProperty(c => c.Description, ModelFactory.DefaultArticleDescription)
+                .CheckProperty(c => c.Amount, ModelFactory.DefaultArticleAmount)
+                .CheckProperty(c => c.Price, ModelFactory.DefaultArticlePrice)
                 .VerifyTheMappings();
         }
 
@@ -74,7 +77,7 @@ namespace EpAccounting.Test.Model.Mapping
 
             // Assert
             new PersistenceSpecification<Bill>(sessionManager.OpenSession(), new ObjectEqualityComparer())
-                .CheckProperty(c => c.BillId, ModelFactory.DefaultId)
+                .CheckProperty(c => c.Id, ModelFactory.DefaultId)
                 .CheckReference(c => c.Client, ModelFactory.GetDefaultClient())
                 .CheckProperty(c => c.KindOfBill, ModelFactory.DefaultBillKindOfBill)
                 .CheckProperty(c => c.KindOfVat, ModelFactory.DefaultBillKindOfVat)
@@ -93,7 +96,7 @@ namespace EpAccounting.Test.Model.Mapping
 
             // Assert
             new PersistenceSpecification<Client>(sessionManager.OpenSession(), new ObjectEqualityComparer())
-                .CheckProperty(c => c.ClientId, ModelFactory.DefaultId)
+                .CheckProperty(c => c.Id, ModelFactory.DefaultId)
                 .CheckProperty(c => c.Title, ModelFactory.DefaultClientTitle)
                 .CheckProperty(c => c.FirstName, ModelFactory.DefaultClientFirstName)
                 .CheckProperty(c => c.LastName, ModelFactory.DefaultClientLastName)

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: NHibernateRepositoryTest.cs
-// Last Change: 26.07.2017  20:13
+// Last Change: 05.09.2017  20:20
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -12,8 +12,7 @@ namespace EpAccounting.Test.Business
     using EpAccounting.Business;
     using EpAccounting.Data;
     using EpAccounting.Model;
-    using EpAccounting.Test.Model;
-    using EpAccounting.UI.Properties;
+    using EpAccounting.Model.Enum;
     using FluentAssertions;
     using NHibernate.Criterion;
     using NUnit.Framework;
@@ -308,7 +307,7 @@ namespace EpAccounting.Test.Business
         public void UpdateExistingBill()
         {
             // Arrange
-            const string NewBillDate = "02.01.2017";
+            const string NewBillDate = "01.02.2017";
             this.CreateRepositoryWithLoadedDatabase();
             this.repository.LoadDatabase(DatabaseFactory.TestFilePath);
 
@@ -724,7 +723,7 @@ namespace EpAccounting.Test.Business
             this.CreateRepository();
 
             Conjunction conjunction = Restrictions.Conjunction();
-            conjunction.Add(Restrictions.Where<Bill>(bill => bill.KindOfBill.IsLike("test")));
+            conjunction.Add(Restrictions.Where<Bill>(bill => bill.Date.IsLike("23", MatchMode.Anywhere)));
 
             // Act
             Action action = () => this.repository.GetByCriteria<Bill>(conjunction, 1);
@@ -774,7 +773,7 @@ namespace EpAccounting.Test.Business
             this.repository.LoadDatabase(DatabaseFactory.TestFilePath);
 
             Conjunction conjunction = Restrictions.Conjunction();
-            conjunction.Add(Restrictions.Where<Bill>(bill => bill.KindOfBill == "test"));
+            conjunction.Add(Restrictions.Where<Bill>(bill => bill.Date.IsLike("05.08.2017", MatchMode.Anywhere)));
 
             // Act
             for (int i = 0; i < 5; i++)
@@ -792,7 +791,7 @@ namespace EpAccounting.Test.Business
 
             for (int i = 0; i < 5; i++)
             {
-                Bill bill = new Bill() { KindOfBill = "Bescheinigung" };
+                Bill bill = new Bill() { KindOfBill = KindOfBill.Kostenvoranschlag };
                 this.repository.SaveOrUpdate(bill);
             }
 
@@ -861,7 +860,7 @@ namespace EpAccounting.Test.Business
 
             for (int i = 0; i < quantity; i++)
             {
-                Bill bill = new Bill() { KindOfBill = "Bescheinigung" };
+                Bill bill = new Bill() { KindOfBill = KindOfBill.Kostenvoranschlag };
                 this.repository.SaveOrUpdate(bill);
             }
 
@@ -931,7 +930,7 @@ namespace EpAccounting.Test.Business
 
             for (int i = 0; i < quantity; i++)
             {
-                Bill bill = new Bill() { KindOfBill = "Bescheinigung" };
+                Bill bill = new Bill() { KindOfBill = KindOfBill.Kostenvoranschlag };
                 this.repository.SaveOrUpdate(bill);
             }
 
@@ -1000,7 +999,7 @@ namespace EpAccounting.Test.Business
 
             for (int i = 0; i < quantity; i++)
             {
-                Bill bill = new Bill() { KindOfBill = "Bescheinigung" };
+                Bill bill = new Bill() { KindOfBill = KindOfBill.Kostenvoranschlag };
                 this.repository.SaveOrUpdate(bill);
             }
 

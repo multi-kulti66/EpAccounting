@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEditState.cs
-// Last Change: 23.04.2017  20:17
+// Last Change: 02.09.2017  10:30
 // Author: Andre Multerer
 // ///////////////////////////////////
 

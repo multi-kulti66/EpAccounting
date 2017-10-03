@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientSearchViewModel.cs
-// Last Change: 23.08.2017  20:25
+// Last Change: 16.09.2017  11:35
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -125,7 +125,7 @@ namespace EpAccounting.UI.ViewModel
         {
             for (int i = 0; i < this.FoundClients.Count; i++)
             {
-                if (this.FoundClients[i].ClientId == id)
+                if (this.FoundClients[i].Id == id)
                 {
                     Client client = this.repository.GetById<Client>(id);
                     this.FoundClients[i] = new ClientDetailViewModel(client);
@@ -137,7 +137,7 @@ namespace EpAccounting.UI.ViewModel
         {
             for (int i = 0; i < this.FoundClients.Count; i++)
             {
-                if (this.FoundClients[i].ClientId == id)
+                if (this.FoundClients[i].Id == id)
                 {
                     this.FoundClients.RemoveAt(i);
                 }
@@ -216,7 +216,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void SendLoadSelectedClientMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.SelectedClientDetailViewModel.ClientId, Resources.Message_LoadClientForClientEditVM));
+            Messenger.Default.Send(new NotificationMessage<int>(this.SelectedClientDetailViewModel.Id, Resources.Message_LoadClientForClientEditVM));
         }
 
         public ImageCommandViewModel LoadNextPageCommand
@@ -227,7 +227,6 @@ namespace EpAccounting.UI.ViewModel
                 {
                     this._loadNextPageCommand = new ImageCommandViewModel(Resources.img_arrow_right,
                                                                           Resources.Command_DisplayName_Next_Page,
-                                                                          Resources.Command_Message_Next_Page,
                                                                           new RelayCommand(this.LoadNextPage, this.CanLoadNextPage));
                 }
 
@@ -259,7 +258,6 @@ namespace EpAccounting.UI.ViewModel
                 {
                     this._loadPreviousPageCommand = new ImageCommandViewModel(Resources.img_arrow_left,
                                                                               Resources.Command_DisplayName_Previous_Page,
-                                                                              Resources.Command_Message_Previous_Page,
                                                                               new RelayCommand(this.LoadPreviousPage, this.CanLoadPreviousPage));
                 }
 

@@ -49,4 +49,6 @@
   <Client ClientID="5" Title="Firma" FirstName="" LastName="Nistler" Street="Regerstraße" HouseNumber="8"
           PostalCode="94234" City="Viechtach" DateOfBirth="" PhoneNumber1="09942 808635" PhoneNumber2=""
           MobileNumber="" Telefax="" Email="" />
+
+  <Article ArticleNumber="1" Description="Blitzschlag" Amount="1" Price="150" />
 </Clients>

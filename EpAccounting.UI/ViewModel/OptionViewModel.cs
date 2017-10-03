@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: OptionViewModel.cs
-// Last Change: 17.08.2017  19:07
+// Last Change: 02.09.2017  10:30
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -36,7 +36,7 @@ namespace EpAccounting.UI.ViewModel
         #region Constructors / Destructor
 
         public OptionViewModel(string title, Bitmap image,
-                               IRepository repository, IDialogService dialogService) : base(title, image)
+            IRepository repository, IDialogService dialogService) : base(title, image)
         {
             this.repository = repository;
             this.dialogService = dialogService;
@@ -53,7 +53,7 @@ namespace EpAccounting.UI.ViewModel
             get { return Settings.Default.DatabaseFilePath; }
             private set
             {
-                if (this.SetProperty(Settings.Default.DatabaseFilePath, value, () => Settings.Default.DatabaseFilePath = value))
+                if (this.SetProperty(() => Settings.Default.DatabaseFilePath = value, () => Settings.Default.DatabaseFilePath == value))
                 {
                     Settings.Default.Save();
                 }

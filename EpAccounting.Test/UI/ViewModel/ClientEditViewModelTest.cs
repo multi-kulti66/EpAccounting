@@ -88,7 +88,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void GetExistingClientStateAfterCreation()
         {
             // Assert
-            this.clientEditViewModel.CurrentClientState.Should().NotBeNull().And.BeOfType<ClientEmptyState>();
+            this.clientEditViewModel.CurrentState.Should().NotBeNull().And.BeOfType<ClientEmptyState>();
         }
 
         [Test]
@@ -262,7 +262,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientEditViewModel.ChangeToCreationMode();
 
             // Assert
-            this.clientEditViewModel.CurrentClientState.Should().BeOfType<ClientCreationState>();
+            this.clientEditViewModel.CurrentState.Should().BeOfType<ClientCreationState>();
         }
 
         [Test]
@@ -272,7 +272,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientEditViewModel.ChangeToLoadedMode();
 
             // Assert
-            this.clientEditViewModel.CurrentClientState.Should().BeOfType<ClientLoadedState>();
+            this.clientEditViewModel.CurrentState.Should().BeOfType<ClientLoadedState>();
         }
 
         [Test]
@@ -285,7 +285,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientEditViewModel.ChangeToEditMode();
 
             // Assert
-            this.clientEditViewModel.CurrentClientState.Should().BeOfType<ClientEditState>();
+            this.clientEditViewModel.CurrentState.Should().BeOfType<ClientEditState>();
         }
 
         [Test]
@@ -295,7 +295,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientEditViewModel.ChangeToEditMode();
 
             // Assert
-            this.clientEditViewModel.CurrentClientState.Should().BeOfType<ClientEmptyState>();
+            this.clientEditViewModel.CurrentState.Should().BeOfType<ClientEmptyState>();
         }
 
         [Test]
@@ -308,7 +308,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientEditViewModel.ChangeToCreationMode();
 
             // Assert
-            this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentClientState);
+            this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentState);
         }
 
         [Test]
@@ -321,7 +321,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientEditViewModel.ChangeToEmptyMode();
 
             // Assert
-            this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentClientState);
+            this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentState);
         }
 
         [Test]
@@ -339,7 +339,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void ClientCommandsAreInitialized()
         {
             // Assert
-            this.clientEditViewModel.ClientCommands.Should().HaveCount(6);
+            this.clientEditViewModel.StateCommands.Should().HaveCount(6);
         }
 
         [Test]
@@ -507,14 +507,14 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             const int ExpectedId = 2;
-            Client client = new Client { ClientId = ExpectedId, FirstName = "Andre", LastName = "Multerer" };
+            Client client = new Client { Id = ExpectedId, FirstName = "Andre", LastName = "Multerer" };
             this.clientEditViewModel.ChangeToLoadedMode(client);
 
             ICriterion criterion = null;
             Messenger.Default.Register<NotificationMessage<ICriterion>>(this, x => criterion = x.Content);
 
             Conjunction expectedCriterion = Restrictions.Conjunction();
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.ClientId == ExpectedId));
+            expectedCriterion.Add(Restrictions.Where<Client>(c => c.Id == ExpectedId));
 
             // Act
             this.clientEditViewModel.SendClientSearchCriterionMessage();
@@ -534,7 +534,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage<ICriterion>>(this, x => criterion = x.Content);
 
             Conjunction expectedCriterion = Restrictions.Conjunction();
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.Title.IsLike(ModelFactory.DefaultClientTitle, MatchMode.Anywhere)));
+            expectedCriterion.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.FirstName.IsLike(ModelFactory.DefaultClientFirstName, MatchMode.Anywhere)));
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.LastName.IsLike(ModelFactory.DefaultClientLastName, MatchMode.Anywhere)));
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.Street.IsLike(ModelFactory.DefaultClientStreet, MatchMode.Anywhere)));
@@ -568,7 +568,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             this.mockRepository.Verify(x => x.GetById<Client>(ExpectedId), Times.Once);
-            this.clientEditViewModel.CurrentClientState.Should().BeOfType<ClientLoadedState>();
+            this.clientEditViewModel.CurrentState.Should().BeOfType<ClientLoadedState>();
         }
 
         [Test]
@@ -793,7 +793,7 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             this.mockRepository.Setup(x => x.GetById<Client>(1)).Returns(ModelFactory.GetDefaultClient);
-            this.clientEditViewModel.ChangeToLoadedMode(new Client { ClientId = 1, FirstName = "Michael" });
+            this.clientEditViewModel.ChangeToLoadedMode(new Client { Id = 1, FirstName = "Michael" });
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_UpdateClientForClientEditVM));

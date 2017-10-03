@@ -10,6 +10,7 @@ namespace EpAccounting.Test.Model
 {
     using System;
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
     using FluentAssertions;
     using NUnit.Framework;
 
@@ -85,7 +86,7 @@ namespace EpAccounting.Test.Model
             // Arrange
             Bill bill1 = ModelFactory.GetDefaultBill();
             Bill bill2 = ModelFactory.GetDefaultBill();
-            bill2.KindOfBill = "Gutschein";
+            bill2.KindOfBill = KindOfBill.Gutschrift;
 
             // Act
             bool isEqual = bill1.Equals(bill2);

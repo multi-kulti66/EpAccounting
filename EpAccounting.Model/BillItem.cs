@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItem.cs
-// Last Change: 28.03.2017  18:58
+// Last Change: 18.09.2017  20:38
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -28,7 +28,7 @@ namespace EpAccounting.Model
 
         public virtual double Amount { get; set; }
 
-        public virtual double Price { get; set; }
+        public virtual decimal Price { get; set; }
 
         public virtual double Discount { get; set; }
 
@@ -56,7 +56,7 @@ namespace EpAccounting.Model
                 return false;
             }
 
-            return this.Id == otherBillItem.Id && this.Bill?.BillId == otherBillItem.Bill?.BillId &&
+            return this.Id == otherBillItem.Id && this.Bill?.Id == otherBillItem.Bill?.Id &&
                    this.Position == otherBillItem.Position && this.ArticleNumber == otherBillItem.ArticleNumber &&
                    string.Equals(this.Description, otherBillItem.Description) && this.Amount.Equals(otherBillItem.Amount) &&
                    this.Price.Equals(otherBillItem.Price) && this.Discount.Equals(otherBillItem.Discount);

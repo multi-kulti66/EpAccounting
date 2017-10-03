@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: CommandViewModel.cs
-// Last Change: 14.03.2017  17:00
+// Last Change: 16.09.2017  11:33
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -16,10 +16,9 @@ namespace EpAccounting.UI.ViewModel
     {
         #region Constructors / Destructor
 
-        public CommandViewModel(string displayName, string commandMessage, RelayCommand relayCommand)
+        public CommandViewModel(string displayName, RelayCommand relayCommand)
         {
             this.DisplayName = displayName;
-            this.CommandMessage = commandMessage;
             this.RelayCommand = relayCommand;
         }
 
@@ -30,8 +29,6 @@ namespace EpAccounting.UI.ViewModel
         #region Properties
 
         public string DisplayName { get; private set; }
-
-        public string CommandMessage { get; private set; }
 
         public RelayCommand RelayCommand { get; private set; }
 

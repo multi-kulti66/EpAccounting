@@ -71,7 +71,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.mainViewModel = this.GetMockedViewModel();
 
             // Assert
-            this.mainViewModel.WorkspaceViewModels.Should().HaveCount(3);
+            this.mainViewModel.WorkspaceViewModels.Should().HaveCount(4);
             this.mainViewModel.CurrentWorkspace.Should().NotBeNull();
             this.mainViewModel.CurrentWorkspace.Should().BeOfType<ClientViewModel>();
         }

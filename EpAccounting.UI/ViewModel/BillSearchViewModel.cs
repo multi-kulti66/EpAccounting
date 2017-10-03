@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModel.cs
-// Last Change: 22.08.2017  21:10
+// Last Change: 02.09.2017  10:30
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -98,7 +98,7 @@ namespace EpAccounting.UI.ViewModel
             Conjunction billConjunction = Restrictions.Conjunction();
             Expression<Func<Bill, Client>> expression = x => x.Client;
             Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(client => client.ClientId == clientId));
+            clientConjunction.Add(Restrictions.Where<Client>(client => client.Id == clientId));
 
             this.LoadSearchedBills(new Tuple<ICriterion,
                                        Expression<Func<Bill, Client>>,
@@ -106,8 +106,8 @@ namespace EpAccounting.UI.ViewModel
         }
 
         private void LoadSearchedBills(Tuple<ICriterion,
-                                           Expression<Func<Bill, Client>>,
-                                           ICriterion> tupleCriterion, int page = 1)
+            Expression<Func<Bill, Client>>,
+            ICriterion> tupleCriterion, int page = 1)
         {
             // ReSharper disable once PossibleLossOfFraction
             int numberOfBills;
@@ -147,7 +147,7 @@ namespace EpAccounting.UI.ViewModel
         {
             for (int i = 0; i < this.FoundBills.Count; i++)
             {
-                if (this.FoundBills[i].BillId == id)
+                if (this.FoundBills[i].Id == id)
                 {
                     Bill bill = this.repository.GetById<Bill>(id);
                     this.FoundBills[i] = new BillDetailViewModel(bill);
@@ -161,7 +161,7 @@ namespace EpAccounting.UI.ViewModel
             {
                 if (this.FoundBills[i].ClientId == id)
                 {
-                    Bill bill = this.repository.GetById<Bill>(this.FoundBills[i].BillId);
+                    Bill bill = this.repository.GetById<Bill>(this.FoundBills[i].Id);
                     this.FoundBills[i] = new BillDetailViewModel(bill);
                 }
             }
@@ -171,7 +171,7 @@ namespace EpAccounting.UI.ViewModel
         {
             for (int i = this.FoundBills.Count - 1; i >= 0; i--)
             {
-                if (this.FoundBills[i].BillId == id)
+                if (this.FoundBills[i].Id == id)
                 {
                     this.FoundBills.RemoveAt(i);
                 }
@@ -202,8 +202,8 @@ namespace EpAccounting.UI.ViewModel
         #region Messenger
 
         private void ExecuteNotificationMessage(NotificationMessage<Tuple<ICriterion,
-                                                    Expression<Func<Bill, Client>>,
-                                                    ICriterion>> message)
+            Expression<Func<Bill, Client>>,
+            ICriterion>> message)
         {
             if (message.Notification == Resources.Message_BillSearchCriteriaForBillSearchVM)
             {
@@ -267,7 +267,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void SendLoadSelectedBillMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.SelectedBillDetailViewModel.BillId, Resources.Message_LoadSelectedBillForBillEditVM));
+            Messenger.Default.Send(new NotificationMessage<int>(this.SelectedBillDetailViewModel.Id, Resources.Message_LoadSelectedBillForBillEditVM));
         }
 
         public ImageCommandViewModel LoadNextPageCommand
@@ -278,7 +278,6 @@ namespace EpAccounting.UI.ViewModel
                 {
                     this._loadNextPageCommand = new ImageCommandViewModel(Resources.img_arrow_right,
                                                                           Resources.Command_DisplayName_Next_Page,
-                                                                          Resources.Command_Message_Next_Page,
                                                                           new RelayCommand(this.LoadNextPage, this.CanLoadNextPage));
                 }
 
@@ -310,7 +309,6 @@ namespace EpAccounting.UI.ViewModel
                 {
                     this._loadPreviousPageCommand = new ImageCommandViewModel(Resources.img_arrow_left,
                                                                               Resources.Command_DisplayName_Previous_Page,
-                                                                              Resources.Command_Message_Previous_Page,
                                                                               new RelayCommand(this.LoadPreviousPage, this.CanLoadPreviousPage));
                 }
 

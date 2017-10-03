@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemDetailViewModelTest.cs
-// Last Change: 22.08.2017  20:54
+// Last Change: 17.09.2017  18:25
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,10 +9,14 @@
 namespace EpAccounting.Test.UI.ViewModel
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
+    using EpAccounting.Business;
     using EpAccounting.Model;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
+    using Moq;
+    using NHibernate.Criterion;
     using NUnit.Framework;
 
 
@@ -22,6 +26,7 @@ namespace EpAccounting.Test.UI.ViewModel
     {
         #region Fields
 
+        private Mock<IRepository> mockRepository;
         private BillItemDetailViewModel billItemDetailViewModel;
 
         #endregion
@@ -33,12 +38,14 @@ namespace EpAccounting.Test.UI.ViewModel
         [SetUp]
         public void Init()
         {
-            this.billItemDetailViewModel = new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem());
+            this.mockRepository = new Mock<IRepository>();
+            this.billItemDetailViewModel = new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem(), this.mockRepository.Object);
         }
 
         [TearDown]
         public void Cleanup()
         {
+            this.mockRepository = null;
             this.billItemDetailViewModel = null;
             GC.Collect();
         }
@@ -67,15 +74,15 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             const int Amount = 2;
-            const double Price = 4.99;
-            const double Sum = 9.98;
+            const decimal Price = 4.99m;
+            const decimal Sum = 9.98m;
 
             BillItem billItem = new BillItem();
             billItem.Amount = Amount;
             billItem.Price = Price;
 
             // Act
-            this.billItemDetailViewModel = new BillItemDetailViewModel(billItem);
+            this.billItemDetailViewModel = new BillItemDetailViewModel(billItem, this.mockRepository.Object);
 
             // Assert
             this.billItemDetailViewModel.Sum.Should().Be(Sum);
@@ -86,9 +93,9 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             const double Amount = 2;
-            const double Price = 10;
+            const decimal Price = 10m;
             const double Discount = 10;
-            const double Sum = 18;
+            const decimal Sum = 18m;
 
             // Act
             BillItem billItem = new BillItem();
@@ -96,7 +103,7 @@ namespace EpAccounting.Test.UI.ViewModel
             billItem.Price = Price;
             billItem.Discount = Discount;
 
-            this.billItemDetailViewModel = new BillItemDetailViewModel(billItem);
+            this.billItemDetailViewModel = new BillItemDetailViewModel(billItem, this.mockRepository.Object);
 
             // Assert
             this.billItemDetailViewModel.Sum.Should().Be(Sum);
@@ -110,7 +117,7 @@ namespace EpAccounting.Test.UI.ViewModel
             const int ArticleNumber = 44;
             const string Description = "Testdescription";
             const double Amount = 4;
-            const double Price = 55;
+            const decimal Price = 55m;
             const double Discount = 50;
 
             // Act
@@ -138,7 +145,7 @@ namespace EpAccounting.Test.UI.ViewModel
             const int ArticleNumber = 44;
             const string Description = "Testdescription";
             const double Amount = 4;
-            const double Price = 55;
+            const decimal Price = 55;
             const double Discount = 50;
 
             this.billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
@@ -197,6 +204,22 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
+        }
+
+        [Test]
+        public void FillsArticleData()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.GetByCriteria<Article>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Article> { ModelFactory.GetDefaultArticle() });
+
+            // Act
+            this.billItemDetailViewModel.ArticleNumber = 3;
+
+            // Assert
+            this.billItemDetailViewModel.Description.Should().Be(ModelFactory.DefaultArticleDescription);
+            this.billItemDetailViewModel.Amount.Should().Be(ModelFactory.DefaultArticleAmount);
+            this.billItemDetailViewModel.Price.Should().Be(ModelFactory.DefaultArticlePrice);
         }
 
         #endregion

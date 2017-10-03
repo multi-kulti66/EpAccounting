@@ -53,6 +53,10 @@
     <Compile Include="Bill.cs" />
     <Compile Include="BillItem.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="Converter\EnumDescriptionTypeConverter.cs" />
+    <Compile Include="Enum\ClientTitle.cs" />
+    <Compile Include="Enum\KindOfBill.cs" />
+    <Compile Include="Enum\KindOfVat.cs" />
     <Compile Include="Mapping\ArticleMap.cs" />
     <Compile Include="Mapping\BillItemMap.cs" />
     <Compile Include="Mapping\BillMap.cs" />

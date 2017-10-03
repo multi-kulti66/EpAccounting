@@ -10,6 +10,7 @@ namespace EpAccounting.Test.Model
 {
     using System;
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
     using EpAccounting.Model.Properties;
     using FluentAssertions;
     using NUnit.Framework;
@@ -121,7 +122,7 @@ namespace EpAccounting.Test.Model
 
             Bill bill1 = ModelFactory.GetDefaultBill();
             Bill bill2 = ModelFactory.GetDefaultBill();
-            bill2.KindOfBill = "Gutschein";
+            bill2.KindOfBill = KindOfBill.Gutschrift;
 
             client1.AddBill(bill1);
             client2.AddBill(bill2);
@@ -180,7 +181,7 @@ namespace EpAccounting.Test.Model
             // Arrange
             const int ExpectedId = 10;
             Client client = ModelFactory.GetDefaultClient();
-            client.ClientId = ExpectedId;
+            client.Id = ExpectedId;
 
             // Assert
             client.ToString().Should().Be(string.Format(Resources.Client_ToString, ExpectedId,

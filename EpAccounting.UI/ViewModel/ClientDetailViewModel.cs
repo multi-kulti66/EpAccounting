@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientDetailViewModel.cs
-// Last Change: 23.08.2017  20:23
+// Last Change: 22.09.2017  13:07
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,6 +9,8 @@
 namespace EpAccounting.UI.ViewModel
 {
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
+    using EpAccounting.UI.Validation;
 
 
 
@@ -35,88 +37,89 @@ namespace EpAccounting.UI.ViewModel
 
         #region Properties
 
-        public int ClientId
+        public int Id
         {
-            get { return this.client.ClientId; }
-            set { this.SetProperty(this.client.ClientId, value, () => this.client.ClientId = value); }
+            get { return this.client.Id; }
+            set { this.SetProperty(() => this.client.Id = value, () => this.client.Id == value); }
         }
 
-        public string Title
+        public ClientTitle? Title
         {
             get { return this.client.Title; }
-            set { this.SetProperty(this.client.Title, value, () => this.client.Title = value); }
+            set { this.SetProperty(() => this.client.Title = value, () => this.client.Title == value); }
         }
 
         public string FirstName
         {
             get { return this.client.FirstName; }
-            set { this.SetProperty(this.client.FirstName, value, () => this.client.FirstName = value); }
+            set { this.SetProperty(() => this.client.FirstName = value, () => this.client.FirstName == value); }
         }
 
         public string LastName
         {
             get { return this.client.LastName; }
-            set { this.SetProperty(this.client.LastName, value, () => this.client.LastName = value); }
+            set { this.SetProperty(() => this.client.LastName = value, () => this.client.LastName == value); }
         }
 
         public string Street
         {
             get { return this.client.Street; }
-            set { this.SetProperty(this.client.Street, value, () => this.client.Street = value); }
+            set { this.SetProperty(() => this.client.Street = value, () => this.client.Street == value); }
         }
 
         public string HouseNumber
         {
             get { return this.client.HouseNumber; }
-            set { this.SetProperty(this.client.HouseNumber, value, () => this.client.HouseNumber = value); }
+            set { this.SetProperty(() => this.client.HouseNumber = value, () => this.client.HouseNumber == value); }
         }
 
         public string PostalCode
         {
             get { return this.client.PostalCode; }
-            set { this.SetProperty(this.client.PostalCode, value, () => this.client.PostalCode = value); }
+            set { this.SetProperty(() => this.client.PostalCode = value, () => this.client.PostalCode == value); }
         }
 
         public string City
         {
             get { return this.client.City; }
-            set { this.SetProperty(this.client.City, value, () => this.client.City = value); }
+            set { this.SetProperty(() => this.client.City = value, () => this.client.City == value); }
         }
 
+        [ValidDate]
         public string DateOfBirth
         {
             get { return this.client.DateOfBirth; }
-            set { this.SetProperty(this.client.DateOfBirth, value, () => this.client.DateOfBirth = value); }
+            set { this.SetProperty(() => this.client.DateOfBirth = value, () => this.client.DateOfBirth == value); }
         }
 
         public string PhoneNumber1
         {
             get { return this.client.PhoneNumber1; }
-            set { this.SetProperty(this.client.PhoneNumber1, value, () => this.client.PhoneNumber1 = value); }
+            set { this.SetProperty(() => this.client.PhoneNumber1 = value, () => this.client.PhoneNumber1 == value); }
         }
 
         public string PhoneNumber2
         {
             get { return this.client.PhoneNumber2; }
-            set { this.SetProperty(this.client.PhoneNumber2, value, () => this.client.PhoneNumber2 = value); }
+            set { this.SetProperty(() => this.client.PhoneNumber2 = value, () => this.client.PhoneNumber2 == value); }
         }
 
         public string MobileNumber
         {
             get { return this.client.MobileNumber; }
-            set { this.SetProperty(this.client.MobileNumber, value, () => this.client.MobileNumber = value); }
+            set { this.SetProperty(() => this.client.MobileNumber = value, () => this.client.MobileNumber == value); }
         }
 
         public string Telefax
         {
             get { return this.client.Telefax; }
-            set { this.SetProperty(this.client.Telefax, value, () => this.client.Telefax = value); }
+            set { this.SetProperty(() => this.client.Telefax = value, () => this.client.Telefax == value); }
         }
 
         public string Email
         {
             get { return this.client.Email; }
-            set { this.SetProperty(this.client.Email, value, () => this.client.Email = value); }
+            set { this.SetProperty(() => this.client.Email = value, () => this.client.Email == value); }
         }
 
         public int NumberOfBills
@@ -124,17 +127,17 @@ namespace EpAccounting.UI.ViewModel
             get { return this.client.Bills.Count; }
         }
 
-        public double Sales
+        public decimal Sales
         {
             get
             {
-                double sum = 0;
+                decimal sum = 0;
 
                 foreach (Bill bill in this.client.Bills)
                 {
                     foreach (BillItem billDetail in bill.BillItems)
                     {
-                        sum += billDetail.Price * ((100 - billDetail.Discount) / 100) * billDetail.Amount;
+                        sum += billDetail.Price * ((100 - (decimal)billDetail.Discount) / 100) * (decimal)billDetail.Amount;
                     }
                 }
 

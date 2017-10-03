@@ -18,7 +18,7 @@ namespace EpAccounting.Model.Mapping
 
         public BillMap()
         {
-            this.Id(x => x.BillId);
+            this.Id(x => x.Id);
             this.References(x => x.Client).Fetch.Join();
             this.Map(x => x.KindOfBill);
             this.Map(x => x.KindOfVat);

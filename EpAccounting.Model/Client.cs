@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: Client.cs
-// Last Change: 10.07.2017  20:30
+// Last Change: 05.09.2017  19:35
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -10,6 +10,7 @@ namespace EpAccounting.Model
 {
     using System;
     using System.Collections.Generic;
+    using EpAccounting.Model.Enum;
     using EpAccounting.Model.Properties;
 
 
@@ -18,9 +19,9 @@ namespace EpAccounting.Model
     {
         #region Properties
 
-        public virtual int ClientId { get; set; }
+        public virtual int Id { get; set; }
 
-        public virtual string Title { get; set; }
+        public virtual ClientTitle? Title { get; set; }
 
         public virtual string FirstName { get; set; }
 
@@ -83,7 +84,7 @@ namespace EpAccounting.Model
                 return false;
             }
 
-            bool equalClientData = this.ClientId == otherClient.ClientId && string.Equals(this.Title, otherClient.Title) &&
+            bool equalClientData = this.Id == otherClient.Id && Equals(this.Title, otherClient.Title) &&
                                    string.Equals(this.FirstName, otherClient.FirstName) && string.Equals(this.LastName, otherClient.LastName) &&
                                    string.Equals(this.Street, otherClient.Street) && string.Equals(this.HouseNumber, otherClient.HouseNumber) &&
                                    string.Equals(this.PostalCode, otherClient.PostalCode) && string.Equals(this.City, otherClient.City) &&
@@ -111,8 +112,8 @@ namespace EpAccounting.Model
         {
             unchecked
             {
-                int hashCode = this.ClientId;
-                hashCode = (hashCode * 397) ^ (this.Title?.GetHashCode() ?? 0);
+                int hashCode = this.Id;
+                hashCode = (hashCode * 397) ^ (this.Title.GetHashCode());
                 hashCode = (hashCode * 397) ^ (this.FirstName?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (this.LastName?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (this.Street?.GetHashCode() ?? 0);
@@ -132,7 +133,7 @@ namespace EpAccounting.Model
 
         public override string ToString()
         {
-            return string.Format(Resources.Client_ToString, this.ClientId, this.FirstName, this.LastName,
+            return string.Format(Resources.Client_ToString, this.Id, this.FirstName, this.LastName,
                                  this.Street, this.HouseNumber, this.PostalCode, this.City);
         }
     }

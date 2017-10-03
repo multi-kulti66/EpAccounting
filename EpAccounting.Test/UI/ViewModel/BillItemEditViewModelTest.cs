@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditViewModelTest.cs
-// Last Change: 22.08.2017  20:59
+// Last Change: 18.09.2017  20:57
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -10,11 +10,14 @@ namespace EpAccounting.Test.UI.ViewModel
 {
     using System;
     using System.ComponentModel;
+    using EpAccounting.Business;
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
     using GalaSoft.MvvmLight.Messaging;
+    using Moq;
     using NUnit.Framework;
 
 
@@ -24,6 +27,7 @@ namespace EpAccounting.Test.UI.ViewModel
     {
         #region Fields
 
+        private Mock<IRepository> mockRepository;
         private BillItemEditViewModel billItemEditViewModel;
 
         #endregion
@@ -35,12 +39,14 @@ namespace EpAccounting.Test.UI.ViewModel
         [SetUp]
         public void Init()
         {
-            this.billItemEditViewModel = new BillItemEditViewModel();
+            this.mockRepository = new Mock<IRepository>();
+            this.billItemEditViewModel = new BillItemEditViewModel(this.mockRepository.Object);
         }
 
         [TearDown]
         public void Cleanup()
         {
+            this.mockRepository = null;
             this.billItemEditViewModel = null;
             GC.Collect();
         }
@@ -223,7 +229,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billItemEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.billItemEditViewModel.SelectedBillItemDetailViewModel = new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem());
+            this.billItemEditViewModel.SelectedBillItemDetailViewModel = new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem(), this.mockRepository.Object);
 
             // Assert
             this.billItemEditViewModel.SelectedBillItemDetailViewModel.Should().NotBeNull();
@@ -429,6 +435,114 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             this.billItemEditViewModel.BillItemDetailViewModels.Count.Should().Be(0);
+        }
+
+        [Test]
+        public void CalculateSumWhenInclusiveVAT()
+        {
+            // Arrange
+            this.billItemEditViewModel.BillItemDetailViewModels.Add(new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem(), this.mockRepository.Object));
+
+            // Act
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Assert
+            this.billItemEditViewModel.NettoSum.Should().BeApproximately(55.56m, 0.05m);
+            this.billItemEditViewModel.VatSum.Should().BeApproximately(10.56m, 0.05m);
+            this.billItemEditViewModel.BruttoSum.Should().BeApproximately(66.11m, 0.05m);
+        }
+
+        [Test]
+        public void CalculateSumWhenPlusVAT()
+        {
+            // Arrange
+            this.billItemEditViewModel.BillItemDetailViewModels.Add(new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem(), this.mockRepository.Object));
+
+            // Act
+            Bill bill = ModelFactory.GetDefaultBill();
+            bill.KindOfVat = KindOfVat.zzgl_MwSt;
+            this.billItemEditViewModel.LoadBill(bill);
+
+            // Assert
+            this.billItemEditViewModel.NettoSum.Should().BeApproximately(66.11m, 0.05m);
+            this.billItemEditViewModel.VatSum.Should().BeApproximately(12.56m, 0.05m);
+            this.billItemEditViewModel.BruttoSum.Should().BeApproximately(78.67m, 0.05m);
+        }
+
+        [Test]
+        public void CalculateSumWhenNoVAT()
+        {
+            // Arrange
+            this.billItemEditViewModel.BillItemDetailViewModels.Add(new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem(), this.mockRepository.Object));
+
+            // Act
+            Bill bill = ModelFactory.GetDefaultBill();
+            bill.KindOfVat = KindOfVat.without_MwSt;
+            this.billItemEditViewModel.LoadBill(bill);
+
+            // Assert
+            this.billItemEditViewModel.NettoSum.Should().BeApproximately(66.11m, 0.05m);
+            this.billItemEditViewModel.VatSum.Should().Be(0);
+            this.billItemEditViewModel.BruttoSum.Should().BeApproximately(66.11m, 0.05m);
+        }
+
+        [Test]
+        public void ReclaculateNettoVatAndSumWhenUpdateMessageReceived()
+        {
+            // Arrange
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+            this.billItemEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_UpdateSumsForBillItemEditVM));
+
+            // Assert
+            this.billItemEditViewModel.ShouldRaisePropertyChangeFor(x => x.NettoSum);
+            this.billItemEditViewModel.ShouldRaisePropertyChangeFor(x => x.VatSum);
+            this.billItemEditViewModel.ShouldRaisePropertyChangeFor(x => x.BruttoSum);
+        }
+
+        [Test]
+        public void CanNotChangeVatAfterInitialization()
+        {
+            // Arrange
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Assert
+            this.billItemEditViewModel.CanChangeVAT.Should().BeFalse();
+        }
+
+        [Test]
+        public void CanChangeVat()
+        {
+            // Arrange
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Act
+            this.billItemEditViewModel.ChangeVATCommand.Execute(null);
+
+            // Assert
+            this.billItemEditViewModel.CanChangeVAT.Should().BeTrue();
+        }
+
+        [Test]
+        public void ChangesVat()
+        {
+            // Arrange
+            double vatPercentage = Settings.Default.VAT;
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Act
+            this.billItemEditViewModel.ChangeVATCommand.Execute(null);
+            Settings.Default.VAT = 50;
+            this.billItemEditViewModel.ChangeVATCommand.Execute(null);
+
+            // Assert
+            Settings.Default.VAT = vatPercentage;
+            Settings.Default.Save();
+            this.billItemEditViewModel.NettoSum.Should().BeApproximately(44.07M, 0.005M);
+            this.billItemEditViewModel.VatSum.Should().BeApproximately(22.04M, 0.005M);
+            this.billItemEditViewModel.BruttoSum.Should().BeApproximately(66.11M, 0.005M);
         }
 
         #endregion

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEditViewModel.cs
-// Last Change: 31.08.2017  20:21
+// Last Change: 05.09.2017  19:58
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -16,7 +16,7 @@ namespace EpAccounting.UI.ViewModel
     using System.Threading.Tasks;
     using EpAccounting.Business;
     using EpAccounting.Model;
-    using EpAccounting.UI.Enum;
+    using EpAccounting.Model.Enum;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.Service;
     using EpAccounting.UI.State;
@@ -158,7 +158,7 @@ namespace EpAccounting.UI.ViewModel
 
         public virtual void Reload()
         {
-            this.ChangeToLoadedMode(this.repository.GetById<Bill>(this.currentBill.BillId));
+            this.ChangeToLoadedMode(this.repository.GetById<Bill>(this.currentBill.Id));
         }
 
         public virtual async Task<bool> SaveOrUpdateBillAsync()
@@ -204,9 +204,9 @@ namespace EpAccounting.UI.ViewModel
             Bill bill = new Bill
                         {
                             Client = this.repository.GetById<Client>(clientId),
-                            KindOfBill = KindOfBill.Rechnung.ToString(),
-                            KindOfVat = KindOfVat.inkl_MwSt.ToString(),
-                            Date = DateTime.Now.ToShortDateString()
+                            KindOfBill = KindOfBill.Rechnung,
+                            KindOfVat = KindOfVat.inkl_MwSt,
+                            Date = "05.09.2017"
                         };
 
             this.LoadBill(bill);
@@ -263,7 +263,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void InsertClientData(Client messageContent)
         {
-            this.CurrentBillDetailViewModel.ClientId = messageContent.ClientId;
+            this.CurrentBillDetailViewModel.ClientId = messageContent.Id;
             this.CurrentBillDetailViewModel.Title = messageContent.Title;
             this.CurrentBillDetailViewModel.FirstName = messageContent.FirstName;
             this.CurrentBillDetailViewModel.LastName = messageContent.LastName;
@@ -278,23 +278,25 @@ namespace EpAccounting.UI.ViewModel
             Conjunction billConjunction = Restrictions.Conjunction();
 
             // Bill data
-            if (this.CurrentBillDetailViewModel.BillId != 0)
+            if (this.CurrentBillDetailViewModel.Id != 0)
             {
-                billConjunction.Add(Restrictions.Where<Bill>(b => b.BillId == this.CurrentBillDetailViewModel.BillId));
+                billConjunction.Add(Restrictions.Where<Bill>(b => b.Id == this.CurrentBillDetailViewModel.Id));
                 return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, null, null);
             }
 
-            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.KindOfBill))
+            if (this.CurrentBillDetailViewModel.KindOfBill != null)
             {
-                billConjunction.Add(Restrictions.Where<Bill>(b => b.KindOfBill.IsLike(this.CurrentBillDetailViewModel.KindOfBill, MatchMode.Anywhere)));
+                billConjunction.Add(Restrictions.Where<Bill>(b => b.KindOfBill == this.CurrentBillDetailViewModel.KindOfBill));
             }
-            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.KindOfVat))
+
+            if (this.CurrentBillDetailViewModel.KindOfVat != null)
             {
-                billConjunction.Add(Restrictions.Where<Bill>(b => b.KindOfVat.IsLike(this.CurrentBillDetailViewModel.KindOfVat, MatchMode.Anywhere)));
+                billConjunction.Add(Restrictions.Where<Bill>(b => b.KindOfVat == this.CurrentBillDetailViewModel.KindOfVat));
             }
-            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.Date))
+
+            if (this.CurrentBillDetailViewModel.Date != null)
             {
-                billConjunction.Add(Restrictions.Where<Bill>(b => b.Date.IsLike(this.CurrentBillDetailViewModel.Date, MatchMode.Anywhere)));
+                billConjunction.Add(Restrictions.Where<Bill>(b => b.Date == this.CurrentBillDetailViewModel.Date));
             }
 
             Conjunction clientConjunction = Restrictions.Conjunction();
@@ -303,14 +305,14 @@ namespace EpAccounting.UI.ViewModel
             // if client id is passed, it should just search bills for this client
             if (this.CurrentBillDetailViewModel.ClientId != 0)
             {
-                clientConjunction.Add(Restrictions.Where<Client>(c => c.ClientId == this.CurrentBillDetailViewModel.ClientId));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.Id == this.CurrentBillDetailViewModel.ClientId));
                 return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
             }
 
             // searches all bills with specific client data
-            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.Title))
+            if (this.CurrentBillDetailViewModel.Title != null)
             {
-                clientConjunction.Add(Restrictions.Where<Client>(c => c.Title.IsLike(this.CurrentBillDetailViewModel.Title, MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == this.CurrentBillDetailViewModel.Title));
             }
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.FirstName))
             {
@@ -430,14 +432,14 @@ namespace EpAccounting.UI.ViewModel
             }
             else if (message.Notification == Resources.Message_UpdateClientValuesForBillEditVM)
             {
-                if (message.Content == this.currentBill.Client.ClientId)
+                if (message.Content == this.CurrentBillDetailViewModel?.ClientId)
                 {
                     this.Reload();
                 }
             }
             else if (message.Notification == Resources.Message_RemoveClientForBillEditVM)
             {
-                if (message.Content == this.CurrentBillDetailViewModel.ClientId)
+                if (message.Content == this.CurrentBillDetailViewModel?.ClientId)
                 {
                     this.ChangeToEmptyMode();
                 }
@@ -454,20 +456,20 @@ namespace EpAccounting.UI.ViewModel
 
         public virtual void SendUpdateBillValuesMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.BillId,
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.Id,
                                                                 Resources.Message_UpdateBillValuesMessageForBillSearchVM));
         }
 
         public virtual void SendRemoveBillMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.BillId,
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.Id,
                                                                 Resources.Message_RemoveBillForBillSearchVM));
             Messenger.Default.Send(new NotificationMessage(Resources.Message_ResetBillItemEditVMAndChangeToSearchWorkspaceForBillVM));
         }
 
         private void SendUpdateClientMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.currentBill.Client.ClientId,
+            Messenger.Default.Send(new NotificationMessage<int>(this.currentBill.Client.Id,
                                                                 Resources.Message_UpdateClientForClientEditVM));
         }
 
@@ -510,27 +512,22 @@ namespace EpAccounting.UI.ViewModel
                                     new ImageCommandViewModel(
                                                               Resources.img_search,
                                                               Resources.Command_DisplayName_Search,
-                                                              Resources.Command_Message_Bill_Search,
                                                               new RelayCommand(this.SwitchToSearchMode, this.CanSwitchToSearchMode)),
                                     new ImageCommandViewModel(
                                                               Resources.img_edit,
                                                               Resources.Command_DisplayName_Edit,
-                                                              Resources.Command_Message_Bill_Edit,
                                                               new RelayCommand(this.SwitchToEditMode, this.CanSwitchToEditMode)),
                                     new ImageCommandViewModel(
                                                               Resources.img_saveOrUpdate,
                                                               Resources.Command_DisplayName_SaveOrUpdate,
-                                                              Resources.Command_Message_Bill_SaveOrUpdate,
                                                               new RelayCommand(this.Commit, this.CanCommit)),
                                     new ImageCommandViewModel(
                                                               Resources.img_cancel,
                                                               Resources.Command_DisplayName_Cancel,
-                                                              Resources.Command_Message_Bill_Cancel,
                                                               new RelayCommand(this.Cancel, this.CanCancel)),
                                     new ImageCommandViewModel(
                                                               Resources.img_delete,
                                                               Resources.Command_DisplayName_Delete,
-                                                              Resources.Command_Message_Bill_Delete,
                                                               new RelayCommand(this.Delete, this.CanDelete))
                                 };
         }

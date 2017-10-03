@@ -18,7 +18,7 @@ namespace EpAccounting.Model.Mapping
 
         public ClientMap()
         {
-            this.Id(x => x.ClientId);
+            this.Id(x => x.Id);
             this.Map(x => x.Title);
             this.Map(x => x.FirstName);
             this.Map(x => x.LastName);

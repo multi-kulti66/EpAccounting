@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ListExtension.cs
-// Last Change: 16.08.2017  18:33
+// Last Change: 02.09.2017  10:30
 // Author: Andre Multerer
 // ///////////////////////////////////
 

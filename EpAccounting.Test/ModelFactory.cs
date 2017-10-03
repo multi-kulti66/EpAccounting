@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ModelFactory.cs
-// Last Change: 16.08.2017  18:28
+// Last Change: 18.09.2017  20:41
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -10,6 +10,7 @@ namespace EpAccounting.Test
 {
     using System.Collections.Generic;
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
 
 
 
@@ -19,9 +20,12 @@ namespace EpAccounting.Test
 
         public const int DefaultId = 1;
 
+        public const int DefaultArticleNumber = 3;
         public const string DefaultArticleDescription = "Testartikel - Blitzschaden";
+        public const double DefaultArticleAmount = 4;
+        public const decimal DefaultArticlePrice = 2.5m;
 
-        public const string DefaultClientTitle = "Herr";
+        public const ClientTitle DefaultClientTitle = ClientTitle.Herr;
         public const string DefaultClientFirstName = "Andre";
         public const string DefaultClientLastName = "Multerer";
         public const string DefaultClientStreet = "Schmidstraße";
@@ -35,17 +39,17 @@ namespace EpAccounting.Test
         public const string DefaultClientTelefax = "09942 / 902098";
         public const string DefaultClientEmail = "andre.multerer@gmail.com";
 
-        public const string DefaultBillKindOfBill = "Rechnung";
-        public const string DefaultBillKindOfVat = "inkl. MwSt";
+        public const KindOfBill DefaultBillKindOfBill = KindOfBill.Rechnung;
+        public const KindOfVat DefaultBillKindOfVat = KindOfVat.inkl_MwSt;
         public const double DefaultBillVatPercentage = 19;
-        public const string DefaultBillDate = "01.01.2017";
 
         public const int DefaultBillItemPosition = 1;
         public const int DefaultBillItemArticleNumber = 1;
         public const string DefaultBillItemDescription = "Test Description";
         public const double DefaultBillItemAmount = 3;
-        public const double DefaultBillItemPrice = 23.32;
+        public const decimal DefaultBillItemPrice = 23.32m;
         public const double DefaultBillItemDiscount = 5.5;
+        public const string DefaultBillDate = "01.01.2017";
 
         #endregion
 
@@ -101,7 +105,10 @@ namespace EpAccounting.Test
         {
             return new Article
                    {
-                       Description = DefaultArticleDescription
+                       ArticleNumber = DefaultArticleNumber,
+                       Description = DefaultArticleDescription,
+                       Amount = DefaultArticleAmount,
+                       Price = DefaultArticlePrice
                    };
         }
     }

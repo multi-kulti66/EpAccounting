@@ -3,23 +3,23 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                      xmlns:markup="clr-namespace:EpAccounting.UI.Markup"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:properties="clr-namespace:EpAccounting.UI.Properties"
                       Title="Rechnungsprogramm"
-                      Width="{markup:SettingBinding Width}"
-                      Height="{markup:SettingBinding Height}"
+                      Width="{Binding Source={x:Static properties:Settings.Default}, Path=Width}"
+                      Height="{Binding Source={x:Static properties:Settings.Default}, Path=Height}"
                       MinWidth="800" MinHeight="600"
                       BorderBrush="{DynamicResource AccentColorBrush}"
                       BorderThickness="1"
                       DataContext="{Binding Main, Source={StaticResource Locator}}"
-                      Icon="pack://application:,,,/Resources/icon_ep_logo.ico" ResizeMode="CanResizeWithGrip"
-                      ShowIconOnTitleBar="True" TitleCharacterCasing="Normal" WindowStartupLocation="CenterScreen"
-                      WindowState="{markup:SettingBinding WindowState}"
+                      Icon="pack://application:,,,/Resources/icon_ep_logo.ico"
+                      ResizeMode="CanResizeWithGrip" ShowIconOnTitleBar="True"
+                      TitleCharacterCasing="Normal" WindowStartupLocation="CenterScreen"
+                      WindowState="{Binding Source={x:Static properties:Settings.Default}, Path=WindowState}"
                       mc:Ignorable="d">
     <Window.Resources>
-        <ResourceDictionary Source="ViewResourceDictionary.xaml" />
+        <ResourceDictionary Source="/View/ViewResourceDictionary.xaml" />
     </Window.Resources>
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -40,13 +40,14 @@
         </Grid>
 
         <ListBox Grid.Row="1" Grid.Column="0"
+                 IsEnabled="{Binding Path=CanChangeWorkspace}"
                  ItemTemplate="{StaticResource MenuWorkspaceViewModelStyle}"
                  ItemsSource="{Binding Path=WorkspaceViewModels}"
                  SelectedItem="{Binding Path=CurrentWorkspace}"
-                 IsEnabled="{Binding Path=CanChangeWorkspace}"
                  Style="{StaticResource MainMenuListBoxStyle}" />
 
-        <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto">
             <ContentPresenter Content="{Binding Path=CurrentWorkspace}" />
         </ScrollViewer>
 

@@ -109,6 +109,8 @@
     <Compile Include="Model\Mapping\MappingTest.cs" />
     <Compile Include="ModelFactory.cs" />
     <Compile Include="DatabaseFactory.cs" />
+    <Compile Include="UI\State\ArticleEditStateTest.cs" />
+    <Compile Include="UI\State\ArticleLoadedStateTest.cs" />
     <Compile Include="UI\State\BillCreationStateTest.cs" />
     <Compile Include="UI\State\BillEditStateTest.cs" />
     <Compile Include="UI\State\BillEmptyStateTest.cs" />
@@ -119,6 +121,8 @@
     <Compile Include="UI\State\ClientEmptyStateTest.cs" />
     <Compile Include="UI\State\ClientLoadedStateTest.cs" />
     <Compile Include="UI\State\ClientSearchStateTest.cs" />
+    <Compile Include="UI\ViewModel\ArticlesOptionViewModelTest.cs" />
+    <Compile Include="UI\ViewModel\ArticleViewModelTest.cs" />
     <Compile Include="UI\ViewModel\BillDetailViewModelTest.cs" />
     <Compile Include="UI\ViewModel\BillEditViewModelTest.cs" />
     <Compile Include="UI\ViewModel\BillItemDetailViewModelTest.cs" />

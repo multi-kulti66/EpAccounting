@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillWorkspaceViewModel.cs
-// Last Change: 16.04.2017  11:40
+// Last Change: 02.09.2017  10:30
 // Author: Andre Multerer
 // ///////////////////////////////////
 

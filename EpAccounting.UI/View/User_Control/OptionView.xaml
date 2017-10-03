@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="EpAccounting.UI.View.User_Control.OptionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModel="clr-namespace:EpAccounting.UI.ViewModel"
+             d:DataContext="{d:DesignInstance viewModel:OptionViewModel}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary Source="/View/ViewResourceDictionary.xaml" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
+                   Style="{StaticResource CaptionTextBlockStyle}"
+                   Text="Datenbank:" />
+
+        <Button Grid.Row="1" Grid.Column="0"
+                Command="{Binding Path=CreateDatabaseCommand}"
+                Content="Neu" />
+        <Button Grid.Row="1" Grid.Column="1"
+                Command="{Binding Path=LoadDatabaseCommand}"
+                Content="Lade" />
+        <TextBox Grid.Row="1" Grid.Column="2" IsReadOnly="True"
+                 Style="{StaticResource LeftTextAlignTextBoxStyle}"
+                 Text="{Binding Path=FilePath, Mode=OneWay}" />
+
+    </Grid>
+</UserControl>
+

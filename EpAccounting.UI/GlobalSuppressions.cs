@@ -1,8 +1,13 @@
-﻿
-// This file is used by Code Analysis to maintain SuppressMessage 
-// attributes that are applied to this project.
-// Project-level suppressions either have no target or are given 
-// a specific target and scoped to a namespace, type, member, etc.
+﻿// ///////////////////////////////////
+// File: GlobalSuppressions.cs
+// Last Change: 02.09.2017  10:30
+// Author: Andre Multerer
+// ///////////////////////////////////
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Sonar Bug", "S3236:Caller information arguments should not be provided explicitly", Justification = "<Pending>", Scope = "member", Target = "~M:EpAccounting.UI.ViewModel.ClientEditViewModel.UpdateProperties")]
 
+
+using System.Diagnostics.CodeAnalysis;
+
+
+
+[assembly: SuppressMessage("Sonar Bug", "S3236:Caller information arguments should not be provided explicitly", Justification = "<Pending>", Scope = "member", Target = "~M:EpAccounting.UI.ViewModel.ClientEditViewModel.UpdateProperties")]

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModelTest.cs
-// Last Change: 22.08.2017  21:11
+// Last Change: 05.09.2017  20:23
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -14,6 +14,7 @@ namespace EpAccounting.Test.UI.ViewModel
     using System.Linq.Expressions;
     using EpAccounting.Business;
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
@@ -81,7 +82,7 @@ namespace EpAccounting.Test.UI.ViewModel
                 .Returns(new List<Bill> { ModelFactory.GetDefaultBill() });
 
             Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(ModelFactory.DefaultBillKindOfBill, MatchMode.Anywhere)));
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
 
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, null, null);
 
@@ -102,9 +103,9 @@ namespace EpAccounting.Test.UI.ViewModel
                 .Returns(new List<Bill> { ModelFactory.GetDefaultBill() });
 
             Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(ModelFactory.DefaultBillKindOfBill, MatchMode.Anywhere)));
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
             Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title.IsLike(ModelFactory.DefaultClientTitle, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
 
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
 
@@ -142,11 +143,11 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             const string ExpectedDate = "01.01.2015";
-            Bill expectedBill = new Bill { BillId = 1, Date = ExpectedDate, KindOfVat = ModelFactory.DefaultBillKindOfVat };
+            Bill expectedBill = new Bill { Id = 1, Date = ExpectedDate, KindOfVat = ModelFactory.DefaultBillKindOfVat };
             this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
 
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { BillId = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }));
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { BillId = 2, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }));
+            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }));
+            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 2, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }));
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_UpdateBillValuesMessageForBillSearchVM));
@@ -166,7 +167,7 @@ namespace EpAccounting.Test.UI.ViewModel
             expectedBill.Client.FirstName = ExpectedFirstName;
             this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
 
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { BillId = 1, Date = "01.01.2017", KindOfVat = "Gutschein", Client = new Client() }));
+            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat, Client = new Client() }));
             this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(ModelFactory.GetDefaultBill()));
 
             // Act
@@ -183,17 +184,17 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int Id = 1;
             const string Date = "01.01.2015";
-            const string KindOfBill = "Gutschrift";
+            KindOfBill KindOfBill = KindOfBill.Gutschrift;
 
-            Bill expectedBill = new Bill { BillId = Id, Date = Date, KindOfBill = KindOfBill };
+            Bill expectedBill = new Bill { Id = Id, Date = Date, KindOfBill = KindOfBill };
             this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
             this.mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Bill>());
 
             Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(ModelFactory.DefaultBillKindOfBill, MatchMode.Anywhere)));
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
             Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title.IsLike(ModelFactory.DefaultClientTitle, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
 
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
 
@@ -284,9 +285,9 @@ namespace EpAccounting.Test.UI.ViewModel
                 .Returns(NumberOfElements);
 
             Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(ModelFactory.DefaultBillKindOfBill, MatchMode.Anywhere)));
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
             Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title.IsLike(ModelFactory.DefaultClientTitle, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
 
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
 
@@ -309,9 +310,9 @@ namespace EpAccounting.Test.UI.ViewModel
                 .Returns(NumberOfElements);
 
             Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(ModelFactory.DefaultBillKindOfBill, MatchMode.Anywhere)));
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
             Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title.IsLike(ModelFactory.DefaultClientTitle, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
 
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
 
@@ -353,9 +354,9 @@ namespace EpAccounting.Test.UI.ViewModel
                 .Returns(NumberOfElements);
 
             Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(ModelFactory.DefaultBillKindOfBill, MatchMode.Anywhere)));
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
             Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title.IsLike(ModelFactory.DefaultClientTitle, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
 
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
 
@@ -379,9 +380,9 @@ namespace EpAccounting.Test.UI.ViewModel
                 .Returns(NumberOfElements);
 
             Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(ModelFactory.DefaultBillKindOfBill, MatchMode.Anywhere)));
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
             Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title.IsLike(ModelFactory.DefaultClientTitle, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
 
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
 
@@ -406,9 +407,9 @@ namespace EpAccounting.Test.UI.ViewModel
                 .Returns(NumberOfElements);
 
             Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill.IsLike(ModelFactory.DefaultBillKindOfBill, MatchMode.Anywhere)));
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
             Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title.IsLike(ModelFactory.DefaultClientTitle, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
 
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
 

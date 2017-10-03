@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ObjectEqualityComparer.cs
-// Last Change: 13.03.2017  20:44
+// Last Change: 18.09.2017  20:44
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -16,7 +16,15 @@ namespace EpAccounting.Test.Model.Mapping
 
     public class ObjectEqualityComparer : IEqualityComparer
     {
+        #region Fields
+
         private const double MAX_VARIATION = 0.01;
+
+        #endregion
+
+
+
+        #region IEqualityComparer Members
 
         public new bool Equals(object firstObject, object secondObject)
         {
@@ -57,9 +65,13 @@ namespace EpAccounting.Test.Model.Mapping
             throw new NotImplementedException();
         }
 
+        #endregion
+
+
+
         private static bool AreEqualClients(Client client1, Client client2)
         {
-            if ((client1.ClientId == client2.ClientId) &&
+            if ((client1.Id == client2.Id) &&
                 (client1.Title == client2.Title) &&
                 (client1.FirstName == client2.FirstName) &&
                 (client1.LastName == client2.LastName) &&
@@ -82,7 +94,7 @@ namespace EpAccounting.Test.Model.Mapping
 
         private static bool AreEqualBills(Bill bill1, Bill bill2)
         {
-            if ((bill1.BillId == bill2.BillId) &&
+            if ((bill1.Id == bill2.Id) &&
                 (bill1.KindOfBill == bill2.KindOfBill) &&
                 (bill1.KindOfVat == bill2.KindOfVat) &&
                 (Math.Abs(bill1.VatPercentage - bill2.VatPercentage) < MAX_VARIATION) &&
@@ -102,7 +114,7 @@ namespace EpAccounting.Test.Model.Mapping
                 (billDetail1.Description == billDetail2.Description) &&
                 (Math.Abs(billDetail1.Amount - billDetail2.Amount) < MAX_VARIATION) &&
                 (Math.Abs(billDetail1.Discount - billDetail2.Discount) < MAX_VARIATION) &&
-                (Math.Abs(billDetail1.Price - billDetail2.Price) < MAX_VARIATION))
+                billDetail1.Price == billDetail2.Price)
             {
                 return true;
             }

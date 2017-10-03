@@ -151,168 +151,6 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CN_Bill_Cancel.
-        /// </summary>
-        public static string Command_Message_Bill_Cancel {
-            get {
-                return ResourceManager.GetString("Command_Message_Bill_Cancel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Bill_Delete.
-        /// </summary>
-        public static string Command_Message_Bill_Delete {
-            get {
-                return ResourceManager.GetString("Command_Message_Bill_Delete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Bill_Edit.
-        /// </summary>
-        public static string Command_Message_Bill_Edit {
-            get {
-                return ResourceManager.GetString("Command_Message_Bill_Edit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Bill_SaveOrUpdate.
-        /// </summary>
-        public static string Command_Message_Bill_SaveOrUpdate {
-            get {
-                return ResourceManager.GetString("Command_Message_Bill_SaveOrUpdate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Bill_Search.
-        /// </summary>
-        public static string Command_Message_Bill_Search {
-            get {
-                return ResourceManager.GetString("Command_Message_Bill_Search", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_BillItem_Add.
-        /// </summary>
-        public static string Command_Message_BillItem_Add {
-            get {
-                return ResourceManager.GetString("Command_Message_BillItem_Add", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_BillItem_Delete.
-        /// </summary>
-        public static string Command_Message_BillItem_Delete {
-            get {
-                return ResourceManager.GetString("Command_Message_BillItem_Delete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_BillItem_Down.
-        /// </summary>
-        public static string Command_Message_BillItem_Down {
-            get {
-                return ResourceManager.GetString("Command_Message_BillItem_Down", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_BillItem_Up.
-        /// </summary>
-        public static string Command_Message_BillItem_Up {
-            get {
-                return ResourceManager.GetString("Command_Message_BillItem_Up", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Client_Add.
-        /// </summary>
-        public static string Command_Message_Client_Add {
-            get {
-                return ResourceManager.GetString("Command_Message_Client_Add", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Client_Cancel.
-        /// </summary>
-        public static string Command_Message_Client_Cancel {
-            get {
-                return ResourceManager.GetString("Command_Message_Client_Cancel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Client_Delete.
-        /// </summary>
-        public static string Command_Message_Client_Delete {
-            get {
-                return ResourceManager.GetString("Command_Message_Client_Delete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Client_Edit.
-        /// </summary>
-        public static string Command_Message_Client_Edit {
-            get {
-                return ResourceManager.GetString("Command_Message_Client_Edit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Client_Load.
-        /// </summary>
-        public static string Command_Message_Client_Load {
-            get {
-                return ResourceManager.GetString("Command_Message_Client_Load", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Client_SaveOrUpdate.
-        /// </summary>
-        public static string Command_Message_Client_SaveOrUpdate {
-            get {
-                return ResourceManager.GetString("Command_Message_Client_SaveOrUpdate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Client_Search.
-        /// </summary>
-        public static string Command_Message_Client_Search {
-            get {
-                return ResourceManager.GetString("Command_Message_Client_Search", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Next_Page.
-        /// </summary>
-        public static string Command_Message_Next_Page {
-            get {
-                return ResourceManager.GetString("Command_Message_Next_Page", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CN_Previous_Page.
-        /// </summary>
-        public static string Command_Message_Previous_Page {
-            get {
-                return ResourceManager.GetString("Command_Message_Previous_Page", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Rechnungsprogramm.db.
         /// </summary>
         public static string Database_NameWithExtension {
@@ -327,6 +165,15 @@ namespace EpAccounting.UI.Properties {
         public static string Dialog_Message_ClientHasMissingNamePart {
             get {
                 return ResourceManager.GetString("Dialog_Message_ClientHasMissingNamePart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jede Artikelnummer darf nur 1 mal vorkommen..
+        /// </summary>
+        public static string Dialog_Message_MultipleEqualArticleNumbers {
+            get {
+                return ResourceManager.GetString("Dialog_Message_MultipleEqualArticleNumbers", resourceCulture);
             }
         }
         
@@ -518,6 +365,16 @@ namespace EpAccounting.UI.Properties {
         public static System.Drawing.Bitmap img_arrow_up {
             get {
                 object obj = ResourceManager.GetObject("img_arrow_up", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap img_articles {
+            get {
+                object obj = ResourceManager.GetObject("img_articles", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -719,6 +576,15 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Message_CreateNewBillMessageForMainVM.
+        /// </summary>
+        public static string Message_CreateNewBillMessageForMainVM {
+            get {
+                return ResourceManager.GetString("Message_CreateNewBillMessageForMainVM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Message_EnableStateForBillItemEditVM.
         /// </summary>
         public static string Message_EnableStateForBillItemEditVM {
@@ -733,6 +599,24 @@ namespace EpAccounting.UI.Properties {
         public static string Message_EnableStateForClientSearchVM {
             get {
                 return ResourceManager.GetString("Message_EnableStateForClientSearchVM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message_FocusArticleForArticlesOptionView.
+        /// </summary>
+        public static string Message_FocusArticleForArticlesOptionView {
+            get {
+                return ResourceManager.GetString("Message_FocusArticleForArticlesOptionView", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message_FocusBillItemsMessageForBillItemEditView.
+        /// </summary>
+        public static string Message_FocusBillItemsMessageForBillItemEditView {
+            get {
+                return ResourceManager.GetString("Message_FocusBillItemsMessageForBillItemEditView", resourceCulture);
             }
         }
         
@@ -899,29 +783,20 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Message_UpdateSumsForBillItemEditVM.
+        /// </summary>
+        public static string Message_UpdateSumsForBillItemEditVM {
+            get {
+                return ResourceManager.GetString("Message_UpdateSumsForBillItemEditVM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Message_WorkspaceEnableStateForMainVM.
         /// </summary>
         public static string Message_WorkspaceEnableStateForMainVM {
             get {
                 return ResourceManager.GetString("Message_WorkspaceEnableStateForMainVM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Message_CreateNewBillMessageForMainVM.
-        /// </summary>
-        public static string Messenger_Message_CreateNewBillMessageForMainVM {
-            get {
-                return ResourceManager.GetString("Messenger_Message_CreateNewBillMessageForMainVM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Message_FocusBillItemsMessageForBillItemEditView.
-        /// </summary>
-        public static string Messenger_Message_FocusBillItemsMessageForBillItemEditView {
-            get {
-                return ResourceManager.GetString("Messenger_Message_FocusBillItemsMessageForBillItemEditView", resourceCulture);
             }
         }
         
@@ -935,9 +810,18 @@ namespace EpAccounting.UI.Properties {
         ///    &lt;Bill BillID=&quot;1&quot; Date=&quot;27.11.2016&quot; KindOfBill=&quot;Rechnung&quot; KindOfVAT=&quot;inkl_MwSt&quot; VATPercentage=&quot;19&quot;&gt;
         ///     [rest of string was truncated]&quot;;.
         /// </summary>
-        public static string TestData {
+        public static string testdata {
             get {
-                return ResourceManager.GetString("TestData", resourceCulture);
+                return ResourceManager.GetString("testdata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bitte geben Sie ein gültiges Datum ein..
+        /// </summary>
+        public static string ValidationError_InvalidDate {
+            get {
+                return ResourceManager.GetString("ValidationError_InvalidDate", resourceCulture);
             }
         }
         

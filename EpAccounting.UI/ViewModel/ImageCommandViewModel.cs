@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ImageCommandViewModel.cs
-// Last Change: 14.03.2017  19:53
+// Last Change: 16.09.2017  11:33
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -17,19 +17,15 @@ namespace EpAccounting.UI.ViewModel
     {
         #region Constructors / Destructor
 
-
-
         #region Constructors
 
-        public ImageCommandViewModel(Bitmap image, string displayName, string commandMessage, RelayCommand relayCommand)
-            : base(displayName, commandMessage, relayCommand)
+        public ImageCommandViewModel(Bitmap image, string displayName, RelayCommand relayCommand)
+            : base(displayName, relayCommand)
         {
             this.Image = image;
         }
 
         #endregion
-
-
 
         #endregion
 

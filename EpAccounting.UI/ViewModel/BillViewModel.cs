@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillViewModel.cs
-// Last Change: 24.08.2017  20:29
+// Last Change: 02.09.2017  10:30
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -36,7 +36,7 @@ namespace EpAccounting.UI.ViewModel
         public BillViewModel(string title, Bitmap image, IRepository repository, IDialogService dialogService) : base(title, image)
         {
             this._billEditViewModel = new BillEditViewModel(repository, dialogService);
-            this._billItemEditViewModel = new BillItemEditViewModel();
+            this._billItemEditViewModel = new BillItemEditViewModel(repository);
             this._billSearchViewModel = new BillSearchViewModel(repository);
             this._billWorkspaceViewModel = this.BillSearchViewModel;
 

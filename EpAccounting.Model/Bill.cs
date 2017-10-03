@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: Bill.cs
-// Last Change: 28.03.2017  19:00
+// Last Change: 05.09.2017  19:37
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -10,6 +10,7 @@ namespace EpAccounting.Model
 {
     using System;
     using System.Collections.Generic;
+    using EpAccounting.Model.Enum;
     using EpAccounting.Model.Properties;
 
 
@@ -18,13 +19,13 @@ namespace EpAccounting.Model
     {
         #region Properties
 
-        public virtual int BillId { get; set; }
+        public virtual int Id { get; set; }
 
         public virtual Client Client { get; set; }
 
-        public virtual string KindOfBill { get; set; }
+        public virtual KindOfBill? KindOfBill { get; set; }
 
-        public virtual string KindOfVat { get; set; }
+        public virtual KindOfVat? KindOfVat { get; set; }
 
         public virtual double VatPercentage { get; set; }
 
@@ -67,9 +68,9 @@ namespace EpAccounting.Model
                 return false;
             }
 
-            bool equalBillItem = this.BillId == otherBill.BillId && this.Client?.ClientId == otherBill.Client?.ClientId &&
-                                 string.Equals(this.KindOfBill, otherBill.KindOfBill) && string.Equals(this.KindOfVat, otherBill.KindOfVat) &&
-                                 this.VatPercentage.Equals(otherBill.VatPercentage) && string.Equals(this.Date, otherBill.Date);
+            bool equalBillItem = this.Id == otherBill.Id && this.Client?.Id == otherBill.Client?.Id &&
+                                 Equals(this.KindOfBill, otherBill.KindOfBill) && Equals(this.KindOfVat, otherBill.KindOfVat) &&
+                                 this.VatPercentage.Equals(otherBill.VatPercentage) && Equals(this.Date, otherBill.Date);
 
             if (!equalBillItem || (this.BillItems.Count != otherBill.BillItems.Count))
             {
@@ -91,12 +92,12 @@ namespace EpAccounting.Model
         {
             unchecked
             {
-                int hashCode = this.BillId;
+                int hashCode = this.Id;
                 hashCode = (hashCode * 397) ^ (this.Client?.GetHashCode() ?? 0);
-                hashCode = (hashCode * 397) ^ (this.KindOfBill?.GetHashCode() ?? 0);
-                hashCode = (hashCode * 397) ^ (this.KindOfVat?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ this.KindOfBill.GetHashCode();
+                hashCode = (hashCode * 397) ^ this.KindOfVat.GetHashCode();
                 hashCode = (hashCode * 397) ^ this.VatPercentage.GetHashCode();
-                hashCode = (hashCode * 397) ^ (this.Date?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ this.Date.GetHashCode();
                 hashCode = (hashCode * 397) ^ (this.BillItems?.GetHashCode() ?? 0);
                 return hashCode;
             }

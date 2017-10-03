@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditViewModel.cs
-// Last Change: 29.08.2017  18:49
+// Last Change: 16.09.2017  11:57
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -34,7 +34,7 @@ namespace EpAccounting.UI.ViewModel
         private Client currentClient;
         private ClientDetailViewModel _currentClientDetailViewModel;
 
-        private IClientState _currentClientState;
+        private IClientState currentState;
         private ClientEmptyState _clientEmptyState;
         private ClientSearchState _clientSearchState;
         private ClientCreationState _clientCreationState;
@@ -57,10 +57,10 @@ namespace EpAccounting.UI.ViewModel
             this.dialogService = dialogService;
 
             this.InitPropertyInfos();
-            this.InitClientStates();
-            this.InitClientCommands();
+            this.InitStates();
+            this.InitStateCommands();
 
-            this._currentClientState = this.GetClientEmptyState();
+            this.currentState = this.GetClientEmptyState();
             this.SetCurrentClient(new Client());
 
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
@@ -78,17 +78,17 @@ namespace EpAccounting.UI.ViewModel
             private set { this.SetProperty(ref this._currentClientDetailViewModel, value); }
         }
 
-        public IClientState CurrentClientState
+        public IClientState CurrentState
         {
-            get { return this._currentClientState; }
-            private set { this.SetProperty(ref this._currentClientState, value); }
+            get { return this.currentState; }
+            private set { this.SetProperty(ref this.currentState, value); }
         }
 
         public bool CanInsertClientId
         {
             get
             {
-                if (this.repository.IsConnected && this.CurrentClientState is ClientSearchState)
+                if (this.repository.IsConnected && this.CurrentState is ClientSearchState)
                 {
                     return true;
                 }
@@ -114,7 +114,7 @@ namespace EpAccounting.UI.ViewModel
         {
             get
             {
-                if (this.repository.IsConnected && this.CurrentClientState is ClientLoadedState)
+                if (this.repository.IsConnected && this.CurrentState is ClientLoadedState)
                 {
                     return true;
                 }
@@ -129,48 +129,9 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        public virtual void ChangeToEmptyMode()
-        {
-            this.LoadClient(new Client());
-            this.LoadClientState(this.GetClientEmptyState());
-            this.UpdateViewModel();
-        }
-
-        public virtual void ChangeToCreationMode()
-        {
-            this.LoadClient(new Client());
-            this.LoadClientState(this.GetClientCreationState());
-            this.UpdateViewModel();
-        }
-
-        public virtual void ChangeToSearchMode()
-        {
-            this.LoadClient(new Client());
-            this.LoadClientState(this.GetClientSearchState());
-            this.UpdateViewModel();
-        }
-
-        public virtual void ChangeToLoadedMode(Client client = null)
-        {
-            this.LoadClient(client);
-            this.LoadClientState(this.GetClientLoadedState());
-            this.UpdateViewModel();
-        }
-
-        public virtual void ChangeToEditMode()
-        {
-            if (this.CurrentClientState != this.GetClientLoadedState())
-            {
-                return;
-            }
-
-            this.LoadClientState(this.GetClientEditState());
-            this.UpdateViewModel();
-        }
-
         public virtual void Reload()
         {
-            this.ChangeToLoadedMode(this.repository.GetById<Client>(this.currentClient.ClientId));
+            this.ChangeToLoadedMode(this.repository.GetById<Client>(this.currentClient.Id));
         }
 
         public virtual async Task<bool> SaveOrUpdateClientAsync()
@@ -248,7 +209,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void LoadClientState(IClientState clientState)
         {
-            this.CurrentClientState = clientState;
+            this.CurrentState = clientState;
         }
 
         private void UpdateViewModel()
@@ -260,7 +221,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void UpdateCommands()
         {
-            foreach (ImageCommandViewModel command in this.ClientCommands)
+            foreach (ImageCommandViewModel command in this.StateCommands)
             {
                 command.RelayCommand.RaiseCanExecuteChanged();
             }
@@ -285,7 +246,7 @@ namespace EpAccounting.UI.ViewModel
 
         private ICriterion GetEqualClientCriterion()
         {
-            return Restrictions.Where<Client>(c => (c.ClientId != this.CurrentClientDetailViewModel.ClientId &&
+            return Restrictions.Where<Client>(c => (c.Id != this.CurrentClientDetailViewModel.Id &&
                                                     c.FirstName == this.CurrentClientDetailViewModel.FirstName) &&
                                                    (c.LastName == this.CurrentClientDetailViewModel.LastName));
         }
@@ -294,15 +255,15 @@ namespace EpAccounting.UI.ViewModel
         {
             Conjunction conjunction = Restrictions.Conjunction();
 
-            if (this.CurrentClientDetailViewModel.ClientId != 0)
+            if (this.CurrentClientDetailViewModel.Id != 0)
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.ClientId == this.CurrentClientDetailViewModel.ClientId));
+                conjunction.Add(Restrictions.Where<Client>(c => c.Id == this.CurrentClientDetailViewModel.Id));
                 return conjunction;
             }
 
-            if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.Title))
+            if (this.CurrentClientDetailViewModel.Title != null)
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.Title.IsLike(this.CurrentClientDetailViewModel.Title, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c => c.Title == this.CurrentClientDetailViewModel.Title));
             }
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.FirstName))
             {
@@ -367,15 +328,45 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region ClientState Methods
+        #region States
 
-        private void InitClientStates()
+        public virtual void ChangeToEmptyMode()
         {
-            this._clientEmptyState = new ClientEmptyState(this);
-            this._clientSearchState = new ClientSearchState(this);
-            this._clientCreationState = new ClientCreationState(this);
-            this._clientLoadedState = new ClientLoadedState(this);
-            this._clientEditState = new ClientEditState(this);
+            this.LoadClient(new Client());
+            this.LoadClientState(this.GetClientEmptyState());
+            this.UpdateViewModel();
+        }
+
+        public virtual void ChangeToCreationMode()
+        {
+            this.LoadClient(new Client());
+            this.LoadClientState(this.GetClientCreationState());
+            this.UpdateViewModel();
+        }
+
+        public virtual void ChangeToSearchMode()
+        {
+            this.LoadClient(new Client());
+            this.LoadClientState(this.GetClientSearchState());
+            this.UpdateViewModel();
+        }
+
+        public virtual void ChangeToLoadedMode(Client client = null)
+        {
+            this.LoadClient(client);
+            this.LoadClientState(this.GetClientLoadedState());
+            this.UpdateViewModel();
+        }
+
+        public virtual void ChangeToEditMode()
+        {
+            if (this.CurrentState != this.GetClientLoadedState())
+            {
+                return;
+            }
+
+            this.LoadClientState(this.GetClientEditState());
+            this.UpdateViewModel();
         }
 
         public IClientState GetClientEmptyState()
@@ -403,6 +394,15 @@ namespace EpAccounting.UI.ViewModel
             return this._clientEditState;
         }
 
+        private void InitStates()
+        {
+            this._clientEmptyState = new ClientEmptyState(this);
+            this._clientSearchState = new ClientSearchState(this);
+            this._clientCreationState = new ClientCreationState(this);
+            this._clientLoadedState = new ClientLoadedState(this);
+            this._clientEditState = new ClientEditState(this);
+        }
+
         #endregion
 
 
@@ -417,7 +417,7 @@ namespace EpAccounting.UI.ViewModel
             }
             else if (message.Notification == Resources.Message_UpdateClientForClientEditVM)
             {
-                if (this.currentClient.ClientId == message.Content)
+                if (this.currentClient.Id == message.Content)
                 {
                     this.Reload();
                 }
@@ -432,32 +432,32 @@ namespace EpAccounting.UI.ViewModel
 
         public virtual void SendUpdateClientValuesMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id,
                                                                 Resources.Message_UpdateClientValuesForClientSearchVM));
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id,
                                                                 Resources.Message_UpdateClientValuesForBillEditVM));
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id,
                                                                 Resources.Message_UpdateClientValuesForBillSearchVM));
         }
 
         private void SendRemoveClientMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id,
                                                                 Resources.Message_RemoveClientForClientSearchVM));
 
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id,
                                                                 Resources.Message_RemoveClientForBillEditVM));
 
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id,
                                                                 Resources.Message_RemoveClientForBillSearchVM));
 
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId,
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id,
                                                                 Resources.Message_RemoveClientForBillItemEditVM));
         }
 
         private void SendEnableStateForClientSearchAndWorkspaceMessage()
         {
-            if (this.CurrentClientState == this.GetClientEditState() || this.CurrentClientState == this.GetClientCreationState())
+            if (this.CurrentState == this.GetClientEditState() || this.CurrentState == this.GetClientCreationState())
             {
                 Messenger.Default.Send(new NotificationMessage<bool>(false,
                                                                      Resources.Message_EnableStateForClientSearchVM));
@@ -507,7 +507,8 @@ namespace EpAccounting.UI.ViewModel
 
         public RelayCommand ClearFieldsCommand
         {
-            get {
+            get
+            {
                 if (this._clearFieldsCommand == null)
                 {
                     this._clearFieldsCommand = new RelayCommand(this.ClearFields, this.CanClearFields);
@@ -519,7 +520,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanCreateNewBill()
         {
-            if (this.CurrentClientState == this.GetClientLoadedState())
+            if (this.CurrentState == this.GetClientLoadedState())
             {
                 return true;
             }
@@ -530,12 +531,12 @@ namespace EpAccounting.UI.ViewModel
         private void SendCreateNewBillMessage()
         {
             Messenger.Default.Send(new NotificationMessage(Resources.Message_ChangeToBillWorkspaceForMainVM));
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.ClientId, Resources.Message_CreateNewBillForBillEditVM));
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id, Resources.Message_CreateNewBillForBillEditVM));
         }
 
         private bool CanSendLoadBillsFromClientMessage()
         {
-            if (this.CurrentClientState == this.GetClientLoadedState())
+            if (this.CurrentState == this.GetClientLoadedState())
             {
                 return true;
             }
@@ -546,13 +547,13 @@ namespace EpAccounting.UI.ViewModel
         private void SendLoadBillsFromClientMessage()
         {
             Messenger.Default.Send(new NotificationMessage(Resources.Message_ChangeToBillWorkspaceForMainVM));
-            Messenger.Default.Send(new NotificationMessage<int>(this.currentClient.ClientId, Resources.Message_LoadBillsFromClientForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<int>(this.currentClient.Id, Resources.Message_LoadBillsFromClientForBillSearchVM));
             Messenger.Default.Send(new NotificationMessage<Client>(this.currentClient, Resources.Message_SwitchToSearchModeAndLoadClientDataForBillEditVM));
         }
 
         private bool CanClearFields()
         {
-            if (this.CurrentClientState == this.GetClientLoadedState())
+            if (this.CurrentState == this.GetClientLoadedState())
             {
                 return true;
             }
@@ -571,127 +572,91 @@ namespace EpAccounting.UI.ViewModel
 
         #region State Commands
 
-        public List<ImageCommandViewModel> ClientCommands { get; private set; }
+        public List<ImageCommandViewModel> StateCommands { get; private set; }
 
-        private void InitClientCommands()
+        private void InitStateCommands()
         {
-            this.ClientCommands = new List<ImageCommandViewModel>
-                                  {
-                                      new ImageCommandViewModel(Resources.img_client_search,
-                                                                Resources.Command_DisplayName_Search,
-                                                                Resources.Command_Message_Client_Search,
-                                                                new RelayCommand(this.SwitchToSearchMode, this.CanSwitchToSearchMode)),
-                                      new ImageCommandViewModel(Resources.img_client_add,
-                                                                Resources.Command_DisplayName_Add,
-                                                                Resources.Command_Message_Client_Add,
-                                                                new RelayCommand(this.SwitchToAddMode, this.CanSwitchToAddMode)),
-                                      new ImageCommandViewModel(Resources.img_client_edit,
-                                                                Resources.Command_DisplayName_Edit,
-                                                                Resources.Command_Message_Client_Edit,
-                                                                new RelayCommand(this.SwitchToEditMode, this.CanSwitchToEditMode)),
-                                      new ImageCommandViewModel(Resources.img_client_saveOrUpdate,
-                                                                Resources.Command_DisplayName_SaveOrUpdate,
-                                                                Resources.Command_Message_Client_SaveOrUpdate,
-                                                                new RelayCommand(this.Commit, this.CanCommit)),
-                                      new ImageCommandViewModel(Resources.img_client_cancel,
-                                                                Resources.Command_DisplayName_Cancel,
-                                                                Resources.Command_Message_Client_Cancel,
-                                                                new RelayCommand(this.Cancel, this.CanCancel)),
-                                      new ImageCommandViewModel(Resources.img_delete,
-                                                                Resources.Command_DisplayName_Delete,
-                                                                Resources.Command_Message_Client_Delete,
-                                                                new RelayCommand(this.Delete, this.CanDelete))
-                                  };
+            this.StateCommands = new List<ImageCommandViewModel>
+                                 {
+                                     new ImageCommandViewModel(Resources.img_client_search,
+                                                               Resources.Command_DisplayName_Search,
+                                                               new RelayCommand(this.SwitchToSearchMode, this.CanSwitchToSearchMode)),
+                                     new ImageCommandViewModel(Resources.img_client_add,
+                                                               Resources.Command_DisplayName_Add,
+                                                               new RelayCommand(this.SwitchToAddMode, this.CanSwitchToAddMode)),
+                                     new ImageCommandViewModel(Resources.img_client_edit,
+                                                               Resources.Command_DisplayName_Edit,
+                                                               new RelayCommand(this.SwitchToEditMode, this.CanSwitchToEditMode)),
+                                     new ImageCommandViewModel(Resources.img_client_saveOrUpdate,
+                                                               Resources.Command_DisplayName_SaveOrUpdate,
+                                                               new RelayCommand(this.Commit, this.CanCommit)),
+                                     new ImageCommandViewModel(Resources.img_client_cancel,
+                                                               Resources.Command_DisplayName_Cancel,
+                                                               new RelayCommand(this.Cancel, this.CanCancel)),
+                                     new ImageCommandViewModel(Resources.img_delete,
+                                                               Resources.Command_DisplayName_Delete,
+                                                               new RelayCommand(this.Delete, this.CanDelete))
+                                 };
         }
 
         private bool CanSwitchToSearchMode()
         {
-            if (this.repository.IsConnected && this.CurrentClientState.CanSwitchToSearchMode())
-            {
-                return true;
-            }
-
-            return false;
+            return this.repository.IsConnected && this.CurrentState.CanSwitchToSearchMode();
         }
 
         private void SwitchToSearchMode()
         {
-            this.CurrentClientState.SwitchToSearchMode();
+            this.CurrentState.SwitchToSearchMode();
         }
 
         private bool CanSwitchToAddMode()
         {
-            if (this.repository.IsConnected && this.CurrentClientState.CanSwitchToAddMode())
-            {
-                return true;
-            }
-
-            return false;
+            return this.repository.IsConnected && this.CurrentState.CanSwitchToAddMode();
         }
 
         private void SwitchToAddMode()
         {
-            this.CurrentClientState.SwitchToAddMode();
+            this.CurrentState.SwitchToAddMode();
         }
 
         private bool CanSwitchToEditMode()
         {
-            if (this.repository.IsConnected && this.CurrentClientState.CanSwitchToEditMode())
-            {
-                return true;
-            }
-
-            return false;
+            return this.repository.IsConnected && this.CurrentState.CanSwitchToEditMode();
         }
 
         private void SwitchToEditMode()
         {
-            this.CurrentClientState.SwitchToEditMode();
+            this.CurrentState.SwitchToEditMode();
         }
 
         private bool CanCommit()
         {
-            if (this.repository.IsConnected && this.CurrentClientState.CanCommit())
-            {
-                return true;
-            }
-
-            return false;
+            return this.repository.IsConnected && this.CurrentState.CanCommit();
         }
 
         private void Commit()
         {
-            this.CurrentClientState.Commit();
+            this.CurrentState.Commit();
         }
 
         private bool CanCancel()
         {
-            if (this.repository.IsConnected && this.CurrentClientState.CanCancel())
-            {
-                return true;
-            }
-
-            return false;
+            return this.repository.IsConnected && this.CurrentState.CanCancel();
         }
 
         private void Cancel()
         {
-            this.CurrentClientState.Cancel();
+            this.CurrentState.Cancel();
         }
 
         private bool CanDelete()
         {
-            if (this.repository.IsConnected && this.CurrentClientState.CanDelete())
-            {
-                return true;
-            }
-
-            return false;
+            return this.repository.IsConnected && this.CurrentState.CanDelete();
         }
 
         private void Delete()
         {
-            this.CurrentClientState.Delete();
+            this.CurrentState.Delete();
         }
 
         #endregion

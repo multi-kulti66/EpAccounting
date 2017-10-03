@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: IDialogService.cs
-// Last Change: 13.03.2017  21:01
+// Last Change: 02.09.2017  10:30
 // Author: Andre Multerer
 // ///////////////////////////////////
 

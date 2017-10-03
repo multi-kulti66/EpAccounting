@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillDetailViewModelTest.cs
-// Last Change: 22.08.2017  19:49
+// Last Change: 14.09.2017  19:44
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,8 +9,11 @@
 namespace EpAccounting.Test.UI.ViewModel
 {
     using System;
+    using EpAccounting.Model.Enum;
+    using EpAccounting.UI.Properties;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
+    using GalaSoft.MvvmLight.Messaging;
     using NUnit.Framework;
 
 
@@ -51,7 +54,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void GetDefaultValues()
         {
             // Assert
-            this.billDetailViewModel.BillId.Should().Be(0); // not in database
+            this.billDetailViewModel.Id.Should().Be(0); // not in database
             this.billDetailViewModel.KindOfBill.Should().Be(ModelFactory.DefaultBillKindOfBill);
             this.billDetailViewModel.KindOfVat.Should().Be(ModelFactory.DefaultBillKindOfVat);
             this.billDetailViewModel.VatPercentage.Should().Be(ModelFactory.DefaultBillVatPercentage);
@@ -71,11 +74,11 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             const int BillId = 4;
-            const string KindOfBill = "Gutschein";
-            const string KindOfVat = "zzgl";
+            KindOfBill KindOfBill = KindOfBill.Gutschrift;
+            KindOfVat KindOfVat = KindOfVat.zzgl_MwSt;
             const double VatPercentage = 34.234;
-            const string Date = "14.4.2012";
-            const string Title = "Madam";
+            const string Date = "14.04.2014";
+            ClientTitle Title = ClientTitle.Frau;
             const int ClientId = 10;
             const string FirstName = "Mia";
             const string LastName = "Meier";
@@ -85,7 +88,7 @@ namespace EpAccounting.Test.UI.ViewModel
             const string City = "Berlin";
 
             // Act
-            this.billDetailViewModel.BillId = BillId;
+            this.billDetailViewModel.Id = BillId;
             this.billDetailViewModel.KindOfBill = KindOfBill;
             this.billDetailViewModel.KindOfVat = KindOfVat;
             this.billDetailViewModel.VatPercentage = VatPercentage;
@@ -100,7 +103,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billDetailViewModel.City = City;
 
             // Assert
-            this.billDetailViewModel.BillId.Should().Be(BillId);
+            this.billDetailViewModel.Id.Should().Be(BillId);
             this.billDetailViewModel.KindOfBill.Should().Be(KindOfBill);
             this.billDetailViewModel.KindOfVat.Should().Be(KindOfVat);
             this.billDetailViewModel.VatPercentage.Should().Be(VatPercentage);
@@ -113,6 +116,21 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billDetailViewModel.HouseNumber.Should().Be(HouseNumber);
             this.billDetailViewModel.PostalCode.Should().Be(PostalCode);
             this.billDetailViewModel.City.Should().Be(City);
+        }
+
+        [Test]
+        public void SendsUpdateMessageWhenKindOfVatChanges()
+        {
+            // Arrange
+            NotificationMessage notificaton = null;
+            Messenger.Default.Register<NotificationMessage>(this, x => notificaton = x);
+
+            // Act
+            this.billDetailViewModel.KindOfVat = KindOfVat.without_MwSt;
+
+            // Assert
+            notificaton.Should().NotBeNull();
+            notificaton.Notification.Should().Be(Resources.Message_UpdateSumsForBillItemEditVM);
         }
 
         #endregion

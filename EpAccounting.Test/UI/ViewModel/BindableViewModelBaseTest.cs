@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BindableViewModelBaseTest.cs
-// Last Change: 23.08.2017  20:18
+// Last Change: 18.09.2017  20:35
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -140,7 +140,7 @@ namespace EpAccounting.Test.UI.ViewModel
             public string Name
             {
                 get { return this.subTestClass.Name; }
-                set { this.SetProperty(this.subTestClass.Name, value, () => this.subTestClass.Name = value); }
+                set { this.SetProperty(() => this.subTestClass.Name = value, () => this.subTestClass.Name == value); }
             }
 
             #endregion

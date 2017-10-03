@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BindableViewModelBase.cs
-// Last Change: 13.03.2017  15:26
+// Last Change: 22.09.2017  20:42
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,13 +9,66 @@
 namespace EpAccounting.UI.ViewModel
 {
     using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
+    using System.Reflection;
     using System.Runtime.CompilerServices;
     using GalaSoft.MvvmLight;
 
 
 
-    public abstract class BindableViewModelBase : ViewModelBase
+    public abstract class BindableViewModelBase : ViewModelBase, IDataErrorInfo
     {
+        #region Fields
+
+        private PropertyInfo[] _propertyInfos;
+
+        #endregion
+
+
+
+        #region Properties
+
+        public bool IsValid
+        {
+            get
+            {
+                foreach (PropertyInfo propertyinfo in this.GetPropertyInfos())
+                {
+                    string error = (this as IDataErrorInfo)[propertyinfo.Name];
+
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        #endregion
+
+
+
+        #region IDataErrorInfo Members
+
+        public string this[string propertyName]
+        {
+            get { return this.Validate(propertyName); }
+        }
+
+        public string Error
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+        #endregion
+
+
+
         #region Methods
 
         protected virtual bool SetProperty<T>(ref T storage, T newValue, [CallerMemberName] string propertyName = null)
@@ -30,16 +83,50 @@ namespace EpAccounting.UI.ViewModel
             return true;
         }
 
-        protected virtual bool SetProperty<T>(T currentValue, T newValue, Action doSet, [CallerMemberName] string propertyName = null)
+        protected virtual bool SetProperty(Action action, Func<bool> equals, [CallerMemberName] string propertyName = null)
         {
-            if (Equals(currentValue, newValue))
+            if (equals())
             {
                 return false;
             }
 
-            doSet.Invoke();
+            action();
             this.RaisePropertyChanged(propertyName);
             return true;
+        }
+
+        protected virtual string Validate(string propertyName)
+        {
+            List<ValidationResult> results = new List<ValidationResult>();
+
+            bool isValid = Validator.TryValidateProperty(this.GetPropertyValue(propertyName),
+                                                         new ValidationContext(this, null, null) { MemberName = propertyName },
+                                                         results);
+
+            return isValid ? string.Empty : results.First().ErrorMessage;
+        }
+
+        private object GetPropertyValue(string propertyName)
+        {
+            Type type = this.GetPropertyInfos().First(x => x.Name == propertyName).PropertyType;
+            object value = this.GetPropertyInfos().First(x => x.Name == propertyName).GetValue(this);
+
+            if (type == typeof(string) && value == null)
+            {
+                value = string.Empty;
+            }
+
+            return value;
+        }
+
+        private PropertyInfo[] GetPropertyInfos()
+        {
+            if (this._propertyInfos == null)
+            {
+                this._propertyInfos = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray();
+            }
+
+            return this._propertyInfos;
         }
 
         #endregion Methods

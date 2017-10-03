@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="EpAccounting.UI.View.User_Control.ClientView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModel="clr-namespace:EpAccounting.UI.ViewModel"
+             xmlns:userControl1="clr-namespace:EpAccounting.UI.View.User_Control"
+             d:DataContext="{d:DesignInstance viewModel:ClientViewModel}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary Source="/View/ViewResourceDictionary.xaml" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <userControl1:ClientEditView x:Name="ClientEditView" Grid.Column="0" DataContext="{Binding Path=ClientEditViewModel}" />
+        <GridSplitter Grid.Column="1" Style="{StaticResource VerticalGridSplitterStyle}" />
+        <userControl1:ClientSearchView Grid.Column="2" MaxHeight="{Binding ActualHeight, ElementName=ClientEditView}" DataContext="{Binding Path=ClientSearchViewModel}" />
+
+    </Grid>
+</UserControl>

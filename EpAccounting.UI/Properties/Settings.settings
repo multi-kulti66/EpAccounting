@@ -20,5 +20,8 @@
     <Setting Name="PageSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">50</Value>
     </Setting>
+    <Setting Name="VAT" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">19</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

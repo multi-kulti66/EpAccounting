@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditViewModel.cs
-// Last Change: 22.08.2017  20:56
+// Last Change: 21.09.2017  12:12
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -10,8 +10,12 @@ namespace EpAccounting.UI.ViewModel
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
     using System.Linq;
+    using EpAccounting.Business;
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
     using EpAccounting.UI.Markup;
     using EpAccounting.UI.Properties;
     using GalaSoft.MvvmLight.Command;
@@ -22,6 +26,8 @@ namespace EpAccounting.UI.ViewModel
     public class BillItemEditViewModel : BillWorkspaceViewModel
     {
         #region Fields
+
+        private readonly IRepository repository;
 
         private Bill currentBill;
         private ObservableCollection<BillItemDetailViewModel> _billItemDetailViewModels;
@@ -34,18 +40,25 @@ namespace EpAccounting.UI.ViewModel
         private ImageCommandViewModel _moveItemUpCommand;
         private ImageCommandViewModel _moveItemDownCommand;
 
+        private RelayCommand _changeVATCommand;
+
         #endregion
 
 
 
         #region Constructors / Destructor
 
-        public BillItemEditViewModel()
+        public BillItemEditViewModel(IRepository repository)
         {
+            this.repository = repository;
+
             this.InitCommands();
 
+            Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<bool>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
+
+            this.BillItemDetailViewModels.CollectionChanged += this.OnCollectionChanged;
         }
 
         #endregion
@@ -77,6 +90,8 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
+        public bool CanChangeVAT { get; private set; }
+
         public bool IsEditingEnabled
         {
             get { return this._isEditingEnabled; }
@@ -87,19 +102,38 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
+        public decimal NettoSum { get; private set; }
+
+        public decimal VatSum { get; private set; }
+
+        public decimal BruttoSum { get; private set; }
+
+        public RelayCommand ChangeVATCommand
+        {
+            get
+            {
+                if (this._changeVATCommand == null)
+                {
+                    this._changeVATCommand = new RelayCommand(this.ChangeVAT);
+                }
+
+                return this._changeVATCommand;
+            }
+        }
+
         #endregion
 
 
-
-        public void LoadBill(Bill bill)
-        {
-            this.LoadBillItems(bill);
-        }
 
         public void Clear()
         {
             this.currentBill = null;
             this.BillItemDetailViewModels.Clear();
+        }
+
+        public void LoadBill(Bill bill)
+        {
+            this.LoadBillItems(bill);
         }
 
         private void LoadBillItems(Bill bill)
@@ -110,13 +144,94 @@ namespace EpAccounting.UI.ViewModel
 
             foreach (BillItem billItem in this.currentBill.BillItems)
             {
-                this.BillItemDetailViewModels.InsertOrderedBy(new BillItemDetailViewModel(billItem), x => x.Position);
+                this.BillItemDetailViewModels.InsertOrderedBy(new BillItemDetailViewModel(billItem, this.repository), x => x.Position);
             }
+
+            this.CalculateSums();
+        }
+
+        private void CalculateSums()
+        {
+            decimal sum = 0;
+
+            foreach (BillItemDetailViewModel billItemDetailViewModel in this.BillItemDetailViewModels)
+            {
+                sum += billItemDetailViewModel.Sum;
+            }
+
+            if (this.currentBill.KindOfVat == KindOfVat.inkl_MwSt)
+            {
+                this.BruttoSum = sum;
+                this.VatSum = this.BruttoSum / (decimal)(100 + Settings.Default.VAT) * (decimal)Settings.Default.VAT;
+                this.NettoSum = this.BruttoSum - this.VatSum;
+            }
+            else if (this.currentBill.KindOfVat == KindOfVat.zzgl_MwSt)
+            {
+                this.NettoSum = sum;
+                this.BruttoSum = sum * (100 + (decimal)Settings.Default.VAT) / 100;
+                this.VatSum = this.BruttoSum - this.NettoSum;
+            }
+            else
+            {
+                this.NettoSum = sum;
+                this.BruttoSum = sum;
+                this.VatSum = 0;
+            }
+
+            this.RaisePropertyChanged(() => this.NettoSum);
+            this.RaisePropertyChanged(() => this.VatSum);
+            this.RaisePropertyChanged(() => this.BruttoSum);
+        }
+
+        private void ChangeVAT()
+        {
+            this.CanChangeVAT = !this.CanChangeVAT;
+            this.RaisePropertyChanged(() => this.CanChangeVAT);
+
+            if (this.CanChangeVAT == false)
+            {
+                Settings.Default.Save();
+                this.CalculateSums();
+            }
+        }
+
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems != null)
+            {
+                foreach (INotifyPropertyChanged item in e.OldItems)
+                {
+                    item.PropertyChanged -= this.OnItemCollectionChanged;
+                }
+            }
+            if (e.NewItems != null)
+            {
+                foreach (INotifyPropertyChanged item in e.NewItems)
+                {
+                    item.PropertyChanged += this.OnItemCollectionChanged;
+                }
+            }
+        }
+
+        private void OnItemCollectionChanged(object sender, PropertyChangedEventArgs e)
+        {
+            this.CalculateSums();
         }
 
 
 
         #region Messenger
+
+        private void ExecuteNotificationMessage(NotificationMessage message)
+        {
+            if (message.Notification == Resources.Message_UpdateSumsForBillItemEditVM)
+            {
+                if (this.currentBill != null)
+                {
+                    this.CalculateSums();
+                }
+            }
+        }
 
         private void ExecuteNotificationMessage(NotificationMessage<bool> message)
         {
@@ -130,7 +245,7 @@ namespace EpAccounting.UI.ViewModel
         {
             if (message.Notification == Resources.Message_RemoveClientForBillItemEditVM)
             {
-                if (this.currentBill.Client.ClientId == message.Content)
+                if (message.Content == this.currentBill?.Client.Id)
                 {
                     this.Clear();
                 }
@@ -164,7 +279,6 @@ namespace EpAccounting.UI.ViewModel
                 {
                     this._moveItemUpCommand = new ImageCommandViewModel(Resources.img_arrow_up,
                                                                         Resources.Command_DisplayName_Up,
-                                                                        Resources.Command_Message_BillItem_Up,
                                                                         new RelayCommand(this.MoveItemUp, this.CanMoveItemUp));
                 }
 
@@ -205,7 +319,6 @@ namespace EpAccounting.UI.ViewModel
                 {
                     this._moveItemDownCommand = new ImageCommandViewModel(Resources.img_arrow_down,
                                                                           Resources.Command_DisplayName_Down,
-                                                                          Resources.Command_Message_BillItem_Down,
                                                                           new RelayCommand(this.MoveItemDown, this.CanMoveItemDown));
                 }
 
@@ -246,7 +359,6 @@ namespace EpAccounting.UI.ViewModel
                 {
                     this._addItemCommand = new ImageCommandViewModel(Resources.img_add,
                                                                      Resources.Command_DisplayName_Add,
-                                                                     Resources.Command_Message_BillItem_Add,
                                                                      new RelayCommand(this.AddItem, this.CanAddItem));
                 }
 
@@ -262,11 +374,11 @@ namespace EpAccounting.UI.ViewModel
         private void AddItem()
         {
             BillItem billItem = new BillItem() { Position = this.BillItemDetailViewModels.Count + 1 };
-            BillItemDetailViewModel billItemDetailViewModel = new BillItemDetailViewModel(billItem);
+            BillItemDetailViewModel billItemDetailViewModel = new BillItemDetailViewModel(billItem, this.repository);
 
             this.currentBill.AddBillItem(billItem);
             this.BillItemDetailViewModels.Add(billItemDetailViewModel);
-            Messenger.Default.Send(new NotificationMessage(Resources.Messenger_Message_FocusBillItemsMessageForBillItemEditView));
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_FocusBillItemsMessageForBillItemEditView));
         }
 
         public ImageCommandViewModel DeleteItemCommand
@@ -277,7 +389,6 @@ namespace EpAccounting.UI.ViewModel
                 {
                     this._deleteItemCommand = new ImageCommandViewModel(Resources.img_remove,
                                                                         Resources.Command_DisplayName_Delete,
-                                                                        Resources.Command_Message_BillItem_Delete,
                                                                         new RelayCommand(this.DeleteItem, this.CanDeleteItem));
                 }
 
