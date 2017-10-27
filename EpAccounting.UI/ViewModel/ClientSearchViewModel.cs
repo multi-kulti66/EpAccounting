@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientSearchViewModel.cs
-// Last Change: 16.09.2017  11:35
+// Last Change: 22.10.2017  16:05
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -117,18 +117,24 @@ namespace EpAccounting.UI.ViewModel
 
             foreach (Client client in this.repository.GetByCriteria<Client>(criterion, this.CurrentPage).ToList())
             {
-                this.FoundClients.Add(new ClientDetailViewModel(client));
+                this.FoundClients.Add(new ClientDetailViewModel(client, this.repository));
             }
         }
 
         private void UpdateClient(int id)
         {
+            Client client = this.repository.GetById<Client>(id);
+
             for (int i = 0; i < this.FoundClients.Count; i++)
             {
                 if (this.FoundClients[i].Id == id)
                 {
-                    Client client = this.repository.GetById<Client>(id);
-                    this.FoundClients[i] = new ClientDetailViewModel(client);
+                    this.FoundClients[i] = new ClientDetailViewModel(client, this.repository);
+                }
+                else if (this.FoundClients[i].PostalCode == client.CityToPostalCode.PostalCode &&
+                         this.FoundClients[i].City != client.CityToPostalCode.City)
+                {
+                    this.FoundClients[i] = new ClientDetailViewModel(this.repository.GetById<Client>(this.FoundClients[i].Id), this.repository);
                 }
             }
         }

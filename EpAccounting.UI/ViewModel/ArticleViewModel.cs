@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ArticleViewModel.cs
-// Last Change: 18.09.2017  20:41
+// Last Change: 22.10.2017  16:05
 // Author: Andre Multerer
 // ///////////////////////////////////
 

@@ -98,12 +98,48 @@ namespace EpAccounting.UI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("19")]
-        public double VAT {
+        public double VatPercentage {
             get {
-                return ((double)(this["VAT"]));
+                return ((double)(this["VatPercentage"]));
             }
             set {
-                this["VAT"] = value;
+                this["VatPercentage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\EpAccounting\\Word\\EpAccounting - Bill Template.dotx")]
+        public string WordTemplateFilePath {
+            get {
+                return ((string)(this["WordTemplateFilePath"]));
+            }
+            set {
+                this["WordTemplateFilePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string BillFolderPath {
+            get {
+                return ((string)(this["BillFolderPath"]));
+            }
+            set {
+                this["BillFolderPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Offer {
+            get {
+                return ((string)(this["Offer"]));
+            }
+            set {
+                this["Offer"] = value;
             }
         }
     }

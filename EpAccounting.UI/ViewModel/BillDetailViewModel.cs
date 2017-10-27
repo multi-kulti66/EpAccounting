@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillDetailViewModel.cs
-// Last Change: 22.09.2017  20:57
+// Last Change: 26.10.2017  21:26
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,10 +9,12 @@
 namespace EpAccounting.UI.ViewModel
 {
     using System;
+    using System.Linq;
+    using System.Reflection;
+    using EpAccounting.Business;
     using EpAccounting.Model;
     using EpAccounting.Model.Enum;
     using EpAccounting.UI.Properties;
-    using EpAccounting.UI.Validation;
     using GalaSoft.MvvmLight.Messaging;
 
 
@@ -21,7 +23,8 @@ namespace EpAccounting.UI.ViewModel
     {
         #region Fields
 
-        private readonly Bill bill;
+        private readonly IRepository repository;
+        private Bill bill;
 
         #endregion
 
@@ -29,9 +32,12 @@ namespace EpAccounting.UI.ViewModel
 
         #region Constructors / Destructor
 
-        public BillDetailViewModel(Bill bill)
+        public BillDetailViewModel(Bill bill, IRepository repository)
         {
+            this.repository = repository;
             this.bill = bill;
+
+            Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
 
         #endregion
@@ -46,6 +52,12 @@ namespace EpAccounting.UI.ViewModel
             set { this.SetProperty(() => this.bill.Id = value, () => this.bill.Id == value); }
         }
 
+        public bool? Printed
+        {
+            get { return this.bill.Printed; }
+            set { this.SetProperty(() => this.bill.Printed = value, () => this.bill.Printed == value); }
+        }
+
         public KindOfBill? KindOfBill
         {
             get { return this.bill.KindOfBill; }
@@ -58,7 +70,7 @@ namespace EpAccounting.UI.ViewModel
             set
             {
                 this.SetProperty(() => this.bill.KindOfVat = value, () => this.bill.KindOfVat == value);
-                Messenger.Default.Send(new NotificationMessage(Resources.Message_UpdateSumsForBillItemEditVM));
+                Messenger.Default.Send(new NotificationMessage(Resources.Message_OnVatChangeRecalculatePricesForBillItemEditVM));
             }
         }
 
@@ -68,7 +80,6 @@ namespace EpAccounting.UI.ViewModel
             set { this.SetProperty(() => this.bill.VatPercentage = value, () => Math.Abs(this.bill.VatPercentage - value) < 0.01); }
         }
 
-        [ValidDate]
         public string Date
         {
             get { return this.bill.Date; }
@@ -113,16 +124,39 @@ namespace EpAccounting.UI.ViewModel
 
         public string PostalCode
         {
-            get { return this.bill.Client.PostalCode; }
-            set { this.SetProperty(() => this.bill.Client.PostalCode = value, () => this.bill.Client.PostalCode == value); }
+            get { return this.bill.Client.CityToPostalCode.PostalCode; }
+            set { this.SetProperty(() => this.bill.Client.CityToPostalCode.PostalCode = value, () => this.bill.Client.CityToPostalCode.PostalCode == value); }
         }
 
         public string City
         {
-            get { return this.bill.Client.City; }
-            set { this.SetProperty(() => this.bill.Client.City = value, () => this.bill.Client.City == value); }
+            get { return this.bill.Client.CityToPostalCode.City; }
+            set { this.SetProperty(() => this.bill.Client.CityToPostalCode.City = value, () => this.bill.Client.CityToPostalCode.City == value); }
         }
 
         #endregion
+
+
+
+        private void ExecuteNotificationMessage(NotificationMessage<int> message)
+        {
+            if (message.Notification == Resources.Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM)
+            {
+                if (this.Id == message.Content)
+                {
+                    this.bill = this.repository.GetById<Bill>(message.Content);
+                    this.UpdateProperties();
+                }
+            }
+        }
+
+        private void UpdateProperties()
+        {
+            foreach (PropertyInfo propertyInfo in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                                      .Where(x => x.DeclaringType == this.GetType()))
+            {
+                this.RaisePropertyChanged(propertyInfo.Name);
+            }
+        }
     }
 }

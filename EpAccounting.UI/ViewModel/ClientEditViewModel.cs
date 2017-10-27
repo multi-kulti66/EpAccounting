@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditViewModel.cs
-// Last Change: 16.09.2017  11:57
+// Last Change: 24.10.2017  21:29
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -61,7 +61,7 @@ namespace EpAccounting.UI.ViewModel
             this.InitStateCommands();
 
             this.currentState = this.GetClientEmptyState();
-            this.SetCurrentClient(new Client());
+            this.SetCurrentClient(new Client { CityToPostalCode = new CityToPostalCode() });
 
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
@@ -136,7 +136,7 @@ namespace EpAccounting.UI.ViewModel
 
         public virtual async Task<bool> SaveOrUpdateClientAsync()
         {
-            if (this.CurrentClientDetailViewModel.HasMissingLastName)
+            if (this.CurrentClientDetailViewModel.HasMissingValues)
             {
                 await this.dialogService.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient, Resources.Dialog_Message_ClientHasMissingNamePart);
                 return false;
@@ -155,7 +155,15 @@ namespace EpAccounting.UI.ViewModel
 
                 if (shouldSaveOrUpdate)
                 {
+                    Client tempClient = this.repository.GetById<Client>(this.currentClient.Id);
+
                     this.repository.SaveOrUpdate(this.currentClient);
+
+                    if (tempClient != null)
+                    {
+                        this.DeletePreviousPostalCodeIfNecessary(tempClient);
+                    }
+
                     return true;
                 }
 
@@ -181,6 +189,7 @@ namespace EpAccounting.UI.ViewModel
             try
             {
                 this.repository.Delete(this.currentClient);
+                this.DeletePostalCodeIfNecessary();
                 this.SendRemoveClientMessage();
                 return true;
             }
@@ -204,7 +213,7 @@ namespace EpAccounting.UI.ViewModel
         private void SetCurrentClient(Client client)
         {
             this.currentClient = client;
-            this.CurrentClientDetailViewModel = new ClientDetailViewModel(this.currentClient);
+            this.CurrentClientDetailViewModel = new ClientDetailViewModel(this.currentClient, this.repository);
         }
 
         private void LoadClientState(IClientState clientState)
@@ -283,11 +292,11 @@ namespace EpAccounting.UI.ViewModel
             }
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.PostalCode))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.PostalCode.IsLike(this.CurrentClientDetailViewModel.PostalCode, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode.IsLike(this.CurrentClientDetailViewModel.PostalCode, MatchMode.Anywhere)));
             }
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.City))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.City.IsLike(this.CurrentClientDetailViewModel.City, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.City.IsLike(this.CurrentClientDetailViewModel.City, MatchMode.Anywhere)));
             }
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.DateOfBirth))
             {
@@ -317,6 +326,33 @@ namespace EpAccounting.UI.ViewModel
             return conjunction;
         }
 
+        private void DeletePreviousPostalCodeIfNecessary(Client client)
+        {
+            Conjunction conjunction = Restrictions.Conjunction();
+            conjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode == client.CityToPostalCode.PostalCode));
+
+            int references = this.repository.GetQuantityByCriteria<Client>(conjunction);
+
+            // here 1, because client was not updated till yet
+            if (references == 0)
+            {
+                this.repository.Delete(client.CityToPostalCode);
+            }
+        }
+
+        private void DeletePostalCodeIfNecessary()
+        {
+            Conjunction conjunction = Restrictions.Conjunction();
+            conjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode == this.CurrentClientDetailViewModel.PostalCode));
+
+            int references = this.repository.GetQuantityByCriteria<Client>(conjunction);
+
+            if (references == 0)
+            {
+                this.repository.Delete(this.currentClient.CityToPostalCode);
+            }
+        }
+
         private void InitPropertyInfos()
         {
             this.PropertyInfos = this.GetType()
@@ -332,21 +368,21 @@ namespace EpAccounting.UI.ViewModel
 
         public virtual void ChangeToEmptyMode()
         {
-            this.LoadClient(new Client());
+            this.LoadClient(new Client { CityToPostalCode = new CityToPostalCode() });
             this.LoadClientState(this.GetClientEmptyState());
             this.UpdateViewModel();
         }
 
         public virtual void ChangeToCreationMode()
         {
-            this.LoadClient(new Client());
+            this.LoadClient(new Client { CityToPostalCode = new CityToPostalCode() });
             this.LoadClientState(this.GetClientCreationState());
             this.UpdateViewModel();
         }
 
         public virtual void ChangeToSearchMode()
         {
-            this.LoadClient(new Client());
+            this.LoadClient(new Client { CityToPostalCode = new CityToPostalCode() });
             this.LoadClientState(this.GetClientSearchState());
             this.UpdateViewModel();
         }

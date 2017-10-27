@@ -9,11 +9,17 @@
 namespace EpAccounting.Test.UI.ViewModel
 {
     using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using Castle.Core.Smtp;
+    using EpAccounting.Business;
+    using EpAccounting.Model;
     using EpAccounting.Model.Enum;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
     using GalaSoft.MvvmLight.Messaging;
+    using Moq;
     using NUnit.Framework;
 
 
@@ -23,6 +29,7 @@ namespace EpAccounting.Test.UI.ViewModel
     {
         #region Fields
 
+        private Mock<IRepository> mockRepository;
         private BillDetailViewModel billDetailViewModel;
 
         #endregion
@@ -34,12 +41,14 @@ namespace EpAccounting.Test.UI.ViewModel
         [SetUp]
         public void Init()
         {
-            this.billDetailViewModel = new BillDetailViewModel(ModelFactory.GetDefaultBill());
+            this.mockRepository = new Mock<IRepository>();
+            this.billDetailViewModel = new BillDetailViewModel(ModelFactory.GetDefaultBill(), this.mockRepository.Object);
         }
 
         [TearDown]
         public void Cleanup()
         {
+            this.mockRepository = null;
             this.billDetailViewModel = null;
             GC.Collect();
         }
@@ -65,8 +74,8 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billDetailViewModel.LastName.Should().Be(ModelFactory.DefaultClientLastName);
             this.billDetailViewModel.Street.Should().Be(ModelFactory.DefaultClientStreet);
             this.billDetailViewModel.HouseNumber.Should().Be(ModelFactory.DefaultClientHouseNumber);
-            this.billDetailViewModel.PostalCode.Should().Be(ModelFactory.DefaultClientPostalCode);
-            this.billDetailViewModel.City.Should().Be(ModelFactory.DefaultClientCity);
+            this.billDetailViewModel.PostalCode.Should().Be(ModelFactory.DefaultCityToPostalCodePostalCode);
+            this.billDetailViewModel.City.Should().Be(ModelFactory.DefaultCityToPostalCodeCity);
         }
 
         [Test]
@@ -130,9 +139,42 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             notificaton.Should().NotBeNull();
-            notificaton.Notification.Should().Be(Resources.Message_UpdateSumsForBillItemEditVM);
+            notificaton.Notification.Should().Be(Resources.Message_OnVatChangeRecalculatePricesForBillItemEditVM);
         }
 
+        [Test]
+        public void ReloadsBillWhenPrintedMessageReceived()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultBill());
+            List<string> propertyChangedList = new List<string>();
+            this.billDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.billDetailViewModel.PropertyChanged += (sender, e) => propertyChangedList.Add(e.PropertyName);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM));
+
+            // Assert
+            propertyChangedList.Count.Should().Be(14);
+            this.mockRepository.Verify(x => x.GetById<Bill>(0), Times.Once);
+        }
+
+        [Test]
+        public void DoesNotReloadBillWhenPrintedMessageReceivedWithDifferentId()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultBill());
+            List<string> propertyChangedList = new List<string>();
+            this.billDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.billDetailViewModel.PropertyChanged += (sender, e) => propertyChangedList.Add(e.PropertyName);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM));
+
+            // Assert
+            propertyChangedList.Count.Should().Be(0);
+            this.mockRepository.Verify(x => x.GetById<Bill>(It.IsAny<int>()), Times.Never());
+        }
         #endregion
     }
 }

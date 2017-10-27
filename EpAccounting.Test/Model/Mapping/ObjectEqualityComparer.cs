@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ObjectEqualityComparer.cs
-// Last Change: 18.09.2017  20:44
+// Last Change: 22.10.2017  13:33
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -28,31 +28,27 @@ namespace EpAccounting.Test.Model.Mapping
 
         public new bool Equals(object firstObject, object secondObject)
         {
-            if ((firstObject == null) || (secondObject == null))
+            if (firstObject == null || secondObject == null)
             {
                 return false;
             }
 
-            Client client1 = firstObject as Client;
-            Client client2 = secondObject as Client;
-
-            if (client1 != null && client2 != null)
+            if (firstObject is Client client1 && secondObject is Client client2)
             {
                 return AreEqualClients(client1, client2);
             }
 
-            Bill bill1 = firstObject as Bill;
-            Bill bill2 = secondObject as Bill;
+            if (firstObject is CityToPostalCode cityToPostalCode1 && secondObject is CityToPostalCode cityToPostalCode2)
+            {
+                return AreEqualCityToPostalCodes(cityToPostalCode1, cityToPostalCode2);
+            }
 
-            if (bill1 != null && bill2 != null)
+            if (firstObject is Bill bill1 && secondObject is Bill bill2)
             {
                 return AreEqualBills(bill1, bill2);
             }
 
-            BillItem billDetail1 = firstObject as BillItem;
-            BillItem billDetail2 = secondObject as BillItem;
-
-            if (billDetail1 != null && billDetail2 != null)
+            if (firstObject is BillItem billDetail1 && secondObject is BillItem billDetail2)
             {
                 return AreEqualBillItems(billDetail1, billDetail2);
             }
@@ -71,20 +67,29 @@ namespace EpAccounting.Test.Model.Mapping
 
         private static bool AreEqualClients(Client client1, Client client2)
         {
-            if ((client1.Id == client2.Id) &&
-                (client1.Title == client2.Title) &&
-                (client1.FirstName == client2.FirstName) &&
-                (client1.LastName == client2.LastName) &&
-                (client1.Street == client2.Street) &&
-                (client1.HouseNumber == client2.HouseNumber) &&
-                (client1.PostalCode == client2.PostalCode) &&
-                (client1.City == client2.City) &&
-                (client1.DateOfBirth == client2.DateOfBirth) &&
-                (client1.PhoneNumber1 == client2.PhoneNumber1) &&
-                (client1.PhoneNumber2 == client2.PhoneNumber2) &&
-                (client1.MobileNumber == client2.MobileNumber) &&
-                (client1.Telefax == client2.Telefax) &&
-                (client1.Email == client2.Email))
+            if (client1.Id == client2.Id &&
+                client1.Title == client2.Title &&
+                client1.FirstName == client2.FirstName &&
+                client1.LastName == client2.LastName &&
+                client1.Street == client2.Street &&
+                client1.HouseNumber == client2.HouseNumber &&
+                client1.DateOfBirth == client2.DateOfBirth &&
+                client1.PhoneNumber1 == client2.PhoneNumber1 &&
+                client1.PhoneNumber2 == client2.PhoneNumber2 &&
+                client1.MobileNumber == client2.MobileNumber &&
+                client1.Telefax == client2.Telefax &&
+                client1.Email == client2.Email)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool AreEqualCityToPostalCodes(CityToPostalCode cityToPostalCode1, CityToPostalCode cityToPostalCode2)
+        {
+            if (cityToPostalCode1.PostalCode == cityToPostalCode2.PostalCode &&
+                cityToPostalCode1.City == cityToPostalCode2.City)
             {
                 return true;
             }
@@ -94,11 +99,11 @@ namespace EpAccounting.Test.Model.Mapping
 
         private static bool AreEqualBills(Bill bill1, Bill bill2)
         {
-            if ((bill1.Id == bill2.Id) &&
-                (bill1.KindOfBill == bill2.KindOfBill) &&
-                (bill1.KindOfVat == bill2.KindOfVat) &&
-                (Math.Abs(bill1.VatPercentage - bill2.VatPercentage) < MAX_VARIATION) &&
-                (bill1.Date == bill2.Date))
+            if (bill1.Id == bill2.Id &&
+                bill1.KindOfBill == bill2.KindOfBill &&
+                bill1.KindOfVat == bill2.KindOfVat &&
+                Math.Abs(bill1.VatPercentage - bill2.VatPercentage) < MAX_VARIATION &&
+                bill1.Date == bill2.Date)
             {
                 return true;
             }
@@ -108,12 +113,12 @@ namespace EpAccounting.Test.Model.Mapping
 
         private static bool AreEqualBillItems(BillItem billDetail1, BillItem billDetail2)
         {
-            if ((billDetail1.Id == billDetail2.Id) &&
-                (billDetail1.Position == billDetail2.Position) &&
-                (billDetail1.ArticleNumber == billDetail2.ArticleNumber) &&
-                (billDetail1.Description == billDetail2.Description) &&
-                (Math.Abs(billDetail1.Amount - billDetail2.Amount) < MAX_VARIATION) &&
-                (Math.Abs(billDetail1.Discount - billDetail2.Discount) < MAX_VARIATION) &&
+            if (billDetail1.Id == billDetail2.Id &&
+                billDetail1.Position == billDetail2.Position &&
+                billDetail1.ArticleNumber == billDetail2.ArticleNumber &&
+                billDetail1.Description == billDetail2.Description &&
+                Math.Abs(billDetail1.Amount - billDetail2.Amount) < MAX_VARIATION &&
+                Math.Abs(billDetail1.Discount - billDetail2.Discount) < MAX_VARIATION &&
                 billDetail1.Price == billDetail2.Price)
             {
                 return true;

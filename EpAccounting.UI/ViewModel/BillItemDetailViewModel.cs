@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemDetailViewModel.cs
-// Last Change: 18.09.2017  20:35
+// Last Change: 23.10.2017  21:00
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -12,6 +12,7 @@ namespace EpAccounting.UI.ViewModel
     using System.Linq;
     using EpAccounting.Business;
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
     using NHibernate.Criterion;
 
 
@@ -57,10 +58,7 @@ namespace EpAccounting.UI.ViewModel
             get { return this.billItem.ArticleNumber; }
             set
             {
-                bool articleNumberChanged = this.billItem.ArticleNumber != value;
-                this.SetProperty(() => this.billItem.ArticleNumber = value, () => this.billItem.ArticleNumber == value);
-
-                if (articleNumberChanged)
+                if (this.SetProperty(() => this.billItem.ArticleNumber = value, () => this.billItem.ArticleNumber == value))
                 {
                     this.FillArticleValues();
                 }
@@ -129,7 +127,15 @@ namespace EpAccounting.UI.ViewModel
             {
                 this.Description = article.Description;
                 this.Amount = article.Amount;
-                this.Price = article.Price;
+
+                if (this.billItem.Bill.KindOfVat == KindOfVat.inkl_MwSt)
+                {
+                    this.Price = article.Price * (100 + (decimal)this.billItem.Bill.VatPercentage) / 100;
+                }
+                else
+                {
+                    this.Price = article.Price;
+                }
             }
         }
     }

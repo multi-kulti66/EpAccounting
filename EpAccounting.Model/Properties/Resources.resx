@@ -127,9 +127,9 @@ PLZ: {5}
 Ort: {6}</value>
   </data>
   <data name="Exception_Message_Bill_BillItemHasNoReference" xml:space="preserve">
-    <value>Der Rechnungseintrag konnte nicht hinzugefügt werden, da er keinen Verweis aufweist.</value>
+    <value>Der Rechnungseintrag konnte nicht hinzugefügt werden, da er keiner Rechnung zugewiesen werden konnte.</value>
   </data>
   <data name="Exception_Message_Client_BillHasNoReference" xml:space="preserve">
-    <value>Die Rechnung konnte nicht hinzugefügt werden, da sie keinen Verweis aufweist.</value>
+    <value>Die Rechnung konnte nicht hinzugefügt werden, da keine Rechnung ausgewählt wurde.</value>
   </data>
 </root>

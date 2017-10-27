@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditViewModelTest.cs
-// Last Change: 31.08.2017  20:09
+// Last Change: 22.10.2017  14:40
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -355,6 +355,22 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
+        public async Task DoNotAddNewClientWhenClientHasMissingPostalCode()
+        {
+            // Arrange
+            this.clientEditViewModel.CurrentClientDetailViewModel.FirstName = "Andre";
+            this.clientEditViewModel.CurrentClientDetailViewModel.LastName = "Multerer";
+
+            // Act
+            bool result = await this.clientEditViewModel.SaveOrUpdateClientAsync();
+
+            // Assert
+            result.Should().BeFalse();
+            this.mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient,
+                                                             It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
         public async Task AddClientToDatabaseIfNoEqualClientExists()
         {
             // Arrange
@@ -373,7 +389,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public async Task AddClientToDatabaseIfEqualClientExistsAndDialogResultIsYes()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client> { new Client() });
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client> { new Client { CityToPostalCode = new CityToPostalCode() } });
             this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(true));
             this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
@@ -390,7 +406,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public async Task DoNotAddClientToDatabaseIfEqualClientExistsAndDialogResultIsNo()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client> { new Client() });
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client> { new Client { CityToPostalCode = new CityToPostalCode() } });
             this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(false));
             this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
@@ -455,6 +471,7 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
             bool result = await this.clientEditViewModel.DeleteClientAsync();
@@ -539,8 +556,8 @@ namespace EpAccounting.Test.UI.ViewModel
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.LastName.IsLike(ModelFactory.DefaultClientLastName, MatchMode.Anywhere)));
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.Street.IsLike(ModelFactory.DefaultClientStreet, MatchMode.Anywhere)));
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.HouseNumber.IsLike(ModelFactory.DefaultClientHouseNumber, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.PostalCode.IsLike(ModelFactory.DefaultClientPostalCode, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.City.IsLike(ModelFactory.DefaultClientCity, MatchMode.Anywhere)));
+            expectedCriterion.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode.IsLike(ModelFactory.DefaultCityToPostalCodePostalCode, MatchMode.Anywhere)));
+            expectedCriterion.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.City.IsLike(ModelFactory.DefaultCityToPostalCodeCity, MatchMode.Anywhere)));
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.DateOfBirth.IsLike(ModelFactory.DefaultClientDateOfBirth, MatchMode.Anywhere)));
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.PhoneNumber1.IsLike(ModelFactory.DefaultClientPhoneNumber1, MatchMode.Anywhere)));
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.PhoneNumber2.IsLike(ModelFactory.DefaultClientPhoneNumber2, MatchMode.Anywhere)));
@@ -561,7 +578,7 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             const int ExpectedId = 2;
-            this.mockRepository.Setup(x => x.GetById<Client>(ExpectedId)).Returns(new Client());
+            this.mockRepository.Setup(x => x.GetById<Client>(ExpectedId)).Returns(new Client { CityToPostalCode = new CityToPostalCode() });
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(ExpectedId, Resources.Message_LoadClientForClientEditVM));
@@ -579,7 +596,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage<bool>>(this, x => areEnabled.Add(x.Content));
 
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(new Client());
+            this.clientEditViewModel.ChangeToLoadedMode(new Client { CityToPostalCode = new CityToPostalCode() });
 
             // Assert
             areEnabled.Should().HaveCount(2);
@@ -673,7 +690,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void CanSendCreateNewBillMessageWhenInLoadedClientState()
         {
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(new Client());
+            this.clientEditViewModel.ChangeToLoadedMode(new Client { CityToPostalCode = new CityToPostalCode() });
 
             // Assert
             this.clientEditViewModel.CreateNewBillCommand.CanExecute(null).Should().BeTrue();
@@ -831,6 +848,78 @@ namespace EpAccounting.Test.UI.ViewModel
             // Assert
             this.clientEditViewModel.CurrentClientDetailViewModel.FirstName.Should().BeNullOrEmpty();
             this.clientEditViewModel.CurrentClientDetailViewModel.LastName.Should().BeNullOrEmpty();
+        }
+
+        [Test]
+        public async Task DeletesPostalCodeWhenDeletedClientWasTheOnlyReference()
+        {
+            // Arrange
+            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(0);
+
+            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+
+            // Act
+            bool result = await this.clientEditViewModel.DeleteClientAsync();
+
+            // Assert
+            result.Should().BeTrue();
+            this.mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Once());
+        }
+
+        [Test]
+        public async Task DoesNotDeletePostalCodeWhenDeletedClientWasNotTheOnlyReference()
+        {
+            // Arrange
+            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(1);
+
+            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+
+            // Act
+            bool result = await this.clientEditViewModel.DeleteClientAsync();
+
+            // Assert
+            result.Should().BeTrue();
+            this.mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Never);
+        }
+
+        [Test]
+        public async Task DeletesPreviousPostalCodeWhenChangedClientWasTheOnlyReference()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient());
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>())).Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(0);
+
+            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this.clientEditViewModel.ChangeToEditMode();
+
+            // Act
+            bool result = await this.clientEditViewModel.SaveOrUpdateClientAsync();
+
+            // Assert
+            result.Should().BeTrue();
+            this.mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Once());
+        }
+
+        [Test]
+        public async Task DoesNotDeletePreviousPostalCodeWhenChangedClientWasNotTheOnlyReference()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient());
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>())).Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(1);
+
+            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this.clientEditViewModel.ChangeToEditMode();
+
+            // Act
+            bool result = await this.clientEditViewModel.SaveOrUpdateClientAsync();
+
+            // Assert
+            result.Should().BeTrue();
+            this.mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Never);
         }
 
         #endregion

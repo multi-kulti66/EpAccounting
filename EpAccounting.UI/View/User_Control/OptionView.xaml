@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:properties="clr-namespace:EpAccounting.UI.Properties"
              xmlns:viewModel="clr-namespace:EpAccounting.UI.ViewModel"
              d:DataContext="{d:DesignInstance viewModel:OptionViewModel}"
              mc:Ignorable="d">
@@ -11,8 +12,28 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <!--  0  -->
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <!--  2  -->
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+            <!--  4  -->
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="20" />
+            <!--  6  -->
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <!--  8  -->
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+            <!--  10  -->
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="20" />
+            <!--  12  -->
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <!--  14  -->
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -36,6 +57,33 @@
                  Style="{StaticResource LeftTextAlignTextBoxStyle}"
                  Text="{Binding Path=FilePath, Mode=OneWay}" />
 
+        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+                   Style="{StaticResource CaptionTextBlockStyle}"
+                   Text="Rechnungsvorlagenpfad:" />
+        <TextBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
+                 Style="{StaticResource LeftTextAlignTextBoxStyle}"
+                 Text="{Binding Source={x:Static properties:Settings.Default}, Path=WordTemplateFilePath}" />
+
+        <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3"
+                   Style="{StaticResource CaptionTextBlockStyle}"
+                   Text="Rechnungsordner:" />
+        <TextBox Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3"
+                 Style="{StaticResource LeftTextAlignTextBoxStyle}"
+                 Text="{Binding Source={x:Static properties:Settings.Default}, Path=BillFolderPath}" />
+
+        <TextBlock Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3"
+                   Style="{StaticResource CaptionTextBlockStyle}"
+                   Text="Mehrwertsteuer:" />
+        <TextBox Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2"
+                 Style="{StaticResource LeftTextAlignTextBoxStyle}"
+                 Text="{Binding Source={x:Static properties:Settings.Default}, Path=VatPercentage, StringFormat={}{0:F2} %, ConverterCulture=de-DE, Converter={StaticResource UnitToDoubleConverter}}" />
+
+        <TextBlock Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="3"
+                   Style="{StaticResource CaptionTextBlockStyle}"
+                   Text="Angebot:" />
+        <TextBox Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="3"
+                 Style="{StaticResource LeftTextAlignTextBoxStyle}"
+                 Text="{Binding Source={x:Static properties:Settings.Default}, Path=Offer}" />
     </Grid>
 </UserControl>
 

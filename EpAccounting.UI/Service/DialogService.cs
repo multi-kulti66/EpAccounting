@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: DialogService.cs
-// Last Change: 02.09.2017  10:30
+// Last Change: 22.10.2017  16:05
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,6 +9,7 @@
 namespace EpAccounting.UI.Service
 {
     using System;
+    using System.Drawing.Printing;
     using System.Threading.Tasks;
     using System.Windows.Forms;
     using EpAccounting.UI.Properties;
@@ -91,10 +92,24 @@ namespace EpAccounting.UI.Service
                 if (fbd.ShowDialog() == DialogResult.OK)
                 {
                     Settings.Default.RecentFolderPath = fbd.SelectedPath;
+                    Settings.Default.Save();
                     return fbd.SelectedPath;
                 }
 
                 return null;
+            }
+        }
+
+        public void ShowPrintDialog(PrintDocument document)
+        {
+            using (PrintDialog printDialog = new PrintDialog())
+            {
+                printDialog.Document = document;
+
+                if (printDialog.ShowDialog() == DialogResult.OK)
+                {
+                    printDialog.Document.Print();
+                }
             }
         }
 

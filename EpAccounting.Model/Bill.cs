@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: Bill.cs
-// Last Change: 05.09.2017  19:37
+// Last Change: 23.10.2017  21:16
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -22,6 +22,8 @@ namespace EpAccounting.Model
         public virtual int Id { get; set; }
 
         public virtual Client Client { get; set; }
+
+        public virtual bool? Printed { get; set; }
 
         public virtual KindOfBill? KindOfBill { get; set; }
 

@@ -187,7 +187,7 @@ namespace EpAccounting.Test.Model
             client.ToString().Should().Be(string.Format(Resources.Client_ToString, ExpectedId,
                                                         ModelFactory.DefaultClientFirstName, ModelFactory.DefaultClientLastName,
                                                         ModelFactory.DefaultClientStreet, ModelFactory.DefaultClientHouseNumber,
-                                                        ModelFactory.DefaultClientPostalCode, ModelFactory.DefaultClientCity));
+                                                        ModelFactory.DefaultCityToPostalCodePostalCode, ModelFactory.DefaultCityToPostalCodeCity));
         }
     }
 }

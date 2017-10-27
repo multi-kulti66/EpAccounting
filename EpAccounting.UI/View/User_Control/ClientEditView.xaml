@@ -12,9 +12,6 @@
     <UserControl.Resources>
         <ResourceDictionary Source="/View/ViewResourceDictionary.xaml" />
     </UserControl.Resources>
-    <UserControl.InputBindings>
-        <KeyBinding Key="Enter" Command="{Binding Path=StateCommands[3].RelayCommand}" />
-    </UserControl.InputBindings>
 
     <Grid>
         <Grid.RowDefinitions>

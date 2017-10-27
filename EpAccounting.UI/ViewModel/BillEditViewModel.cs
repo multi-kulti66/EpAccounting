@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEditViewModel.cs
-// Last Change: 05.09.2017  19:58
+// Last Change: 26.10.2017  22:21
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -97,6 +97,19 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
+        public bool CanEditPrintedStatus
+        {
+            get
+            {
+                if (this.repository.IsConnected && this.CurrentBillState is BillSearchState || this.CurrentBillState is BillEditState)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
         public bool CanEditData
         {
             get
@@ -130,14 +143,14 @@ namespace EpAccounting.UI.ViewModel
 
         public virtual void ChangeToEmptyMode()
         {
-            this.LoadBill(new Bill() { Client = new Client() });
+            this.LoadBill(new Bill() { Client = new Client { CityToPostalCode = new CityToPostalCode() } });
             this.LoadBillState(this.GetBillEmptyState());
             this.UpdateViewModel();
         }
 
         public virtual void ChangeToSearchMode()
         {
-            this.LoadBill(new Bill() { Client = new Client() });
+            this.LoadBill(new Bill() { Client = new Client { CityToPostalCode = new CityToPostalCode() } });
             this.LoadBillState(this.GetBillSearchState());
             this.UpdateViewModel();
         }
@@ -165,6 +178,11 @@ namespace EpAccounting.UI.ViewModel
         {
             try
             {
+                if (this.CurrentBillState == this.GetBillCreationState())
+                {
+                    this.CurrentBillDetailViewModel.Printed = false;
+                }
+
                 this.repository.SaveOrUpdate(this.currentBill);
                 this.SendUpdateClientMessage();
                 return true;
@@ -206,7 +224,8 @@ namespace EpAccounting.UI.ViewModel
                             Client = this.repository.GetById<Client>(clientId),
                             KindOfBill = KindOfBill.Rechnung,
                             KindOfVat = KindOfVat.inkl_MwSt,
-                            Date = "05.09.2017"
+                            VatPercentage = Settings.Default.VatPercentage,
+                            Date = DateTime.Now.Date.ToShortDateString()
                         };
 
             this.LoadBill(bill);
@@ -228,7 +247,7 @@ namespace EpAccounting.UI.ViewModel
         private void SetCurrentBill(Bill bill)
         {
             this.currentBill = bill;
-            this.CurrentBillDetailViewModel = new BillDetailViewModel(this.currentBill);
+            this.CurrentBillDetailViewModel = new BillDetailViewModel(this.currentBill, this.repository);
         }
 
         private void LoadBillState(IBillState billState)
@@ -269,8 +288,8 @@ namespace EpAccounting.UI.ViewModel
             this.CurrentBillDetailViewModel.LastName = messageContent.LastName;
             this.CurrentBillDetailViewModel.Street = messageContent.Street;
             this.CurrentBillDetailViewModel.HouseNumber = messageContent.HouseNumber;
-            this.CurrentBillDetailViewModel.PostalCode = messageContent.PostalCode;
-            this.CurrentBillDetailViewModel.City = messageContent.City;
+            this.CurrentBillDetailViewModel.PostalCode = messageContent.CityToPostalCode.PostalCode;
+            this.CurrentBillDetailViewModel.City = messageContent.CityToPostalCode.City;
         }
 
         private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> GetBillSearchCriterion()
@@ -294,9 +313,14 @@ namespace EpAccounting.UI.ViewModel
                 billConjunction.Add(Restrictions.Where<Bill>(b => b.KindOfVat == this.CurrentBillDetailViewModel.KindOfVat));
             }
 
-            if (this.CurrentBillDetailViewModel.Date != null)
+            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.Date))
             {
-                billConjunction.Add(Restrictions.Where<Bill>(b => b.Date == this.CurrentBillDetailViewModel.Date));
+                billConjunction.Add(Restrictions.Where<Bill>(b => b.Date.IsLike(this.CurrentBillDetailViewModel.Date, MatchMode.Anywhere)));
+            }
+
+            if (this.CurrentBillDetailViewModel.Printed != null)
+            {
+                billConjunction.Add(Restrictions.Where<Bill>(b => b.Printed == this.CurrentBillDetailViewModel.Printed));
             }
 
             Conjunction clientConjunction = Restrictions.Conjunction();
@@ -332,11 +356,11 @@ namespace EpAccounting.UI.ViewModel
             }
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.PostalCode))
             {
-                clientConjunction.Add(Restrictions.Where<Client>(c => c.PostalCode.IsLike(this.CurrentBillDetailViewModel.PostalCode, MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode.IsLike(this.CurrentBillDetailViewModel.PostalCode, MatchMode.Anywhere)));
             }
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.City))
             {
-                clientConjunction.Add(Restrictions.Where<Client>(c => c.City.IsLike(this.CurrentBillDetailViewModel.City, MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.City.IsLike(this.CurrentBillDetailViewModel.City, MatchMode.Anywhere)));
             }
 
             return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);

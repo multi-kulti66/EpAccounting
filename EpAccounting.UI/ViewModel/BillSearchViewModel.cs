@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModel.cs
-// Last Change: 02.09.2017  10:30
+// Last Change: 26.10.2017  20:36
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -131,14 +131,14 @@ namespace EpAccounting.UI.ViewModel
             {
                 foreach (Bill bill in this.repository.GetByCriteria<Bill>(tupleCriterion.Item1, this.CurrentPage).ToList())
                 {
-                    this.FoundBills.Add(new BillDetailViewModel(bill));
+                    this.FoundBills.Add(new BillDetailViewModel(bill, this.repository));
                 }
             }
             else
             {
                 foreach (Bill bill in this.repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, this.CurrentPage).ToList())
                 {
-                    this.FoundBills.Add(new BillDetailViewModel(bill));
+                    this.FoundBills.Add(new BillDetailViewModel(bill, this.repository));
                 }
             }
         }
@@ -150,7 +150,7 @@ namespace EpAccounting.UI.ViewModel
                 if (this.FoundBills[i].Id == id)
                 {
                     Bill bill = this.repository.GetById<Bill>(id);
-                    this.FoundBills[i] = new BillDetailViewModel(bill);
+                    this.FoundBills[i] = new BillDetailViewModel(bill, this.repository);
                 }
             }
         }
@@ -162,7 +162,7 @@ namespace EpAccounting.UI.ViewModel
                 if (this.FoundBills[i].ClientId == id)
                 {
                     Bill bill = this.repository.GetById<Bill>(this.FoundBills[i].Id);
-                    this.FoundBills[i] = new BillDetailViewModel(bill);
+                    this.FoundBills[i] = new BillDetailViewModel(bill, this.repository);
                 }
             }
         }

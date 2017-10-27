@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: Client.cs
-// Last Change: 05.09.2017  19:35
+// Last Change: 22.10.2017  12:04
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -31,10 +31,6 @@ namespace EpAccounting.Model
 
         public virtual string HouseNumber { get; set; }
 
-        public virtual string PostalCode { get; set; }
-
-        public virtual string City { get; set; }
-
         public virtual string DateOfBirth { get; set; }
 
         public virtual string PhoneNumber1 { get; set; }
@@ -46,6 +42,8 @@ namespace EpAccounting.Model
         public virtual string Telefax { get; set; }
 
         public virtual string Email { get; set; }
+
+        public virtual CityToPostalCode CityToPostalCode { get; set; }
 
         public virtual IList<Bill> Bills { get; set; } = new List<Bill>();
 
@@ -87,10 +85,10 @@ namespace EpAccounting.Model
             bool equalClientData = this.Id == otherClient.Id && Equals(this.Title, otherClient.Title) &&
                                    string.Equals(this.FirstName, otherClient.FirstName) && string.Equals(this.LastName, otherClient.LastName) &&
                                    string.Equals(this.Street, otherClient.Street) && string.Equals(this.HouseNumber, otherClient.HouseNumber) &&
-                                   string.Equals(this.PostalCode, otherClient.PostalCode) && string.Equals(this.City, otherClient.City) &&
-                                   string.Equals(this.DateOfBirth, otherClient.DateOfBirth) && string.Equals(this.PhoneNumber1, otherClient.PhoneNumber1) &&
-                                   string.Equals(this.PhoneNumber2, otherClient.PhoneNumber2) && string.Equals(this.MobileNumber, otherClient.MobileNumber) &&
-                                   string.Equals(this.Telefax, otherClient.Telefax) && string.Equals(this.Email, otherClient.Email);
+                                   Equals(this.CityToPostalCode.PostalCode, otherClient.CityToPostalCode.PostalCode) && string.Equals(this.DateOfBirth, otherClient.DateOfBirth) &&
+                                   string.Equals(this.PhoneNumber1, otherClient.PhoneNumber1) && string.Equals(this.PhoneNumber2, otherClient.PhoneNumber2)
+                                   && string.Equals(this.MobileNumber, otherClient.MobileNumber) && string.Equals(this.Telefax, otherClient.Telefax) &&
+                                   string.Equals(this.Email, otherClient.Email);
 
             if (!equalClientData || (this.Bills.Count != otherClient.Bills.Count))
             {
@@ -118,8 +116,7 @@ namespace EpAccounting.Model
                 hashCode = (hashCode * 397) ^ (this.LastName?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (this.Street?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (this.HouseNumber?.GetHashCode() ?? 0);
-                hashCode = (hashCode * 397) ^ (this.PostalCode?.GetHashCode() ?? 0);
-                hashCode = (hashCode * 397) ^ (this.City?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ (this.CityToPostalCode.PostalCode?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (this.DateOfBirth?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (this.PhoneNumber1?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (this.PhoneNumber2?.GetHashCode() ?? 0);
@@ -134,7 +131,7 @@ namespace EpAccounting.Model
         public override string ToString()
         {
             return string.Format(Resources.Client_ToString, this.Id, this.FirstName, this.LastName,
-                                 this.Street, this.HouseNumber, this.PostalCode, this.City);
+                                 this.Street, this.HouseNumber, this.CityToPostalCode.PostalCode, this.CityToPostalCode.City);
         }
     }
 }

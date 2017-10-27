@@ -1,6 +1,6 @@
 // ///////////////////////////////////
 // File: MainViewModel.cs
-// Last Change: 18.09.2017  20:48
+// Last Change: 27.10.2017  22:01
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,16 +8,8 @@
 
 namespace EpAccounting.UI.ViewModel
 {
-    using System;
     using System.Collections.ObjectModel;
-    using System.IO;
-    using System.Linq;
-    using System.Reflection;
-    using System.Xml;
-    using System.Xml.Linq;
     using EpAccounting.Business;
-    using EpAccounting.Model;
-    using EpAccounting.Model.Enum;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.Service;
     using GalaSoft.MvvmLight.Messaging;
@@ -82,15 +74,14 @@ namespace EpAccounting.UI.ViewModel
         {
             try
             {
-                // TODO: can be deleted after testing is finished
-                DatabaseFactory.DeleteTestFolderAndFile();
+                // uncomment for test purposes
+                /*DatabaseFactory.DeleteTestFolderAndFile();
                 DatabaseFactory.CreateTestFile();
                 DatabaseFactory.SetSavedFilePath();
                 this.repository.LoadDatabase(Settings.Default.DatabaseFilePath);
-                this.LoadXmlData();
+                this.LoadXmlData();*/
 
-                // TODO: change back
-                //this.repository.LoadDatabase(Settings.Default.DatabaseFilePath);
+                this.repository.LoadDatabase(Settings.Default.DatabaseFilePath);
             }
             catch
             {
@@ -124,14 +115,6 @@ namespace EpAccounting.UI.ViewModel
             else if (message.Notification == Resources.Message_ChangeToBillWorkspaceForMainVM)
             {
                 this.ChangeToBillWorkspace();
-            }
-            else if (message.Notification == Resources.Message_CreateNewBillMessageForMainVM)
-            {
-                this.CurrentWorkspace = this.WorkspaceViewModels.First(x => x.Title == Resources.Workspace_Title_Bills);
-            }
-            else if (message.Notification == Resources.Message_ChangeToBillWorkspaceForMainVM)
-            {
-                this.CurrentWorkspace = this.WorkspaceViewModels.First(x => x.Title == Resources.Workspace_Title_Bills);
             }
         }
 
@@ -232,8 +215,7 @@ namespace EpAccounting.UI.ViewModel
 
         #region TestData 
 
-        // TODO: region can be commented out after testing is finished
-        private void LoadXmlData()
+        /*private void LoadXmlData()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             string resourceName = "EpAccounting.UI.Resources.testdata.xml";
@@ -296,6 +278,12 @@ namespace EpAccounting.UI.ViewModel
             string telefax = clientElement.Attribute("Telefax")?.Value.Trim();
             string email = clientElement.Attribute("Email")?.Value.Trim();
 
+            CityToPostalCode cityToPostalCode = new CityToPostalCode
+                                                {
+                                                    PostalCode = postalCode,
+                                                    City = city
+                                                };
+
             Client client = new Client
                             {
                                 Title = (ClientTitle)Enum.Parse(typeof(ClientTitle), title, true),
@@ -303,8 +291,7 @@ namespace EpAccounting.UI.ViewModel
                                 LastName = lastName,
                                 Street = street,
                                 HouseNumber = houseNumber,
-                                PostalCode = postalCode,
-                                City = city,
+                                CityToPostalCode = cityToPostalCode,
                                 DateOfBirth = dateOfBirth,
                                 PhoneNumber1 = phoneNumber1,
                                 PhoneNumber2 = phoneNumber2,
@@ -318,6 +305,7 @@ namespace EpAccounting.UI.ViewModel
 
         private Bill CreateXmlBill(XElement billElement)
         {
+            bool printed = Convert.ToBoolean(billElement.Attribute("Printed")?.Value.Trim());
             string kindOfBill = billElement.Attribute("KindOfBill")?.Value.Trim();
             string kindOfVAT = billElement.Attribute("KindOfVAT")?.Value.Trim();
             double VATPercentage = Convert.ToDouble(billElement.Attribute("VatPercentage")?.Value.Trim());
@@ -325,6 +313,8 @@ namespace EpAccounting.UI.ViewModel
 
             Bill bill = new Bill
                         {
+                            Printed = printed,
+
                             // ReSharper disable once AssignNullToNotNullAttribute
                             KindOfBill = (KindOfBill)Enum.Parse(typeof(KindOfBill), kindOfBill, true),
 
@@ -375,7 +365,7 @@ namespace EpAccounting.UI.ViewModel
                               };
 
             return article;
-        }
+        }*/
 
         #endregion
     }

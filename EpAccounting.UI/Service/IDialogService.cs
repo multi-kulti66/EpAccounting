@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: IDialogService.cs
-// Last Change: 02.09.2017  10:30
+// Last Change: 25.10.2017  21:07
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,6 +8,7 @@
 
 namespace EpAccounting.UI.Service
 {
+    using System.Drawing.Printing;
     using System.Threading.Tasks;
 
 
@@ -23,5 +24,7 @@ namespace EpAccounting.UI.Service
         string ShowDatabaseFileDialog();
 
         string ShowFolderDialog();
+
+        void ShowPrintDialog(PrintDocument document);
     }
 }

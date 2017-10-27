@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientDetailViewModel.cs
-// Last Change: 22.09.2017  13:07
+// Last Change: 26.10.2017  21:00
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,9 +8,11 @@
 
 namespace EpAccounting.UI.ViewModel
 {
+    using System.Linq;
+    using EpAccounting.Business;
     using EpAccounting.Model;
     using EpAccounting.Model.Enum;
-    using EpAccounting.UI.Validation;
+    using NHibernate.Criterion;
 
 
 
@@ -19,6 +21,7 @@ namespace EpAccounting.UI.ViewModel
         #region Fields
 
         private readonly Client client;
+        private readonly IRepository repository;
 
         #endregion
 
@@ -26,9 +29,10 @@ namespace EpAccounting.UI.ViewModel
 
         #region Constructors / Destructor
 
-        public ClientDetailViewModel(Client client)
+        public ClientDetailViewModel(Client client, IRepository repository)
         {
             this.client = client;
+            this.repository = repository;
         }
 
         #endregion
@@ -75,17 +79,22 @@ namespace EpAccounting.UI.ViewModel
 
         public string PostalCode
         {
-            get { return this.client.PostalCode; }
-            set { this.SetProperty(() => this.client.PostalCode = value, () => this.client.PostalCode == value); }
+            get { return this.client.CityToPostalCode.PostalCode; }
+            set
+            {
+                if (this.SetProperty(() => this.client.CityToPostalCode.PostalCode = value, () => this.client.CityToPostalCode.PostalCode == value))
+                {
+                    this.FillCity();
+                }
+            }
         }
 
         public string City
         {
-            get { return this.client.City; }
-            set { this.SetProperty(() => this.client.City = value, () => this.client.City == value); }
+            get { return this.client.CityToPostalCode.City; }
+            set { this.SetProperty(() => this.client.CityToPostalCode.City = value, () => this.client.CityToPostalCode.City == value); }
         }
 
-        [ValidDate]
         public string DateOfBirth
         {
             get { return this.client.DateOfBirth; }
@@ -135,9 +144,19 @@ namespace EpAccounting.UI.ViewModel
 
                 foreach (Bill bill in this.client.Bills)
                 {
-                    foreach (BillItem billDetail in bill.BillItems)
+                    if (bill.KindOfVat == KindOfVat.inkl_MwSt || bill.KindOfVat == KindOfVat.without_MwSt)
                     {
-                        sum += billDetail.Price * ((100 - (decimal)billDetail.Discount) / 100) * (decimal)billDetail.Amount;
+                        foreach (BillItem billDetail in bill.BillItems)
+                        {
+                            sum += billDetail.Price * ((100 - (decimal)billDetail.Discount) / 100) * (decimal)billDetail.Amount;
+                        }
+                    }
+                    else if (bill.KindOfVat == KindOfVat.zzgl_MwSt)
+                    {
+                        foreach (BillItem billDetail in bill.BillItems)
+                        {
+                            sum += billDetail.Price * ((100 - (decimal)billDetail.Discount) / 100) * (decimal)billDetail.Amount * (100 + (decimal)bill.VatPercentage) / 100;
+                        }
                     }
                 }
 
@@ -145,11 +164,11 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        public bool HasMissingLastName
+        public bool HasMissingValues
         {
             get
             {
-                if (string.IsNullOrEmpty(this.LastName))
+                if (string.IsNullOrEmpty(this.LastName) || string.IsNullOrEmpty(this.PostalCode))
                 {
                     return true;
                 }
@@ -165,6 +184,27 @@ namespace EpAccounting.UI.ViewModel
         public override string ToString()
         {
             return this.client.ToString();
+        }
+
+        private void FillCity()
+        {
+            CityToPostalCode cityToPostalCode = null;
+
+            try
+            {
+                cityToPostalCode = this.repository
+                                       .GetByCriteria<CityToPostalCode>(Restrictions.Where<CityToPostalCode>(x => x.PostalCode == this.PostalCode), 1)
+                                       .FirstOrDefault();
+            }
+            catch
+            {
+                // do nothing
+            }
+
+            if (cityToPostalCode != null)
+            {
+                this.City = cityToPostalCode.City;
+            }
         }
     }
 }

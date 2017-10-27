@@ -20,6 +20,7 @@ namespace EpAccounting.Model.Mapping
         {
             this.Id(x => x.Id);
             this.References(x => x.Client).Fetch.Join();
+            this.Map(x => x.Printed);
             this.Map(x => x.KindOfBill);
             this.Map(x => x.KindOfVat);
             this.Map(x => x.VatPercentage);

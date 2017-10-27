@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemDetailViewModelTest.cs
-// Last Change: 17.09.2017  18:25
+// Last Change: 23.10.2017  21:10
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -13,6 +13,8 @@ namespace EpAccounting.Test.UI.ViewModel
     using System.ComponentModel;
     using EpAccounting.Business;
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
+    using EpAccounting.UI.Properties;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
     using Moq;
@@ -207,9 +209,34 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
-        public void FillsArticleData()
+        public void FillsArticleDataWithAdjustedInklVatPrice()
         {
             // Arrange
+            BillItem billItem = ModelFactory.GetDefaultBillItem();
+            billItem.Bill = ModelFactory.GetDefaultBill();
+
+            this.billItemDetailViewModel = new BillItemDetailViewModel(billItem, this.mockRepository.Object);
+            this.mockRepository.Setup(x => x.GetByCriteria<Article>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Article> { ModelFactory.GetDefaultArticle() });
+
+            // Act
+            this.billItemDetailViewModel.ArticleNumber = 3;
+
+            // Assert
+            this.billItemDetailViewModel.Description.Should().Be(ModelFactory.DefaultArticleDescription);
+            this.billItemDetailViewModel.Amount.Should().Be(ModelFactory.DefaultArticleAmount);
+            this.billItemDetailViewModel.Price.Should().Be(ModelFactory.DefaultArticlePrice * (100 + (decimal)Settings.Default.VatPercentage) / 100);
+        }
+
+        [Test]
+        public void FillsArticleDataWithZzglVatPrice()
+        {
+            // Arrange
+            BillItem billItem = ModelFactory.GetDefaultBillItem();
+            billItem.Bill = ModelFactory.GetDefaultBill();
+            billItem.Bill.KindOfVat = KindOfVat.zzgl_MwSt;
+
+            this.billItemDetailViewModel = new BillItemDetailViewModel(billItem, this.mockRepository.Object);
             this.mockRepository.Setup(x => x.GetByCriteria<Article>(It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Article> { ModelFactory.GetDefaultArticle() });
 

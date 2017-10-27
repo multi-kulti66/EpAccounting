@@ -1,10 +1,9 @@
 ﻿<UserControl x:Class="EpAccounting.UI.View.User_Control.BillItemEditView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:customControl="clr-namespace:EpAccounting.UI.View.CustomControl"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:properties="clr-namespace:EpAccounting.UI.Properties"
              xmlns:viewModel="clr-namespace:EpAccounting.UI.ViewModel"
              d:DataContext="{d:DesignInstance viewModel:BillItemEditViewModel}"
              mc:Ignorable="d">
@@ -27,9 +26,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <ItemsControl Grid.Row="1" IsTabStop="False"
-                      ItemTemplate="{StaticResource ImageCommandDataTemplate}"
-                      ItemsSource="{Binding Path=Commands}">
+        <ItemsControl Grid.Row="1" IsTabStop="False" ItemTemplate="{StaticResource ImageCommandDataTemplate}" ItemsSource="{Binding Path=Commands}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" />
@@ -40,8 +37,7 @@
         <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
         <DataGrid Name="dataGrid_BillItems" Grid.Row="3" AutoGenerateColumns="False"
-                  CanUserDeleteRows="False" CanUserReorderColumns="False"
-                  CanUserSortColumns="False"
+                  CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False"
                   IsEnabled="{Binding Path=IsEditingEnabled}"
                   ItemsSource="{Binding Path=BillItemDetailViewModels}"
                   SelectedItem="{Binding Path=SelectedBillItemDetailViewModel}"
@@ -67,6 +63,17 @@
         </DataGrid>
 
         <GridSplitter Grid.Row="4" Style="{StaticResource HorizontalGridSplitterStyle}" />
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal">
+            <controls:ProgressRing Width="45" Height="45" IsActive="{Binding Path=IsCreatingBill}" />
+            <ItemsControl IsTabStop="False" ItemTemplate="{StaticResource ImageCommandDataTemplate}" ItemsSource="{Binding Path=WordCommands}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </StackPanel>
 
         <GridSplitter Grid.Row="6" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
@@ -96,12 +103,8 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="1" Grid.Column="3"
-                       Style="{StaticResource UnderlinedTextBlockStyle}"
-                       Text="Nettosumme: " />
-            <TextBlock Grid.Row="1" Grid.Column="4"
-                       Text="{Binding Path=NettoSum, Mode=OneWay, StringFormat=C, ConverterCulture=de-DE}"
-                       TextAlignment="Right" />
+            <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource UnderlinedTextBlockStyle}" Text="Nettosumme: " />
+            <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Path=NettoSum, Mode=OneWay, StringFormat=C, ConverterCulture=de-DE}" TextAlignment="Right" />
 
             <Button Grid.Row="3" Grid.Column="0" Command="{Binding Path=ChangeVATCommand}">
                 <Button.Style>
@@ -118,25 +121,14 @@
                 </Button.Style>
             </Button>
 
-            <TextBox Grid.Row="3" Grid.Column="1"
-                     IsEnabled="{Binding Path=CanChangeVAT}"
-                     Text="{Binding Source={x:Static properties:Settings.Default}, Path=VAT, StringFormat={}{0:F2} %, ConverterCulture=de-DE, Converter={StaticResource UnitToDoubleConverter}}" />
-            <TextBlock Grid.Row="3" Grid.Column="3"
-                       Style="{StaticResource UnderlinedTextBlockStyle}"
-                       Text="MwSt: " />
-            <TextBlock Grid.Row="3" Grid.Column="4"
-                       Text="{Binding Path=VatSum, Mode=OneWay, StringFormat=C, ConverterCulture=de-DE}"
-                       TextAlignment="Right" />
+            <TextBox Grid.Row="3" Grid.Column="1" IsEnabled="{Binding Path=CanChangeVAT}" Text="{Binding Path=CurrentBillDetailViewModel.VatPercentage, StringFormat={}{0:F2} %, ConverterCulture=de-DE, Converter={StaticResource UnitToDoubleConverter}}" />
+            <TextBlock Grid.Row="3" Grid.Column="3" Style="{StaticResource UnderlinedTextBlockStyle}" Text="MwSt: " />
+            <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding Path=VatSum, Mode=OneWay, StringFormat=C, ConverterCulture=de-DE}" TextAlignment="Right" />
 
-            <GridSplitter Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2"
-                          Style="{StaticResource HorizontalGridSplitterStyle}" />
+            <GridSplitter Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-            <TextBlock Grid.Row="5" Grid.Column="3"
-                       Style="{StaticResource UnderlinedTextBlockStyle}"
-                       Text="Brutto: " />
-            <TextBlock Grid.Row="5" Grid.Column="4"
-                       Text="{Binding Path=BruttoSum, Mode=OneWay, StringFormat=C, ConverterCulture=de-DE}"
-                       TextAlignment="Right" />
+            <TextBlock Grid.Row="5" Grid.Column="3" Style="{StaticResource UnderlinedTextBlockStyle}" Text="Brutto: " />
+            <TextBlock Grid.Row="5" Grid.Column="4" Text="{Binding Path=BruttoSum, Mode=OneWay, StringFormat=C, ConverterCulture=de-DE}" TextAlignment="Right" />
         </Grid>
     </Grid>
 </UserControl>

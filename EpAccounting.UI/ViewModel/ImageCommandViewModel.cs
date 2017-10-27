@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ImageCommandViewModel.cs
-// Last Change: 16.09.2017  11:33
+// Last Change: 22.10.2017  16:05
 // Author: Andre Multerer
 // ///////////////////////////////////
 

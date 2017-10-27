@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientDetailViewModelTest.cs
-// Last Change: 18.09.2017  20:58
+// Last Change: 22.10.2017  15:39
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,11 +9,16 @@
 namespace EpAccounting.Test.UI.ViewModel
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
+    using EpAccounting.Business;
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
     using EpAccounting.Model.Properties;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
+    using Moq;
+    using NHibernate.Criterion;
     using NUnit.Framework;
 
 
@@ -23,6 +28,7 @@ namespace EpAccounting.Test.UI.ViewModel
     {
         #region Fields
 
+        private Mock<IRepository> mockRepository;
         private ClientDetailViewModel clientDetailViewModel;
 
         #endregion
@@ -34,7 +40,8 @@ namespace EpAccounting.Test.UI.ViewModel
         [SetUp]
         public void Init()
         {
-            this.clientDetailViewModel = new ClientDetailViewModel(new Client());
+            this.mockRepository = new Mock<IRepository>();
+            this.clientDetailViewModel = new ClientDetailViewModel(new Client { CityToPostalCode = new CityToPostalCode() }, this.mockRepository.Object);
         }
 
         [TearDown]
@@ -69,8 +76,8 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientDetailViewModel.LastName = ModelFactory.DefaultClientLastName;
             this.clientDetailViewModel.Street = ModelFactory.DefaultClientStreet;
             this.clientDetailViewModel.HouseNumber = ModelFactory.DefaultClientHouseNumber;
-            this.clientDetailViewModel.PostalCode = ModelFactory.DefaultClientPostalCode;
-            this.clientDetailViewModel.City = ModelFactory.DefaultClientCity;
+            this.clientDetailViewModel.PostalCode = ModelFactory.DefaultCityToPostalCodePostalCode;
+            this.clientDetailViewModel.City = ModelFactory.DefaultCityToPostalCodeCity;
             this.clientDetailViewModel.DateOfBirth = ModelFactory.DefaultClientDateOfBirth;
             this.clientDetailViewModel.MobileNumber = ModelFactory.DefaultClientMobileNumber;
             this.clientDetailViewModel.PhoneNumber1 = ModelFactory.DefaultClientPhoneNumber1;
@@ -107,12 +114,12 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             Bill bill = ModelFactory.GetDefaultBill();
-            Client client = new Client();
+            Client client = new Client { CityToPostalCode = new CityToPostalCode() };
 
             // Act
             client.AddBill(bill);
             client.AddBill(bill);
-            this.clientDetailViewModel = new ClientDetailViewModel(client);
+            this.clientDetailViewModel = new ClientDetailViewModel(client, this.mockRepository.Object);
 
             // Assert
             this.clientDetailViewModel.NumberOfBills.Should().Be(2);
@@ -126,7 +133,7 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
-        public void ReturnSalesWhenClientHasBills()
+        public void ReturnSalesWhenClientHasBillsWithInklVat()
         {
             Client client = ModelFactory.GetDefaultClient();
 
@@ -134,37 +141,53 @@ namespace EpAccounting.Test.UI.ViewModel
             client.AddBill(bill);
 
             // Act
-            this.clientDetailViewModel = new ClientDetailViewModel(client);
+            this.clientDetailViewModel = new ClientDetailViewModel(client, this.mockRepository.Object);
 
             // Assert
             this.clientDetailViewModel.Sales.Should().BeApproximately(66.11m, 0.05m);
         }
 
         [Test]
+        public void ReturnSalesWhenClientHasBillsWithZzglVat()
+        {
+            Client client = ModelFactory.GetDefaultClient();
+
+            Bill bill = ModelFactory.GetDefaultBill();
+            bill.KindOfVat = KindOfVat.zzgl_MwSt;
+            client.AddBill(bill);
+
+            // Act
+            this.clientDetailViewModel = new ClientDetailViewModel(client, this.mockRepository.Object);
+
+            // Assert
+            this.clientDetailViewModel.Sales.Should().BeApproximately(78.67m, 0.05m);
+        }
+
+        [Test]
         public void DetectMissingNamePartWhenFirstNameAndLastNameMissing()
         {
             // Assert
-            this.clientDetailViewModel.HasMissingLastName.Should().BeTrue();
+            this.clientDetailViewModel.HasMissingValues.Should().BeTrue();
         }
 
         [Test]
         public void DetectMissingNamePartWhenLastNameMissing()
         {
             // Act
-            this.clientDetailViewModel = new ClientDetailViewModel(new Client() { FirstName = "Andre" });
+            this.clientDetailViewModel = new ClientDetailViewModel(new Client { FirstName = "Andre", CityToPostalCode = new CityToPostalCode() }, this.mockRepository.Object);
 
             // Assert
-            this.clientDetailViewModel.HasMissingLastName.Should().BeTrue();
+            this.clientDetailViewModel.HasMissingValues.Should().BeTrue();
         }
 
         [Test]
-        public void DetectNotMissingNamePart()
+        public void DetectNotMissingValues()
         {
             // Act
-            this.clientDetailViewModel = new ClientDetailViewModel(new Client() { FirstName = "Andre", LastName = "Multerer" });
+            this.clientDetailViewModel = new ClientDetailViewModel(new Client { FirstName = "Andre", LastName = "Multerer", CityToPostalCode = new CityToPostalCode() { PostalCode = "94234" } }, this.mockRepository.Object);
 
             // Assert
-            this.clientDetailViewModel.HasMissingLastName.Should().BeFalse();
+            this.clientDetailViewModel.HasMissingValues.Should().BeFalse();
         }
 
         [Test]
@@ -175,15 +198,43 @@ namespace EpAccounting.Test.UI.ViewModel
             string ExpectedString = string.Format(Resources.Client_ToString, ExpectedId,
                                                   ModelFactory.DefaultClientFirstName, ModelFactory.DefaultClientLastName,
                                                   ModelFactory.DefaultClientStreet, ModelFactory.DefaultClientHouseNumber,
-                                                  ModelFactory.DefaultClientPostalCode, ModelFactory.DefaultClientCity);
+                                                  ModelFactory.DefaultCityToPostalCodePostalCode, ModelFactory.DefaultCityToPostalCodeCity);
 
             // Act
             Client client = ModelFactory.GetDefaultClient();
             client.Id = ExpectedId;
-            this.clientDetailViewModel = new ClientDetailViewModel(client);
+            this.clientDetailViewModel = new ClientDetailViewModel(client, this.mockRepository.Object);
 
             // Assert
             this.clientDetailViewModel.ToString().Should().Be(ExpectedString);
+        }
+
+        [Test]
+        public void FillsCityData()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.GetByCriteria<CityToPostalCode>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<CityToPostalCode> { ModelFactory.GetDefaultCityToPostalCode() });
+
+            // Act
+            this.clientDetailViewModel.PostalCode = "234";
+
+            // Assert
+            this.clientDetailViewModel.City.Should().Be(ModelFactory.DefaultCityToPostalCodeCity);
+        }
+
+        [Test]
+        public void DoesNotFillCityData()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.GetByCriteria<CityToPostalCode>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<CityToPostalCode>());
+
+            // Act
+            this.clientDetailViewModel.PostalCode = "234";
+
+            // Assert
+            this.clientDetailViewModel.City.Should().Be(null);
         }
 
         #endregion

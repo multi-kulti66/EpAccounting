@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditViewModelTest.cs
-// Last Change: 18.09.2017  20:57
+// Last Change: 26.10.2017  22:05
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -10,10 +10,12 @@ namespace EpAccounting.Test.UI.ViewModel
 {
     using System;
     using System.ComponentModel;
+    using System.Threading;
     using EpAccounting.Business;
     using EpAccounting.Model;
     using EpAccounting.Model.Enum;
     using EpAccounting.UI.Properties;
+    using EpAccounting.UI.Service;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
     using GalaSoft.MvvmLight.Messaging;
@@ -28,6 +30,8 @@ namespace EpAccounting.Test.UI.ViewModel
         #region Fields
 
         private Mock<IRepository> mockRepository;
+        private Mock<IDialogService> mockDialogService;
+        private Mock<IWordService> mockWordService;
         private BillItemEditViewModel billItemEditViewModel;
 
         #endregion
@@ -40,13 +44,17 @@ namespace EpAccounting.Test.UI.ViewModel
         public void Init()
         {
             this.mockRepository = new Mock<IRepository>();
-            this.billItemEditViewModel = new BillItemEditViewModel(this.mockRepository.Object);
+            this.mockDialogService = new Mock<IDialogService>();
+            this.mockWordService = new Mock<IWordService>();
+            this.billItemEditViewModel = new BillItemEditViewModel(this.mockRepository.Object, this.mockDialogService.Object, this.mockWordService.Object);
         }
 
         [TearDown]
         public void Cleanup()
         {
             this.mockRepository = null;
+            this.mockDialogService = null;
+            this.mockWordService = null;
             this.billItemEditViewModel = null;
             GC.Collect();
         }
@@ -61,6 +69,14 @@ namespace EpAccounting.Test.UI.ViewModel
         public void DerivesFromBillWorkspaceViewModel()
         {
             typeof(BillItemEditViewModel).Should().BeDerivedFrom<BillWorkspaceViewModel>();
+        }
+
+        [Test]
+        public void InitializedAllCommands()
+        {
+            // Assert
+            this.billItemEditViewModel.Commands.Count.Should().Be(4);
+            this.billItemEditViewModel.WordCommands.Count.Should().Be(2);
         }
 
         [Test]
@@ -487,19 +503,37 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
-        public void ReclaculateNettoVatAndSumWhenUpdateMessageReceived()
+        public void ReclaculateNettoVatAndSumWhenUpdateMessageReceivedForInklVat()
         {
             // Arrange
             this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
             this.billItemEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            Messenger.Default.Send(new NotificationMessage(Resources.Message_UpdateSumsForBillItemEditVM));
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_OnVatChangeRecalculatePricesForBillItemEditVM));
 
             // Assert
             this.billItemEditViewModel.ShouldRaisePropertyChangeFor(x => x.NettoSum);
             this.billItemEditViewModel.ShouldRaisePropertyChangeFor(x => x.VatSum);
             this.billItemEditViewModel.ShouldRaisePropertyChangeFor(x => x.BruttoSum);
+            this.billItemEditViewModel.BillItemDetailViewModels[0].Price.Should().Be(ModelFactory.DefaultBillItemPrice * (100 + (decimal)ModelFactory.DefaultBillVatPercentage) / 100);
+        }
+
+        [Test]
+        public void ReclaculateNettoVatAndSumWhenUpdateMessageReceivedForZzglVat()
+        {
+            // Arrange
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+            this.billItemEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+
+            // Act
+            this.billItemEditViewModel.CurrentBillDetailViewModel.KindOfVat = KindOfVat.zzgl_MwSt;
+
+            // Assert
+            this.billItemEditViewModel.ShouldRaisePropertyChangeFor(x => x.NettoSum);
+            this.billItemEditViewModel.ShouldRaisePropertyChangeFor(x => x.VatSum);
+            this.billItemEditViewModel.ShouldRaisePropertyChangeFor(x => x.BruttoSum);
+            this.billItemEditViewModel.BillItemDetailViewModels[0].Price.Should().Be(ModelFactory.DefaultBillItemPrice * 100 / (100 + (decimal)ModelFactory.DefaultBillVatPercentage));
         }
 
         [Test]
@@ -529,20 +563,156 @@ namespace EpAccounting.Test.UI.ViewModel
         public void ChangesVat()
         {
             // Arrange
-            double vatPercentage = Settings.Default.VAT;
             this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
 
             // Act
             this.billItemEditViewModel.ChangeVATCommand.Execute(null);
-            Settings.Default.VAT = 50;
+            this.billItemEditViewModel.CurrentBillDetailViewModel.VatPercentage = 50;
             this.billItemEditViewModel.ChangeVATCommand.Execute(null);
 
             // Assert
-            Settings.Default.VAT = vatPercentage;
-            Settings.Default.Save();
             this.billItemEditViewModel.NettoSum.Should().BeApproximately(44.07M, 0.005M);
             this.billItemEditViewModel.VatSum.Should().BeApproximately(22.04M, 0.005M);
             this.billItemEditViewModel.BruttoSum.Should().BeApproximately(66.11M, 0.005M);
+        }
+
+        [Test]
+        public void DoesNotCalculateSumsWhenNoBillWasLoaded()
+        {
+            // Act
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_OnVatChangeRecalculatePricesForBillItemEditVM));
+
+            // Assert
+            this.billItemEditViewModel.CurrentBillDetailViewModel.Should().BeNull();
+        }
+
+        [Test]
+        public void CanCreateBillWhenInLoadedMode()
+        {
+            // Act
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Assert
+            this.billItemEditViewModel.CreateDocumentCommand.RelayCommand.CanExecute(null).Should().BeTrue();
+        }
+
+        [Test]
+        public void CanNotCreateBillWhenInEditMode()
+        {
+            // Arrange
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<bool>(true, Resources.Message_EnableStateForBillItemEditVM));
+
+            // Assert
+            this.billItemEditViewModel.CreateDocumentCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+        }
+
+        [Test]
+        public void IsCreatingBillShouldBeFalse()
+        {
+            // Assert
+            this.billItemEditViewModel.IsCreatingBill.Should().BeFalse();
+        }
+
+        [Test]
+        public void IsCreatingBillShouldBeTrue()
+        {
+            // Arrange
+            this.mockWordService.Setup(x => x.CreateWordBill(It.IsAny<BillItemEditViewModel>(), true)).Callback(() => Thread.Sleep(100));
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Act
+            this.billItemEditViewModel.CreateDocumentCommand.RelayCommand.Execute(null);
+
+            // Assert
+            this.billItemEditViewModel.IsCreatingBill.Should().BeTrue();
+            Thread.Sleep(200);
+        }
+
+        [Test]
+        public void CreatesWordDocument()
+        {
+            // Arrange
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Act
+            this.billItemEditViewModel.CreateDocumentCommand.RelayCommand.Execute(null);
+            Thread.Sleep(100);
+
+            // Assert
+            this.mockWordService.Verify(x => x.CreateWordBill(It.IsAny<BillItemEditViewModel>(), true), Times.Once);
+        }
+
+        [Test]
+        public void ShowMessageWhenWordDocumentWasCreated()
+        {
+            // Arrange
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Act
+            this.billItemEditViewModel.CreateDocumentCommand.RelayCommand.Execute(null);
+            Thread.Sleep(100);
+
+            // Assert
+            this.mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_Bill_Created, Resources.Dialog_Message_Bill_Created), Times.Once);
+        }
+
+        [Test]
+        public void ShowMessageWhenWordDocumentCouldNotBeCreated()
+        {
+            // Arrange
+            this.mockWordService.Setup(x => x.CreateWordBill(It.IsAny<BillItemEditViewModel>(), true)).Throws<Exception>();
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+
+            // Act
+            this.billItemEditViewModel.CreateDocumentCommand.RelayCommand.Execute(null);
+            Thread.Sleep(100);
+
+            // Assert
+            this.mockDialogService.Verify(x => x.ShowMessage(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public void PrintsDocument()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(new Bill() { Printed = true });
+            this.mockWordService.Setup(x => x.PrintDocument()).Returns(true);
+            this.mockWordService.Setup(x => x.CreateWordBill(this.billItemEditViewModel, false));
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+            this.billItemEditViewModel.CurrentBillDetailViewModel.Printed = null;
+
+            // Act
+            this.billItemEditViewModel.PrintDocumentCommand.RelayCommand.Execute(null);
+            Thread.Sleep(100);
+
+            // Assert
+            this.billItemEditViewModel.CurrentBillDetailViewModel.Printed.Should().BeTrue();
+            this.mockWordService.Verify(x => x.PrintDocument(), Times.Once);
+            this.mockWordService.Verify(x => x.CloseDocument(), Times.Once);
+            this.mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Bill>()), Times.Once);
+        }
+
+        [Test]
+        public void PrintDocumentWasCancelled()
+        {
+            // Arrange
+            this.mockWordService.Setup(x => x.PrintDocument()).Returns(false);
+            this.mockWordService.Setup(x => x.CreateWordBill(this.billItemEditViewModel, false));
+            this.billItemEditViewModel.LoadBill(ModelFactory.GetDefaultBill());
+            this.billItemEditViewModel.CurrentBillDetailViewModel.Printed = null;
+
+            // Act
+            this.billItemEditViewModel.PrintDocumentCommand.RelayCommand.Execute(null);
+            Thread.Sleep(100);
+
+            // Assert
+            this.billItemEditViewModel.CurrentBillDetailViewModel.Printed.Should().BeNull();
+            this.mockWordService.Verify(x => x.PrintDocument(), Times.Once);
+            this.mockWordService.Verify(x => x.CloseDocument(), Times.Once);
+            this.mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Bill>()), Times.Never);
         }
 
         #endregion

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: MainViewModelTest.cs
-// Last Change: 29.08.2017  18:46
+// Last Change: 27.10.2017  21:53
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -93,23 +93,16 @@ namespace EpAccounting.Test.UI.ViewModel
         [Test]
         public void DoNotConnectAtStartupWhenSavedDatabasePathIsInvalid()
         {
-            // TODO: uncomment after testing is finished
-
-            /*
             // Arrange
             this.mainViewModel = this.GetDefaultViewModel();
 
             // Assert
             this.mainViewModel.IsConnected.Should().BeFalse();
-            */
         }
 
         [Test]
         public void ClearSavedDatabasePathWhenSavedPathWasInvalidAtStartup()
         {
-            // TODO: uncomment after testing is finished
-
-            /*
             // Arrange
             Settings.Default.DatabaseFilePath = "Desktop\\Test.db";
 
@@ -118,7 +111,6 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             Settings.Default.DatabaseFilePath.Should().BeNullOrEmpty();
-            */
         }
 
         [Test]

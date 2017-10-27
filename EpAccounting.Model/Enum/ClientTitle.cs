@@ -12,6 +12,7 @@ namespace EpAccounting.Model.Enum
     {
         Herr,
         Frau,
+        Familie,
         Firma
     }
 }

@@ -20,8 +20,17 @@
     <Setting Name="PageSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">50</Value>
     </Setting>
-    <Setting Name="VAT" Type="System.Double" Scope="User">
+    <Setting Name="VatPercentage" Type="System.Double" Scope="User">
       <Value Profile="(Default)">19</Value>
+    </Setting>
+    <Setting Name="WordTemplateFilePath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Program Files (x86)\EpAccounting\Word\EpAccounting - Bill Template.dotx</Value>
+    </Setting>
+    <Setting Name="BillFolderPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Offer" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

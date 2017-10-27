@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpAccounting.Data", "EpAccounting.Data\EpAccounting.Data.csproj", "{3F11EDA6-1C15-4F5C-8648-E72709EA83B1}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpAccounting.Business", "EpAccounting.Business\EpAccounting.Business.csproj", "{2CF0E779-D313-481F-A4B3-EB22CF4CFFBF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpAccounting.Model", "EpAccounting.Model\EpAccounting.Model.csproj", "{21A60DCC-295E-4DD1-AF5E-27D28E77DCB2}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "EpAccounting.Installer", "EpAccounting.Installer\EpAccounting.Installer.vdproj", "{D2CB9BFC-8701-4084-A5D6-91862875BE6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,8 +41,13 @@ Global
 		{21A60DCC-295E-4DD1-AF5E-27D28E77DCB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21A60DCC-295E-4DD1-AF5E-27D28E77DCB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21A60DCC-295E-4DD1-AF5E-27D28E77DCB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2CB9BFC-8701-4084-A5D6-91862875BE6F}.Debug|Any CPU.ActiveCfg = Debug
+		{D2CB9BFC-8701-4084-A5D6-91862875BE6F}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3EDE3CBB-3C36-4D16-B86C-777D9C90C198}
 	EndGlobalSection
 EndGlobal

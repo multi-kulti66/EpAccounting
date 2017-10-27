@@ -8,6 +8,7 @@
 
     <!--  Converter  -->
     <converter:BitmapToBitmapImageConverter x:Key="BitmapToBitmapImageConverter" />
+    <converter:BoolInverterConverter x:Key="BoolInverterConverter" />
     <converter:UnitToDoubleConverter x:Key="UnitToDoubleConverter" />
 
     <!--  Style: Grid  -->
@@ -44,6 +45,36 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding Path=(viewModel:MainViewModel.IsConnected), Mode=OneWay}" Value="false">
                 <Setter Property="Source" Value="/EpAccounting.UI;component/Resources/img_db_disconnected.png" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="PrintedImageStyle" TargetType="{x:Type Image}">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Width" Value="40" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=CurrentBillDetailViewModel.Printed, Mode=OneWay}" Value="true">
+                <Setter Property="Source" Value="/EpAccounting.UI;component/Resources/img_printed.png" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Path=CurrentBillDetailViewModel.Printed, Mode=OneWay}" Value="false">
+                <Setter Property="Source" Value="/EpAccounting.UI;component/Resources/img_notPrinted.png" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="PrintedImageColumnStyle" TargetType="{x:Type Image}">
+        <Setter Property="Height" Value="20" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Width" Value="20" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=Printed, Mode=OneWay}" Value="true">
+                <Setter Property="Source" Value="/EpAccounting.UI;component/Resources/img_printed.png" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Path=Printed, Mode=OneWay}" Value="false">
+                <Setter Property="Source" Value="/EpAccounting.UI;component/Resources/img_notPrinted.png" />
             </DataTrigger>
         </Style.Triggers>
     </Style>

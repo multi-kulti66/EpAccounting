@@ -1,8 +1,6 @@
 ﻿<UserControl x:Class="EpAccounting.UI.View.User_Control.BillSearchView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:behavior="clr-namespace:EpAccounting.UI.Behavior"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:behavior="clr-namespace:EpAccounting.UI.Behavior" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModel="clr-namespace:EpAccounting.UI.ViewModel"
@@ -31,10 +29,7 @@
 
         <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-        <ListView Grid.Row="3"
-                  ItemsSource="{Binding Path=FoundBills}"
-                  ScrollViewer.CanContentScroll="True"
-                  SelectedItem="{Binding Path=SelectedBillDetailViewModel}">
+        <ListView Grid.Row="3" ItemsSource="{Binding Path=FoundBills}" ScrollViewer.CanContentScroll="True" SelectedItem="{Binding Path=SelectedBillDetailViewModel}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
                     <i:InvokeCommandAction Command="{Binding Path=LoadSelectedBillCommand}" />
@@ -48,6 +43,13 @@
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Id}" Header="Rechnungsnr" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=KindOfBill}" Header="Rechnungsart" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Date}" Header="Datum" />
+                    <GridViewColumn Header="Druckstatus">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Style="{StaticResource PrintedImageColumnStyle}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=ClientId}" Header="Kundennummer" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Title}" Header="Anrede" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=FirstName}" Header="Vorname" />

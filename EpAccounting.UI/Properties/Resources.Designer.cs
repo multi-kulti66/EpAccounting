@@ -61,7 +61,16 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add.
+        ///   Looks up a localized string similar to Rechnung.doc.
+        /// </summary>
+        public static string BillFileName {
+            get {
+                return ResourceManager.GetString("BillFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hinzufügen.
         /// </summary>
         public static string Command_DisplayName_Add {
             get {
@@ -70,7 +79,7 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cancel.
+        ///   Looks up a localized string similar to Abbrechen.
         /// </summary>
         public static string Command_DisplayName_Cancel {
             get {
@@ -79,7 +88,16 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete.
+        ///   Looks up a localized string similar to Erstellen.
+        /// </summary>
+        public static string Command_DisplayName_Create {
+            get {
+                return ResourceManager.GetString("Command_DisplayName_Create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Löschen.
         /// </summary>
         public static string Command_DisplayName_Delete {
             get {
@@ -88,7 +106,7 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Down.
+        ///   Looks up a localized string similar to Nach unten.
         /// </summary>
         public static string Command_DisplayName_Down {
             get {
@@ -97,7 +115,7 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit.
+        ///   Looks up a localized string similar to Editieren.
         /// </summary>
         public static string Command_DisplayName_Edit {
             get {
@@ -106,7 +124,7 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Next Page.
+        ///   Looks up a localized string similar to Nächste Seite.
         /// </summary>
         public static string Command_DisplayName_Next_Page {
             get {
@@ -115,7 +133,7 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Previous Page.
+        ///   Looks up a localized string similar to Vorherige Seite.
         /// </summary>
         public static string Command_DisplayName_Previous_Page {
             get {
@@ -124,7 +142,16 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SaveOrUpdate.
+        ///   Looks up a localized string similar to Drucken.
+        /// </summary>
+        public static string Command_DisplayName_Print {
+            get {
+                return ResourceManager.GetString("Command_DisplayName_Print", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Speichern.
         /// </summary>
         public static string Command_DisplayName_SaveOrUpdate {
             get {
@@ -133,7 +160,7 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Search.
+        ///   Looks up a localized string similar to Suchen.
         /// </summary>
         public static string Command_DisplayName_Search {
             get {
@@ -142,7 +169,7 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Up.
+        ///   Looks up a localized string similar to Nach oben.
         /// </summary>
         public static string Command_DisplayName_Up {
             get {
@@ -151,7 +178,7 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Rechnungsprogramm.db.
+        ///   Looks up a localized string similar to EpAccounting.db.
         /// </summary>
         public static string Database_NameWithExtension {
             get {
@@ -160,7 +187,16 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Der Kunde muss mindestens einen Vor- und Nachnamen besitzen..
+        ///   Looks up a localized string similar to Die Rechnung wurde erfolgreich erstellt..
+        /// </summary>
+        public static string Dialog_Message_Bill_Created {
+            get {
+                return ResourceManager.GetString("Dialog_Message_Bill_Created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Der Kunde muss mindestens einen Nachnamen und eine Postleitzahl besitzen..
         /// </summary>
         public static string Dialog_Message_ClientHasMissingNamePart {
             get {
@@ -225,6 +261,15 @@ namespace EpAccounting.UI.Properties {
         public static string Dialog_Title_Attention {
             get {
                 return ResourceManager.GetString("Dialog_Title_Attention", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rechnung erstellt.
+        /// </summary>
+        public static string Dialog_Title_Bill_Created {
+            get {
+                return ResourceManager.GetString("Dialog_Title_Bill_Created", resourceCulture);
             }
         }
         
@@ -306,6 +351,24 @@ namespace EpAccounting.UI.Properties {
         public static string Exception_Message_EmptyStack {
             get {
                 return ResourceManager.GetString("Exception_Message_EmptyStack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Es wurde kein Pfad für den Rechnungsordner angegeben..
+        /// </summary>
+        public static string Exception_Message_NoPathToBillFolder {
+            get {
+                return ResourceManager.GetString("Exception_Message_NoPathToBillFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Es wurde kein Pfad zur Rechnungsvorlage angegeben..
+        /// </summary>
+        public static string Exception_Message_NoPathToBillTemplate {
+            get {
+                return ResourceManager.GetString("Exception_Message_NoPathToBillTemplate", resourceCulture);
             }
         }
         
@@ -462,6 +525,16 @@ namespace EpAccounting.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap img_createWord {
+            get {
+                object obj = ResourceManager.GetObject("img_createWord", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap img_db_connected {
             get {
                 object obj = ResourceManager.GetObject("img_db_connected", resourceCulture);
@@ -502,9 +575,39 @@ namespace EpAccounting.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap img_notPrinted {
+            get {
+                object obj = ResourceManager.GetObject("img_notPrinted", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap img_options {
             get {
                 object obj = ResourceManager.GetObject("img_options", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap img_print {
+            get {
+                object obj = ResourceManager.GetObject("img_print", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap img_printed {
+            get {
+                object obj = ResourceManager.GetObject("img_printed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -572,15 +675,6 @@ namespace EpAccounting.UI.Properties {
         public static string Message_CreateNewBillForBillEditVM {
             get {
                 return ResourceManager.GetString("Message_CreateNewBillForBillEditVM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Message_CreateNewBillMessageForMainVM.
-        /// </summary>
-        public static string Message_CreateNewBillMessageForMainVM {
-            get {
-                return ResourceManager.GetString("Message_CreateNewBillMessageForMainVM", resourceCulture);
             }
         }
         
@@ -662,6 +756,24 @@ namespace EpAccounting.UI.Properties {
         public static string Message_LoadSelectedBillForBillEditVM {
             get {
                 return ResourceManager.GetString("Message_LoadSelectedBillForBillEditVM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message_OnVatChangeRecalculatePricesForBillItemEditVM.
+        /// </summary>
+        public static string Message_OnVatChangeRecalculatePricesForBillItemEditVM {
+            get {
+                return ResourceManager.GetString("Message_OnVatChangeRecalculatePricesForBillItemEditVM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM.
+        /// </summary>
+        public static string Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM {
+            get {
+                return ResourceManager.GetString("Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM", resourceCulture);
             }
         }
         
@@ -783,7 +895,7 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message_UpdateSumsForBillItemEditVM.
+        ///   Looks up a localized string similar to Message_OnVatChangeRecalculatePricesForBillItemEditVM.
         /// </summary>
         public static string Message_UpdateSumsForBillItemEditVM {
             get {
@@ -807,8 +919,7 @@ namespace EpAccounting.UI.Properties {
         ///          PostalCode=&quot;93053&quot; City=&quot;Regensburg&quot; DateOfBirth=&quot;06.11.1993&quot; PhoneNumber1=&quot;09942/902097&quot;
         ///          PhoneNumber2=&quot;09942/902099&quot; MobileNumber=&quot;+49 160 55-07-869&quot; Telefax=&quot;09942/902098&quot;
         ///          Email=&quot;andre.multerer@gmail.com&quot;&gt;
-        ///    &lt;Bill BillID=&quot;1&quot; Date=&quot;27.11.2016&quot; KindOfBill=&quot;Rechnung&quot; KindOfVAT=&quot;inkl_MwSt&quot; VATPercentage=&quot;19&quot;&gt;
-        ///     [rest of string was truncated]&quot;;.
+        ///    &lt;Bill BillID=&quot;1&quot; Printed=&quot;false&quot; Date=&quot;27.11.2016&quot; KindOfBill=&quot;Rechnung&quot; KindOfVAT=&quot;inkl_MwSt&quot; VatPercen [rest of string was truncated]&quot;;.
         /// </summary>
         public static string testdata {
             get {

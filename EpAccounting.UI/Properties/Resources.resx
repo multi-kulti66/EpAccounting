@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Database_NameWithExtension" xml:space="preserve">
-    <value>Rechnungsprogramm.db</value>
+    <value>EpAccounting.db</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="icon_ep_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -178,25 +178,25 @@
     <value>Keine weiteren Elemente gespeichert.</value>
   </data>
   <data name="Command_DisplayName_Add" xml:space="preserve">
-    <value>Add</value>
+    <value>Hinzufügen</value>
   </data>
   <data name="Command_DisplayName_Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Abbrechen</value>
   </data>
   <data name="Command_DisplayName_Delete" xml:space="preserve">
-    <value>Delete</value>
+    <value>Löschen</value>
   </data>
   <data name="Command_DisplayName_Edit" xml:space="preserve">
-    <value>Edit</value>
+    <value>Editieren</value>
   </data>
   <data name="Command_DisplayName_SaveOrUpdate" xml:space="preserve">
-    <value>SaveOrUpdate</value>
+    <value>Speichern</value>
   </data>
   <data name="Command_DisplayName_Search" xml:space="preserve">
-    <value>Search</value>
+    <value>Suchen</value>
   </data>
   <data name="Dialog_Message_ClientHasMissingNamePart" xml:space="preserve">
-    <value>Der Kunde muss mindestens einen Vor- und Nachnamen besitzen.</value>
+    <value>Der Kunde muss mindestens einen Nachnamen und eine Postleitzahl besitzen.</value>
   </data>
   <data name="Dialog_Question_AddToExistingClient" xml:space="preserve">
     <value>Ein ähnlicher Kunde existiert bereits:
@@ -287,10 +287,10 @@ Wollen Sie den Kunden trotzdem speichern?</value>
     <value>..\Resources\img_arrow_up.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Command_DisplayName_Down" xml:space="preserve">
-    <value>Down</value>
+    <value>Nach unten</value>
   </data>
   <data name="Command_DisplayName_Up" xml:space="preserve">
-    <value>Up</value>
+    <value>Nach oben</value>
   </data>
   <data name="img_arrow_left" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\img_arrow_left.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -299,10 +299,10 @@ Wollen Sie den Kunden trotzdem speichern?</value>
     <value>..\Resources\img_arrow_right.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Command_DisplayName_Next_Page" xml:space="preserve">
-    <value>Next Page</value>
+    <value>Nächste Seite</value>
   </data>
   <data name="Command_DisplayName_Previous_Page" xml:space="preserve">
-    <value>Previous Page</value>
+    <value>Vorherige Seite</value>
   </data>
   <data name="Message_CreateNewBillForBillEditVM" xml:space="preserve">
     <value>Message_CreateNewBillForBillEditVM</value>
@@ -318,9 +318,6 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   </data>
   <data name="Workspace_Title_Options" xml:space="preserve">
     <value>Optionen</value>
-  </data>
-  <data name="Message_CreateNewBillMessageForMainVM" xml:space="preserve">
-    <value>Message_CreateNewBillMessageForMainVM</value>
   </data>
   <data name="Message_UpdateClientValuesForBillEditVM" xml:space="preserve">
     <value>Message_UpdateClientValuesForBillEditVM</value>
@@ -362,7 +359,7 @@ Wollen Sie den Kunden trotzdem speichern?</value>
     <value>Message_WorkspaceEnableStateForMainVM</value>
   </data>
   <data name="Message_UpdateSumsForBillItemEditVM" xml:space="preserve">
-    <value>Message_UpdateSumsForBillItemEditVM</value>
+    <value>Message_OnVatChangeRecalculatePricesForBillItemEditVM</value>
   </data>
   <data name="img_articles" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\img_articles.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -378,5 +375,44 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   </data>
   <data name="ValidationError_InvalidDate" xml:space="preserve">
     <value>Bitte geben Sie ein gültiges Datum ein.</value>
+  </data>
+  <data name="img_createWord" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_createWord.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Command_DisplayName_Create" xml:space="preserve">
+    <value>Erstellen</value>
+  </data>
+  <data name="Message_OnVatChangeRecalculatePricesForBillItemEditVM" xml:space="preserve">
+    <value>Message_OnVatChangeRecalculatePricesForBillItemEditVM</value>
+  </data>
+  <data name="Dialog_Message_Bill_Created" xml:space="preserve">
+    <value>Die Rechnung wurde erfolgreich erstellt.</value>
+  </data>
+  <data name="Dialog_Title_Bill_Created" xml:space="preserve">
+    <value>Rechnung erstellt</value>
+  </data>
+  <data name="img_print" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_print.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Command_DisplayName_Print" xml:space="preserve">
+    <value>Drucken</value>
+  </data>
+  <data name="BillFileName" xml:space="preserve">
+    <value>Rechnung.doc</value>
+  </data>
+  <data name="Exception_Message_NoPathToBillFolder" xml:space="preserve">
+    <value>Es wurde kein Pfad für den Rechnungsordner angegeben.</value>
+  </data>
+  <data name="Exception_Message_NoPathToBillTemplate" xml:space="preserve">
+    <value>Es wurde kein Pfad zur Rechnungsvorlage angegeben.</value>
+  </data>
+  <data name="img_notPrinted" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_notPrinted.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_printed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_printed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM" xml:space="preserve">
+    <value>Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM</value>
   </data>
 </root>

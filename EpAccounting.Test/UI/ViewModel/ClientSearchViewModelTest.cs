@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientSearchViewModelTest.cs
-// Last Change: 23.08.2017  20:33
+// Last Change: 22.10.2017  15:57
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -140,7 +140,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientSearchViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.clientSearchViewModel.SelectedClientDetailViewModel = new ClientDetailViewModel(new Client());
+            this.clientSearchViewModel.SelectedClientDetailViewModel = new ClientDetailViewModel(new Client(), this.mockRepository.Object);
 
             // Assert
             this.clientSearchViewModel.ShouldRaisePropertyChangeFor(x => x.SelectedClientDetailViewModel);
@@ -152,11 +152,11 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const string PreviousFirstName = "Andre";
             const string ExpectedFirstName = "Stefanie";
-            Client expectedClient = new Client { Id = 1, FirstName = ExpectedFirstName, LastName = "Multerer" };
+            Client expectedClient = new Client { Id = 1, FirstName = ExpectedFirstName, LastName = "Multerer", CityToPostalCode = ModelFactory.GetDefaultCityToPostalCode() };
             this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(expectedClient);
 
-            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client { Id = 1, FirstName = PreviousFirstName, LastName = "Multerer" }));
-            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client { Id = 2, FirstName = PreviousFirstName, LastName = "Multerer" }));
+            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client { Id = 1, FirstName = PreviousFirstName, LastName = "Multerer", CityToPostalCode = ModelFactory.GetDefaultCityToPostalCode() }, this.mockRepository.Object));
+            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client { Id = 2, FirstName = PreviousFirstName, LastName = "Multerer", CityToPostalCode = ModelFactory.GetDefaultCityToPostalCode() }, this.mockRepository.Object));
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_UpdateClientValuesForClientSearchVM));
@@ -165,6 +165,43 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientSearchViewModel.FoundClients.Should().HaveCount(2);
             this.clientSearchViewModel.FoundClients[0].FirstName.Should().Be(ExpectedFirstName);
             this.clientSearchViewModel.FoundClients[1].FirstName.Should().Be(PreviousFirstName);
+        }
+
+        [Test]
+        public void UpdatesClientsCityReferenceWhenUpdateNotificationReceived()
+        {
+            // Arrange
+            const string PreviousFirstName = "Andre";
+            const string ExpectedFirstName = "Stefanie";
+            Client expectedClient = new Client { Id = 1, FirstName = ExpectedFirstName, LastName = "Multerer", CityToPostalCode = ModelFactory.GetDefaultCityToPostalCode() };
+            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(expectedClient);
+
+            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client
+                                                                                  {
+                                                                                      Id = 1,
+                                                                                      FirstName = PreviousFirstName,
+                                                                                      LastName = "Multerer",
+                                                                                      CityToPostalCode = ModelFactory.GetDefaultCityToPostalCode()
+                                                                                  }, this.mockRepository.Object));
+            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(new Client
+                                                                                  {
+                                                                                      Id = 2,
+                                                                                      FirstName = PreviousFirstName,
+                                                                                      LastName = "Multerer",
+                                                                                      CityToPostalCode = new CityToPostalCode()
+                                                                                                         {
+                                                                                                             PostalCode = ModelFactory.DefaultCityToPostalCodePostalCode,
+                                                                                                             City = "Amsterdam"
+                                                                                                         }
+                                                                                  }, this.mockRepository.Object));
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_UpdateClientValuesForClientSearchVM));
+
+            // Assert
+            this.clientSearchViewModel.FoundClients.Should().HaveCount(2);
+            this.clientSearchViewModel.FoundClients[0].City.Should().Be(ModelFactory.DefaultCityToPostalCodeCity);
+            this.clientSearchViewModel.FoundClients[1].City.Should().Be(ModelFactory.DefaultCityToPostalCodeCity);
         }
 
         [Test]
@@ -179,7 +216,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(expectedClient);
             this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>())).Returns(new List<Client>());
 
-            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(expectedClient));
+            this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(expectedClient, this.mockRepository.Object));
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_RemoveClientForClientSearchVM));
@@ -219,7 +256,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void CanLoadClient()
         {
             // Act
-            this.clientSearchViewModel.SelectedClientDetailViewModel = new ClientDetailViewModel(ModelFactory.GetDefaultClient());
+            this.clientSearchViewModel.SelectedClientDetailViewModel = new ClientDetailViewModel(ModelFactory.GetDefaultClient(), this.mockRepository.Object);
 
             // Assert
             this.clientSearchViewModel.LoadSelectedClientCommand.CanExecute(null).Should().BeTrue();
@@ -229,7 +266,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void SendsLoadClientMessage()
         {
             // Arrange
-            this.clientSearchViewModel.SelectedClientDetailViewModel = new ClientDetailViewModel(ModelFactory.GetDefaultClient());
+            this.clientSearchViewModel.SelectedClientDetailViewModel = new ClientDetailViewModel(ModelFactory.GetDefaultClient(), this.mockRepository.Object);
             string message = null;
 
             Messenger.Default.Register<NotificationMessage<int>>(this, x => message = x.Notification);

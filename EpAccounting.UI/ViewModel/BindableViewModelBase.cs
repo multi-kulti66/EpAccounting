@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BindableViewModelBase.cs
-// Last Change: 22.09.2017  20:42
+// Last Change: 22.10.2017  16:05
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -23,7 +23,7 @@ namespace EpAccounting.UI.ViewModel
     {
         #region Fields
 
-        private PropertyInfo[] _propertyInfos;
+        protected PropertyInfo[] _propertyInfos;
 
         #endregion
 

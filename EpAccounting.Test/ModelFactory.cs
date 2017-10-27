@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ModelFactory.cs
-// Last Change: 18.09.2017  20:41
+// Last Change: 23.10.2017  21:04
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -30,8 +30,6 @@ namespace EpAccounting.Test
         public const string DefaultClientLastName = "Multerer";
         public const string DefaultClientStreet = "Schmidstraße";
         public const string DefaultClientHouseNumber = "14";
-        public const string DefaultClientPostalCode = "94234";
-        public const string DefaultClientCity = "Viechtach";
         public const string DefaultClientDateOfBirth = "06.11.1993";
         public const string DefaultClientPhoneNumber1 = "09942/902097";
         public const string DefaultClientPhoneNumber2 = "09942 - 902099";
@@ -39,6 +37,10 @@ namespace EpAccounting.Test
         public const string DefaultClientTelefax = "09942 / 902098";
         public const string DefaultClientEmail = "andre.multerer@gmail.com";
 
+        public const string DefaultCityToPostalCodePostalCode = "94234";
+        public const string DefaultCityToPostalCodeCity = "Viechtach";
+
+        public const bool DefaultBillPrinted = true;
         public const KindOfBill DefaultBillKindOfBill = KindOfBill.Rechnung;
         public const KindOfVat DefaultBillKindOfVat = KindOfVat.inkl_MwSt;
         public const double DefaultBillVatPercentage = 19;
@@ -64,8 +66,7 @@ namespace EpAccounting.Test
                        LastName = DefaultClientLastName,
                        Street = DefaultClientStreet,
                        HouseNumber = DefaultClientHouseNumber,
-                       PostalCode = DefaultClientPostalCode,
-                       City = DefaultClientCity,
+                       CityToPostalCode = GetDefaultCityToPostalCode(),
                        DateOfBirth = DefaultClientDateOfBirth,
                        PhoneNumber1 = DefaultClientPhoneNumber1,
                        PhoneNumber2 = DefaultClientPhoneNumber2,
@@ -75,10 +76,20 @@ namespace EpAccounting.Test
                    };
         }
 
+        public static CityToPostalCode GetDefaultCityToPostalCode()
+        {
+            return new CityToPostalCode
+                   {
+                       PostalCode = DefaultCityToPostalCodePostalCode,
+                       City = DefaultCityToPostalCodeCity
+                   };
+        }
+
         public static Bill GetDefaultBill()
         {
             return new Bill()
                    {
+                        Printed = DefaultBillPrinted,
                        KindOfBill = DefaultBillKindOfBill,
                        KindOfVat = DefaultBillKindOfVat,
                        VatPercentage = DefaultBillVatPercentage,

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEditViewModelTest.cs
-// Last Change: 16.09.2017  11:36
+// Last Change: 22.10.2017  12:07
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -137,6 +137,47 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             this.billEditViewModel.CanEditData.Should().BeTrue();
+        }
+
+        [Test]
+        public void CanEditPrintedStatusShouldReturnTrueInSearchMode()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+
+            // Act
+            this.billEditViewModel.ChangeToSearchMode();
+
+            // Assert
+            this.billEditViewModel.CanEditPrintedStatus.Should().BeTrue();
+        }
+
+        [Test]
+        public void CanEditPrintedStatusShouldReturnTrueInEditMode()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+
+            // Act
+            this.billEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultBill());
+            this.billEditViewModel.ChangeToEditMode();
+
+            // Assert
+            this.billEditViewModel.CanEditPrintedStatus.Should().BeTrue();
+        }
+
+        [Test]
+        public void CanEditPrintedStatusShouldReturnFalseInCreationMode()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_CreateNewBillForBillEditVM));
+
+            // Assert
+            this.billEditViewModel.CanEditPrintedStatus.Should().BeFalse();
         }
 
         [Test]
@@ -421,7 +462,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             Conjunction billConjunction = Restrictions.Conjunction();
             billConjunction.Add(Restrictions.Where<Bill>(b => b.KindOfBill == KindOfBill));
-            billConjunction.Add(Restrictions.Where<Bill>(b => b.Date == Date));
+            billConjunction.Add(Restrictions.Where<Bill>(b => b.Date.IsLike(Date, MatchMode.Anywhere)));
 
             Conjunction clientConjunction = Restrictions.Conjunction();
             clientConjunction.Add(Restrictions.Where<Client>(c => c.Id == ExpectedId));
@@ -449,7 +490,8 @@ namespace EpAccounting.Test.UI.ViewModel
             Conjunction billConjunction = Restrictions.Conjunction();
             billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
             billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfVat == ModelFactory.DefaultBillKindOfVat));
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.Date == ModelFactory.DefaultBillDate));
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.Date.IsLike(ModelFactory.DefaultBillDate, MatchMode.Anywhere)));
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.Printed == ModelFactory.DefaultBillPrinted));
 
             Conjunction clientConjunction = Restrictions.Conjunction();
             clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
@@ -457,8 +499,8 @@ namespace EpAccounting.Test.UI.ViewModel
             clientConjunction.Add(Restrictions.Where<Client>(c => c.LastName.IsLike(ModelFactory.DefaultClientLastName, MatchMode.Anywhere)));
             clientConjunction.Add(Restrictions.Where<Client>(c => c.Street.IsLike(ModelFactory.DefaultClientStreet, MatchMode.Anywhere)));
             clientConjunction.Add(Restrictions.Where<Client>(c => c.HouseNumber.IsLike(ModelFactory.DefaultClientHouseNumber, MatchMode.Anywhere)));
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.PostalCode.IsLike(ModelFactory.DefaultClientPostalCode, MatchMode.Anywhere)));
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.City.IsLike(ModelFactory.DefaultClientCity, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode.IsLike(ModelFactory.DefaultCityToPostalCodePostalCode, MatchMode.Anywhere)));
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.City.IsLike(ModelFactory.DefaultCityToPostalCodeCity, MatchMode.Anywhere)));
 
             Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
 
@@ -615,6 +657,23 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
+        public void CreatesNewBillWithDefaultValues()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_CreateNewBillForBillEditVM));
+
+            // Assert
+            this.billEditViewModel.CurrentBillDetailViewModel.FirstName.Should().Be(ModelFactory.DefaultClientFirstName);
+            this.billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(DateTime.Now.Date.ToShortDateString());
+            this.billEditViewModel.CurrentBillDetailViewModel.KindOfBill.Should().Be(KindOfBill.Rechnung);
+            this.billEditViewModel.CurrentBillDetailViewModel.KindOfVat.Should().Be(KindOfVat.inkl_MwSt);
+            this.billEditViewModel.CurrentBillDetailViewModel.VatPercentage.Should().Be(Settings.Default.VatPercentage);
+        }
+
+        [Test]
         public void SwitchesToSearchModeAndInsertsClientDataWhenMessageReceived()
         {
             // Act
@@ -628,8 +687,8 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billEditViewModel.CurrentBillDetailViewModel.LastName.Should().Be(ModelFactory.DefaultClientLastName);
             this.billEditViewModel.CurrentBillDetailViewModel.Street.Should().Be(ModelFactory.DefaultClientStreet);
             this.billEditViewModel.CurrentBillDetailViewModel.HouseNumber.Should().Be(ModelFactory.DefaultClientHouseNumber);
-            this.billEditViewModel.CurrentBillDetailViewModel.PostalCode.Should().Be(ModelFactory.DefaultClientPostalCode);
-            this.billEditViewModel.CurrentBillDetailViewModel.City.Should().Be(ModelFactory.DefaultClientCity);
+            this.billEditViewModel.CurrentBillDetailViewModel.PostalCode.Should().Be(ModelFactory.DefaultCityToPostalCodePostalCode);
+            this.billEditViewModel.CurrentBillDetailViewModel.City.Should().Be(ModelFactory.DefaultCityToPostalCodeCity);
         }
 
         [Test]
@@ -690,6 +749,20 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             notificationMessages.Should().Contain(Resources.Message_LoadBillSearchViewModelMessageForBillVM);
+        }
+
+        [Test]
+        public async Task SetsPrintedToFalseAfterCreation()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient());
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_CreateNewBillForBillEditVM));
+
+            // Act
+            await this.billEditViewModel.SaveOrUpdateBillAsync();
+
+            // Assert
+            this.billEditViewModel.CurrentBillDetailViewModel.Printed.Should().BeFalse();
         }
 
         #endregion

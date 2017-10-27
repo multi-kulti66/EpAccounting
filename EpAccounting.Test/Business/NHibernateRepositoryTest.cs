@@ -848,6 +848,7 @@ namespace EpAccounting.Test.Business
             for (int i = 0; i < quantity; i++)
             {
                 Bill bill = new Bill();
+                bill.KindOfBill = KindOfBill.Angebot;
                 this.repository.SaveOrUpdate(bill);
             }
 
@@ -987,6 +988,7 @@ namespace EpAccounting.Test.Business
             for (int i = 0; i < quantity; i++)
             {
                 Bill bill = new Bill();
+                bill.KindOfBill = KindOfBill.Gutschrift;
                 this.repository.SaveOrUpdate(bill);
             }
 

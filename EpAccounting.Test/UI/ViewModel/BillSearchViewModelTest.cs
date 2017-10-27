@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModelTest.cs
-// Last Change: 05.09.2017  20:23
+// Last Change: 26.10.2017  20:39
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -132,7 +132,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billSearchViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.billSearchViewModel.SelectedBillDetailViewModel = new BillDetailViewModel(new Bill());
+            this.billSearchViewModel.SelectedBillDetailViewModel = new BillDetailViewModel(new Bill(), this.mockRepository.Object);
 
             // Assert
             this.billSearchViewModel.ShouldRaisePropertyChangeFor(x => x.SelectedBillDetailViewModel);
@@ -146,8 +146,8 @@ namespace EpAccounting.Test.UI.ViewModel
             Bill expectedBill = new Bill { Id = 1, Date = ExpectedDate, KindOfVat = ModelFactory.DefaultBillKindOfVat };
             this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
 
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }));
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 2, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }));
+            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }, this.mockRepository.Object));
+            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 2, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }, this.mockRepository.Object));
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_UpdateBillValuesMessageForBillSearchVM));
@@ -167,8 +167,8 @@ namespace EpAccounting.Test.UI.ViewModel
             expectedBill.Client.FirstName = ExpectedFirstName;
             this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
 
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat, Client = new Client() }));
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(ModelFactory.GetDefaultBill()));
+            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat, Client = new Client() }, this.mockRepository.Object));
+            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(ModelFactory.GetDefaultBill(), this.mockRepository.Object));
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Message_UpdateClientValuesForBillSearchVM));
@@ -200,7 +200,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(expectedBill));
+            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(expectedBill, this.mockRepository.Object));
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_RemoveBillForBillSearchVM));
@@ -213,7 +213,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void RemoveBillsFromRemovedClient()
         {
             // Arrange
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(ModelFactory.GetDefaultBill()));
+            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(ModelFactory.GetDefaultBill(), this.mockRepository.Object));
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Message_RemoveClientForBillSearchVM));
@@ -233,7 +233,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void CanLoadBill()
         {
             // Act
-            this.billSearchViewModel.SelectedBillDetailViewModel = new BillDetailViewModel(ModelFactory.GetDefaultBill());
+            this.billSearchViewModel.SelectedBillDetailViewModel = new BillDetailViewModel(ModelFactory.GetDefaultBill(), this.mockRepository.Object);
 
             // Assert
             this.billSearchViewModel.LoadSelectedBillCommand.CanExecute(null).Should().BeTrue();
@@ -243,7 +243,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void SendsLoadBillMessage()
         {
             // Arrange
-            this.billSearchViewModel.SelectedBillDetailViewModel = new BillDetailViewModel(ModelFactory.GetDefaultBill());
+            this.billSearchViewModel.SelectedBillDetailViewModel = new BillDetailViewModel(ModelFactory.GetDefaultBill(), this.mockRepository.Object);
 
             string notificationMessage = null;
             Messenger.Default.Register<NotificationMessage<int>>(this, x => notificationMessage = x.Notification);

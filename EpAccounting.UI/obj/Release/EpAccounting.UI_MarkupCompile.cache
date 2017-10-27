@@ -1,0 +1,20 @@
+﻿EpAccounting.UI
+
+
+winexe
+C#
+.cs
+D:\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.UI\obj\Release\
+EpAccounting.UI
+none
+false
+TRACE
+D:\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.UI\App.xaml
+121147410495
+
+65278504878
+861277741541
+View\MainWindow.xaml;View\User_Control\ArticlesOptionView.xaml;View\User_Control\BillClientSearchView.xaml;View\User_Control\BillEditView.xaml;View\User_Control\BillItemEditView.xaml;View\User_Control\BillSearchView.xaml;View\User_Control\BillView.xaml;View\User_Control\ClientEditView.xaml;View\User_Control\ClientSearchView.xaml;View\User_Control\ClientView.xaml;View\User_Control\OptionView.xaml;View\ViewResourceDictionary.xaml;
+
+False
+
