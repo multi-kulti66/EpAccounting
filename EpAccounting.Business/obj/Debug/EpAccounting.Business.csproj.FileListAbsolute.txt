@@ -16,3 +16,6 @@ D:\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Bus
 D:\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Business\obj\Debug\EpAccounting.Business.csproj.CoreCompileInputs.cache
 D:\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Business\obj\Debug\EpAccounting.Business.dll
 D:\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Business\obj\Debug\EpAccounting.Business.pdb
+D:\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Business\bin\Debug\System.Data.SQLite.dll
+D:\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Business\bin\Debug\System.Data.SQLite.xml
+D:\OneDrive\V\Visual Studio 2017\Projects\Projekte\EpAccounting\EpAccounting.Business\bin\Debug\System.Data.SQLite.dll.config

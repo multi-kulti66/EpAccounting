@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: NHibernateSessionManager.cs
-// Last Change: 13.03.2017  20:59
+// Last Change: 28.10.2017  11:17
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -8,6 +8,7 @@
 
 namespace EpAccounting.Data
 {
+    using System.Data.SQLite;
     using System.Reflection;
     using EpAccounting.Model;
     using FluentNHibernate.Cfg;
@@ -21,7 +22,9 @@ namespace EpAccounting.Data
     {
         #region Fields
 
+#pragma warning disable 169
         private readonly Assembly assembly = typeof(Client).Assembly;
+#pragma warning restore 169
 
         #endregion
 
@@ -29,11 +32,37 @@ namespace EpAccounting.Data
 
         protected override ISessionFactory CreateSchema(string filePath)
         {
-            return Fluently.Configure()
-                           .Database(SQLiteConfiguration.Standard.UsingFile(filePath))
-                           .Mappings(m => m.FluentMappings.AddFromAssembly(this.assembly))
-                           .ExposeConfiguration(cfg => new SchemaExport(cfg).Create(false, true))
-                           .BuildSessionFactory();
+            ISessionFactory sessionFactory = Fluently.Configure()
+                                                     .Database(SQLiteConfiguration.Standard.UsingFile(filePath))
+                                                     .Mappings(m => m.FluentMappings.AddFromAssembly(this.assembly))
+                                                     .ExposeConfiguration(cfg => new SchemaExport(cfg).Create(false, true))
+                                                     .BuildSessionFactory();
+
+            using (SQLiteConnection conn = new SQLiteConnection(string.Format("data source={0}", filePath)))
+            {
+                using (SQLiteCommand cmd = new SQLiteCommand(conn))
+                {
+                    conn.Open();
+
+                    using (SQLiteTransaction tr = conn.BeginTransaction())
+                    {
+                        cmd.Transaction = tr;
+
+                        const string clientIdInsert = "INSERT INTO SQLITE_SEQUENCE (name, seq) VALUES (\'Client\', 1000)";
+                        const string billIdInsert = "INSERT INTO SQLITE_SEQUENCE (name, seq) VALUES (\'Bill\', 1000)";
+
+                        cmd.CommandText = clientIdInsert;
+                        cmd.ExecuteNonQuery();
+
+                        cmd.CommandText = billIdInsert;
+                        cmd.ExecuteNonQuery();
+
+                        tr.Commit();
+                    }
+                }
+            }
+
+            return sessionFactory;
         }
 
         protected override ISessionFactory LoadSchema(string filePath)

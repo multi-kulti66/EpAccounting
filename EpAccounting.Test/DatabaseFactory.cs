@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: DatabaseFactory.cs
-// Last Change: 11.03.2017  14:26
+// Last Change: 28.10.2017  11:17
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -15,9 +15,17 @@ namespace EpAccounting.Test
 
     public static class DatabaseFactory
     {
+        #region Fields
+
         private const string DIRECTORY_DESKTOP = @"D:\Downloads";
         private const string DIRECTORY_SURFACE = @"C:\Users\Andre\Desktop";
         private const string DIRECTORY_FOLDERNAME = "TestFolder";
+
+        #endregion
+
+
+
+        #region Properties
 
         public static string TestFolderPath
         {
@@ -36,6 +44,10 @@ namespace EpAccounting.Test
         {
             get { return Path.Combine(TestFolderPath, Resources.Database_NameWithExtension); }
         }
+
+        #endregion
+
+
 
         public static void CreateTestFolder()
         {
