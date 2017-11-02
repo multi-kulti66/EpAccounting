@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ArticlesOptionViewModel.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 02.11.2017  15:34
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -68,15 +68,31 @@ namespace EpAccounting.UI.ViewModel
 
         #region Properties
 
+        public bool IsEditable
+        {
+            get
+            {
+                if (this.CurrentState == this._articleEditState)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
         public IArticleState CurrentState
         {
             get { return this._currentState; }
             private set
             {
-                this.SetProperty(ref this._currentState, value);
-                this.UpdateCommands();
-                this.UpdateStateCommands();
-                this.SendWorkspaceEnabledMessage();
+                if (this.SetProperty(ref this._currentState, value))
+                {
+                    this.RaisePropertyChanged(() => this.IsEditable);
+                    this.UpdateCommands();
+                    this.UpdateStateCommands();
+                    this.SendWorkspaceEnabledMessage();
+                }
             }
         }
 

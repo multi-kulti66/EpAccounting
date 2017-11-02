@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ArticlesOptionViewModelTest.cs
-// Last Change: 17.09.2017  17:37
+// Last Change: 02.11.2017  15:39
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -116,6 +116,13 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
+        public void IsNotEditableWhenInLoadedState()
+        {
+            // Assert
+            this.articlesOptionViewModel.IsEditable.Should().BeFalse();
+        }
+
+        [Test]
         public void ChangesToEditMode()
         {
             // Act
@@ -123,6 +130,16 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             this.articlesOptionViewModel.CurrentState.Should().BeOfType<ArticleEditState>();
+        }
+
+        [Test]
+        public void IsEditableInEditMode()
+        {
+            // Act
+            this.articlesOptionViewModel.ChangeToEditMode();
+
+            // Arrange
+            this.articlesOptionViewModel.IsEditable.Should().BeTrue();
         }
 
         [Test]

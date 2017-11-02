@@ -56,7 +56,7 @@
 
         <DataGrid Name="ArticleDataGrid" Grid.Row="3" AutoGenerateColumns="False"
                   CanUserDeleteRows="False" CanUserReorderColumns="False"
-                  CanUserSortColumns="False"
+                  CanUserSortColumns="False" IsEnabled="{Binding Path=IsEditable}"
                   ItemsSource="{Binding Path=ArticleViewModels}"
                   SelectedItem="{Binding Path=SelectedArticleViewModel}"
                   SelectionMode="Single">

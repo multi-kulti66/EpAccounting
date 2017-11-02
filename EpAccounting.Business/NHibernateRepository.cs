@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: NHibernateRepository.cs
-// Last Change: 16.08.2017  18:21
+// Last Change: 28.10.2017  12:25
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -141,8 +141,8 @@ namespace EpAccounting.Business
         }
 
         public int GetQuantityByCriteria<T, U>(ICriterion criterion1,
-                                               Expression<Func<T, U>> combinationCriterion,
-                                               ICriterion criterion2) where T : class
+            Expression<Func<T, U>> combinationCriterion,
+            ICriterion criterion2) where T : class
         {
             using (ISession session = this.sessionManager.OpenSession())
             {
@@ -159,8 +159,8 @@ namespace EpAccounting.Business
         }
 
         public ICollection<T> GetByCriteria<T, U>(ICriterion criterion1,
-                                                  Expression<Func<T, U>>combinationCriterion,
-                                                  ICriterion criterion2, int page) where T : class
+            Expression<Func<T, U>>combinationCriterion,
+            ICriterion criterion2, int page) where T : class
         {
             using (ISession session = this.sessionManager.OpenSession())
             {

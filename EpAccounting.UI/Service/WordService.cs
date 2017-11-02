@@ -114,12 +114,19 @@ namespace EpAccounting.UI.Service
 
             // Sets the preferred width for the columns
             objTable.Columns.PreferredWidthType = WdPreferredWidthType.wdPreferredWidthPercent;
+            // Pos
             objTable.Columns[1].PreferredWidth = 6;
+            // Article number
             objTable.Columns[2].PreferredWidth = 10;
-            objTable.Columns[3].PreferredWidth = 41;
-            objTable.Columns[4].PreferredWidth = 9;
-            objTable.Columns[5].PreferredWidth = 12;
+            // Description
+            objTable.Columns[3].PreferredWidth = 45;
+            // Amount
+            objTable.Columns[4].PreferredWidth = 6;
+            // Price
+            objTable.Columns[5].PreferredWidth = 11;
+            // Discount
             objTable.Columns[6].PreferredWidth = 8;
+            // Sum
             objTable.Columns[7].PreferredWidth = 14;
 
             // Sets the preferred width of the whole table and centers the table
@@ -135,7 +142,7 @@ namespace EpAccounting.UI.Service
             objTable.Cell(1, 1).Range.Text = "Pos.";
             objTable.Cell(1, 2).Range.Text = "Artikelnr.";
             objTable.Cell(1, 3).Range.Text = "Bezeichnung";
-            objTable.Cell(1, 4).Range.Text = "Anzahl";
+            objTable.Cell(1, 4).Range.Text = "Anz.";
             objTable.Cell(1, 5).Range.Text = "Preis";
             objTable.Cell(1, 6).Range.Text = "Rabatt";
             objTable.Cell(1, 7).Range.Text = "Gesamtpreis";

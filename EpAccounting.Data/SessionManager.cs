@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: SessionManager.cs
-// Last Change: 13.03.2017  20:59
+// Last Change: 28.10.2017  12:25
 // Author: Andre Multerer
 // ///////////////////////////////////
 

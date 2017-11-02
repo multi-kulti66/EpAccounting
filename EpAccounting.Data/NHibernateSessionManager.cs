@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: NHibernateSessionManager.cs
-// Last Change: 28.10.2017  11:17
+// Last Change: 28.10.2017  12:25
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -22,9 +22,7 @@ namespace EpAccounting.Data
     {
         #region Fields
 
-#pragma warning disable 169
         private readonly Assembly assembly = typeof(Client).Assembly;
-#pragma warning restore 169
 
         #endregion
 
