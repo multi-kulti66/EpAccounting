@@ -10,6 +10,10 @@
     <UserControl.Resources>
         <ResourceDictionary Source="/View/ViewResourceDictionary.xaml" />
     </UserControl.Resources>
+    <UserControl.InputBindings>
+        <KeyBinding Key="N" Command="{Binding Path=AddItemCommand.RelayCommand}" Modifiers="Control" />
+    </UserControl.InputBindings>
+
     <Grid>
         <Grid.RowDefinitions>
             <!--  0  -->
@@ -36,17 +40,19 @@
 
         <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-        <DataGrid Name="dataGrid_BillItems" Grid.Row="3" AutoGenerateColumns="False"
+        <DataGrid Name="BillDataGrid" Grid.Row="3" AutoGenerateColumns="False"
                   CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False"
                   IsEnabled="{Binding Path=IsEditingEnabled}"
+                  IsSynchronizedWithCurrentItem="True"
                   ItemsSource="{Binding Path=BillItemDetailViewModels}"
                   SelectedItem="{Binding Path=SelectedBillItemDetailViewModel}"
-                  SelectionMode="Single">
+                  SelectionChanged="DataGrid_BillItems_OnSelectionChanged" SelectionMode="Single"
+                  UnloadingRow="DataGrid_BillItems_OnUnloadingRow">
             <DataGrid.ContextMenu>
                 <ContextMenu ItemTemplate="{StaticResource ImageCommandContextMenuDataTemplate}" ItemsSource="{Binding Path=Commands}" />
             </DataGrid.ContextMenu>
             <DataGrid.InputBindings>
-                <KeyBinding Key="N" Command="{Binding Path=AddItemCommand.RelayCommand}" Modifiers="Control" />
+                <KeyBinding Key="Enter" Command="{Binding Path=AddItemCommand.RelayCommand}" Modifiers="Control" />
                 <KeyBinding Key="Delete" Command="{Binding Path=DeleteItemCommand.RelayCommand}" />
                 <KeyBinding Key="PageUp" Command="{Binding Path=MoveItemUpCommand.RelayCommand}" />
                 <KeyBinding Key="PageDown" Command="{Binding Path=MoveItemDownCommand.RelayCommand}" />

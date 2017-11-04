@@ -183,7 +183,6 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billItemEditViewModel.DeleteItemCommand.RelayCommand.Execute(null);
 
             // Assert
-            this.billItemEditViewModel.SelectedBillItemDetailViewModel.Should().BeNull();
             this.billItemEditViewModel.BillItemDetailViewModels.Count.Should().Be(0);
         }
 

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ArticlesOptionViewModel.cs
-// Last Change: 02.11.2017  15:34
+// Last Change: 04.11.2017  09:22
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -274,8 +274,10 @@ namespace EpAccounting.UI.ViewModel
 
         private void DeleteItem()
         {
-            this.ArticleViewModels.Remove(this.ArticleViewModels.First(x => x.Id == this.SelectedArticleViewModel.Id));
-            this.SelectedArticleViewModel = null;
+            this.ArticleViewModels.Remove(this.ArticleViewModels.First(x => x.ArticleNumber == this.SelectedArticleViewModel.ArticleNumber &&
+                                                                            x.Description == this.SelectedArticleViewModel.Description &&
+                                                                            Math.Abs(x.Amount - this.SelectedArticleViewModel.Amount) < 0.01 &&
+                                                                            x.Price == this.SelectedArticleViewModel.Price));
         }
 
         private void InitCommands()

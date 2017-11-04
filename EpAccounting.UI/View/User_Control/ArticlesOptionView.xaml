@@ -1,6 +1,5 @@
 ﻿<UserControl x:Class="EpAccounting.UI.View.User_Control.ArticlesOptionView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:customControl="clr-namespace:EpAccounting.UI.View.CustomControl"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -11,7 +10,7 @@
         <ResourceDictionary Source="/View/ViewResourceDictionary.xaml" />
     </UserControl.Resources>
     <UserControl.InputBindings>
-        <KeyBinding Key="N" Command="{Binding Path=AddItemCommand.RelayCommand}" Modifiers="Ctrl" />
+        <KeyBinding Key="N" Command="{Binding Path=AddItemCommand.RelayCommand}" Modifiers="Control" />
     </UserControl.InputBindings>
 
     <Grid>
@@ -29,9 +28,7 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <ItemsControl Grid.Column="0" IsTabStop="False"
-                          ItemTemplate="{StaticResource ImageCommandDataTemplate}"
-                          ItemsSource="{Binding Path=StateCommands}">
+            <ItemsControl Grid.Column="0" IsTabStop="False" ItemTemplate="{StaticResource ImageCommandDataTemplate}" ItemsSource="{Binding Path=StateCommands}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
@@ -41,9 +38,7 @@
 
             <GridSplitter Grid.Column="1" Style="{StaticResource VerticalGridSplitterStyle}" />
 
-            <ItemsControl Grid.Column="2" IsTabStop="False"
-                          ItemTemplate="{StaticResource ImageCommandDataTemplate}"
-                          ItemsSource="{Binding Path=Commands}">
+            <ItemsControl Grid.Column="2" IsTabStop="False" ItemTemplate="{StaticResource ImageCommandDataTemplate}" ItemsSource="{Binding Path=Commands}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
@@ -55,11 +50,17 @@
         <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
         <DataGrid Name="ArticleDataGrid" Grid.Row="3" AutoGenerateColumns="False"
-                  CanUserDeleteRows="False" CanUserReorderColumns="False"
-                  CanUserSortColumns="False" IsEnabled="{Binding Path=IsEditable}"
+                  CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False"
+                  IsEnabled="{Binding Path=IsEditable}"
+                  IsSynchronizedWithCurrentItem="True"
                   ItemsSource="{Binding Path=ArticleViewModels}"
-                  SelectedItem="{Binding Path=SelectedArticleViewModel}"
-                  SelectionMode="Single">
+                  SelectedItem="{Binding Path=SelectedArticleViewModel, Mode=TwoWay}"
+                  SelectionChanged="ArticleDataGrid_OnSelectionChanged" SelectionMode="Single"
+                  UnloadingRow="ArticleDataGrid_OnUnloadingRow">
+            <DataGrid.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding Path=AddItemCommand.RelayCommand}" Modifiers="Control" />
+                <KeyBinding Key="Delete" Command="{Binding Path=DeleteItemCommand.RelayCommand}" />
+            </DataGrid.InputBindings>
             <DataGrid.ContextMenu>
                 <ContextMenu ItemTemplate="{StaticResource ImageCommandContextMenuDataTemplate}" ItemsSource="{Binding Path=Commands}" />
             </DataGrid.ContextMenu>

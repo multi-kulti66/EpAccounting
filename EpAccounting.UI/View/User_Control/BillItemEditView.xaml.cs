@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditView.xaml.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 04.11.2017  08:42
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,6 +9,7 @@
 namespace EpAccounting.UI.View.User_Control
 {
     using System.Windows.Controls;
+    using System.Windows.Input;
     using GalaSoft.MvvmLight.Messaging;
 
 
@@ -18,6 +19,14 @@ namespace EpAccounting.UI.View.User_Control
     /// </summary>
     public partial class BillItemEditView : UserControl
     {
+        #region Fields
+
+        private bool unloadedRow;
+
+        #endregion
+
+
+
         #region Constructors / Destructor
 
         public BillItemEditView()
@@ -40,13 +49,28 @@ namespace EpAccounting.UI.View.User_Control
 
         private void SetFocusOnCell()
         {
-            int lastItemIndex = this.dataGrid_BillItems.Items.Count - 1;
+            int lastItemIndex = this.BillDataGrid.Items.Count - 1;
             int columnIndex = 1;
 
-            this.dataGrid_BillItems.Focus();
-            this.dataGrid_BillItems.SelectedItem = this.dataGrid_BillItems.Items[lastItemIndex];
-            this.dataGrid_BillItems.CurrentCell = new DataGridCellInfo(this.dataGrid_BillItems.Items[lastItemIndex], this.dataGrid_BillItems.Columns[columnIndex]);
-            this.dataGrid_BillItems.BeginEdit();
+            this.BillDataGrid.Focus();
+            this.BillDataGrid.SelectedItem = this.BillDataGrid.Items[lastItemIndex];
+            this.BillDataGrid.CurrentCell = new DataGridCellInfo(this.BillDataGrid.Items[lastItemIndex], this.BillDataGrid.Columns[columnIndex]);
+            this.BillDataGrid.BeginEdit();
+        }
+
+        private void DataGrid_BillItems_OnUnloadingRow(object sender, DataGridRowEventArgs e)
+        {
+            this.unloadedRow = true;
+        }
+
+        private void DataGrid_BillItems_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.unloadedRow && this.BillDataGrid.SelectedIndex >= 0)
+            {
+                this.unloadedRow = false;
+                DataGridRow selectedRow = (DataGridRow)this.BillDataGrid.ItemContainerGenerator.ContainerFromIndex(this.BillDataGrid.SelectedIndex);
+                selectedRow?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+            }
         }
     }
 }

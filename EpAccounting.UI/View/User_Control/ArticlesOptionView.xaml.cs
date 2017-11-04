@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ArticlesOptionView.xaml.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 04.11.2017  08:40
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,6 +9,7 @@
 namespace EpAccounting.UI.View.User_Control
 {
     using System.Windows.Controls;
+    using System.Windows.Input;
     using GalaSoft.MvvmLight.Messaging;
 
 
@@ -18,6 +19,14 @@ namespace EpAccounting.UI.View.User_Control
     /// </summary>
     public partial class ArticlesOptionView : UserControl
     {
+        #region Fields
+
+        private bool unloadedRow;
+
+        #endregion
+
+
+
         #region Constructors / Destructor
 
         public ArticlesOptionView()
@@ -48,6 +57,21 @@ namespace EpAccounting.UI.View.User_Control
             this.ArticleDataGrid.CurrentCell = new DataGridCellInfo(this.ArticleDataGrid.Items[lastItemIndex],
                                                                     this.ArticleDataGrid.Columns[columnIndex]);
             this.ArticleDataGrid.BeginEdit();
+        }
+
+        private void ArticleDataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.unloadedRow && this.ArticleDataGrid.SelectedIndex >= 0)
+            {
+                this.unloadedRow = false;
+                DataGridRow selectedRow = (DataGridRow)this.ArticleDataGrid.ItemContainerGenerator.ContainerFromIndex(this.ArticleDataGrid.SelectedIndex);
+                selectedRow?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+            }
+        }
+
+        private void ArticleDataGrid_OnUnloadingRow(object sender, DataGridRowEventArgs e)
+        {
+            this.unloadedRow = true;
         }
     }
 }

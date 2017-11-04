@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditViewModel.cs
-// Last Change: 26.10.2017  21:50
+// Last Change: 04.11.2017  09:15
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -460,7 +460,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void AddItem()
         {
-            BillItem billItem = new BillItem() { Position = this.BillItemDetailViewModels.Count + 1 };
+            BillItem billItem = new BillItem { Position = this.BillItemDetailViewModels.Count + 1 };
             BillItemDetailViewModel billItemDetailViewModel = new BillItemDetailViewModel(billItem, this.repository);
 
             this.currentBill.AddBillItem(billItem);
@@ -495,9 +495,8 @@ namespace EpAccounting.UI.ViewModel
 
         private void DeleteItem()
         {
-            this.currentBill.BillItems.Remove(this.currentBill.BillItems.First(x => x.Id == this.SelectedBillItemDetailViewModel.Id));
-            this.BillItemDetailViewModels.Remove(this.BillItemDetailViewModels.First(x => x.Id == this.SelectedBillItemDetailViewModel.Id));
-            this.SelectedBillItemDetailViewModel = null;
+            this.currentBill.BillItems.Remove(this.currentBill.BillItems.First(x => x.Position == this.SelectedBillItemDetailViewModel.Position));
+            this.BillItemDetailViewModels.Remove(this.SelectedBillItemDetailViewModel);
             this.UpdatePositions();
         }
 
