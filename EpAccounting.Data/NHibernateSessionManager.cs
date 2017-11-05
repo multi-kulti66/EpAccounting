@@ -46,8 +46,8 @@ namespace EpAccounting.Data
                     {
                         cmd.Transaction = tr;
 
-                        const string clientIdInsert = "INSERT INTO SQLITE_SEQUENCE (name, seq) VALUES (\'Client\', 1000)";
-                        const string billIdInsert = "INSERT INTO SQLITE_SEQUENCE (name, seq) VALUES (\'Bill\', 1000)";
+                        const string clientIdInsert = "INSERT INTO SQLITE_SEQUENCE (name, seq) VALUES (\'Client\', 25000)";
+                        const string billIdInsert = "INSERT INTO SQLITE_SEQUENCE (name, seq) VALUES (\'Bill\', 25000)";
 
                         cmd.CommandText = clientIdInsert;
                         cmd.ExecuteNonQuery();

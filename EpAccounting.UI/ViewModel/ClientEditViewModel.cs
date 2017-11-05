@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditViewModel.cs
-// Last Change: 24.10.2017  21:29
+// Last Change: 05.11.2017  22:01
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -138,7 +138,7 @@ namespace EpAccounting.UI.ViewModel
         {
             if (this.CurrentClientDetailViewModel.HasMissingValues)
             {
-                await this.dialogService.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient, Resources.Dialog_Message_ClientHasMissingNamePart);
+                await this.dialogService.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient, Resources.Dialog_Message_ClientHasMissingValues);
                 return false;
             }
 

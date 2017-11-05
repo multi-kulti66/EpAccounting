@@ -18,7 +18,7 @@ namespace EpAccounting.Test
     {
         #region Fields
 
-        public const int DefaultId = 1001;
+        public const int DefaultId = 25001;
 
         public const int DefaultArticleNumber = 3;
         public const string DefaultArticleDescription = "Testartikel - Blitzschaden";

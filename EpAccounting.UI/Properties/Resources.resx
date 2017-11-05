@@ -195,7 +195,7 @@
   <data name="Command_DisplayName_Search" xml:space="preserve">
     <value>Suchen</value>
   </data>
-  <data name="Dialog_Message_ClientHasMissingNamePart" xml:space="preserve">
+  <data name="Dialog_Message_ClientHasMissingValues" xml:space="preserve">
     <value>Der Kunde muss mindestens einen Nachnamen und eine Postleitzahl besitzen.</value>
   </data>
   <data name="Dialog_Question_AddToExistingClient" xml:space="preserve">

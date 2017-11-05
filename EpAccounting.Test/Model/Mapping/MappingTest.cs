@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: MappingTest.cs
-// Last Change: 22.10.2017  13:34
+// Last Change: 05.11.2017  22:01
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -92,7 +92,7 @@ namespace EpAccounting.Test.Model.Mapping
                     .CheckProperty(c => c.KindOfVat, ModelFactory.DefaultBillKindOfVat)
                     .CheckProperty(c => c.VatPercentage, ModelFactory.DefaultBillVatPercentage)
                     .CheckProperty(c => c.Date, ModelFactory.DefaultBillDate)
-                    .CheckList(c => c.BillItems, new List<BillItem>() { ModelFactory.GetDefaultBillItem() })
+                    .CheckList(c => c.BillItems, new List<BillItem> { ModelFactory.GetDefaultBillItem() })
                     .VerifyTheMappings();
         }
 

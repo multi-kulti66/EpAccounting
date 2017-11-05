@@ -198,9 +198,9 @@ namespace EpAccounting.UI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Der Kunde muss mindestens einen Nachnamen und eine Postleitzahl besitzen..
         /// </summary>
-        public static string Dialog_Message_ClientHasMissingNamePart {
+        public static string Dialog_Message_ClientHasMissingValues {
             get {
-                return ResourceManager.GetString("Dialog_Message_ClientHasMissingNamePart", resourceCulture);
+                return ResourceManager.GetString("Dialog_Message_ClientHasMissingValues", resourceCulture);
             }
         }
         
