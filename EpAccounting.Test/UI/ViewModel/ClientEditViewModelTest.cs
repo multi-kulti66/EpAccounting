@@ -14,6 +14,7 @@ namespace EpAccounting.Test.UI.ViewModel
     using System.Threading.Tasks;
     using EpAccounting.Business;
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.Service;
     using EpAccounting.UI.State;
@@ -161,6 +162,77 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             this.clientEditViewModel.CanEditClientData.Should().BeFalse();
+        }
+
+        [Test]
+        public void CanEditCompanyNameShouldReturnTrue()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+
+            // Act
+            this.clientEditViewModel.ChangeToEditMode();
+            this.clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Firma;
+
+            // Assert
+            this.clientEditViewModel.CanEditCompanyName.Should().BeTrue();
+        }
+
+        [Test]
+        public void CanEditCompanyNameShouldReturnTrueInSearchMode()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+
+            // Act
+            this.clientEditViewModel.ChangeToSearchMode();
+
+            // Assert
+            this.clientEditViewModel.CanEditCompanyName.Should().BeTrue();
+        }
+
+        [Test]
+        public void CanEditCompanyNameShouldReturnFalseWhenNotConnectedToDatabase()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.IsConnected).Returns(false);
+            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this.clientEditViewModel.ChangeToEditMode();
+
+            // Act
+            this.clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Firma;
+
+            // Assert
+            this.clientEditViewModel.CanEditCompanyName.Should().BeFalse();
+        }
+
+        [Test]
+        public void CanEditCompanyNameShouldReturnFalseWhenNotInEditMode()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+
+            // Act
+            this.clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Firma;
+
+            // Assert
+            this.clientEditViewModel.CanEditCompanyName.Should().BeFalse();
+        }
+
+        [Test]
+        public void CanEditCompanyNameShouldReturnFalseWhenTitleNotCompany()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+
+            // Act
+            this.clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Familie;
+
+            // Assert
+            this.clientEditViewModel.CanEditCompanyName.Should().BeFalse();
         }
 
         [Test]
@@ -552,6 +624,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             Conjunction expectedCriterion = Restrictions.Conjunction();
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
+            expectedCriterion.Add(Restrictions.Where<Client>(c => c.CompanyName.IsLike(ModelFactory.DefaultClientCompanyName, MatchMode.Anywhere)));
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.FirstName.IsLike(ModelFactory.DefaultClientFirstName, MatchMode.Anywhere)));
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.LastName.IsLike(ModelFactory.DefaultClientLastName, MatchMode.Anywhere)));
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.Street.IsLike(ModelFactory.DefaultClientStreet, MatchMode.Anywhere)));
@@ -920,6 +993,22 @@ namespace EpAccounting.Test.UI.ViewModel
             // Assert
             result.Should().BeTrue();
             this.mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Never);
+        }
+
+        [Test]
+        public void UpdatesCompanyNameEnableStateWhenTitleChanges()
+        {
+            // Arrange
+            this.clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+
+            // Act
+            this.clientEditViewModel.ChangeToEditMode();
+            this.clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Firma;
+
+            // Assert
+            this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CanEditCompanyName);
         }
 
         #endregion

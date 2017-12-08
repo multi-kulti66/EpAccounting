@@ -886,6 +886,15 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Message_UpdateCompanyNameEnableStateForClientEditVM.
+        /// </summary>
+        public static string Message_UpdateCompanyNameEnableStateForClientEditVM {
+            get {
+                return ResourceManager.GetString("Message_UpdateCompanyNameEnableStateForClientEditVM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Message_UpdateConnectionStateForMainVM.
         /// </summary>
         public static string Message_UpdateConnectionStateForMainVM {

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientDetailViewModel.cs
-// Last Change: 26.10.2017  21:00
+// Last Change: 08.12.2017  13:57
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -12,6 +12,8 @@ namespace EpAccounting.UI.ViewModel
     using EpAccounting.Business;
     using EpAccounting.Model;
     using EpAccounting.Model.Enum;
+    using EpAccounting.UI.Properties;
+    using GalaSoft.MvvmLight.Messaging;
     using NHibernate.Criterion;
 
 
@@ -50,7 +52,24 @@ namespace EpAccounting.UI.ViewModel
         public ClientTitle? Title
         {
             get { return this.client.Title; }
-            set { this.SetProperty(() => this.client.Title = value, () => this.client.Title == value); }
+            set
+            {
+                if (this.SetProperty(() => this.client.Title = value, () => this.client.Title == value))
+                {
+                    if (this.client.Title != ClientTitle.Firma)
+                    {
+                        this.CompanyName = string.Empty;
+                    }
+
+                    Messenger.Default.Send(new NotificationMessage(Resources.Message_UpdateCompanyNameEnableStateForClientEditVM));
+                }
+            }
+        }
+
+        public string CompanyName
+        {
+            get { return this.client.CompanyName; }
+            set { this.SetProperty(() => this.client.CompanyName = value, () => this.client.CompanyName == value); }
         }
 
         public string FirstName

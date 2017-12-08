@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientDetailViewModelTest.cs
-// Last Change: 22.10.2017  15:39
+// Last Change: 08.12.2017  13:49
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -14,9 +14,11 @@ namespace EpAccounting.Test.UI.ViewModel
     using EpAccounting.Business;
     using EpAccounting.Model;
     using EpAccounting.Model.Enum;
-    using EpAccounting.Model.Properties;
+    using EpAccounting.UI.Properties;
+    using ModelProperties = EpAccounting.Model.Properties;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
+    using GalaSoft.MvvmLight.Messaging;
     using Moq;
     using NHibernate.Criterion;
     using NUnit.Framework;
@@ -72,6 +74,7 @@ namespace EpAccounting.Test.UI.ViewModel
             // Act
             this.clientDetailViewModel.Id = 5;
             this.clientDetailViewModel.Title = ModelFactory.DefaultClientTitle;
+            this.clientDetailViewModel.CompanyName = ModelFactory.DefaultClientCompanyName;
             this.clientDetailViewModel.FirstName = ModelFactory.DefaultClientFirstName;
             this.clientDetailViewModel.LastName = ModelFactory.DefaultClientLastName;
             this.clientDetailViewModel.Street = ModelFactory.DefaultClientStreet;
@@ -86,8 +89,24 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientDetailViewModel.Email = ModelFactory.DefaultClientEmail;
 
             // Assert
+            this.clientDetailViewModel.Id.Should().Be(5);
+            this.clientDetailViewModel.Title.Should().Be(ModelFactory.DefaultClientTitle);
+            this.clientDetailViewModel.CompanyName.Should().Be(ModelFactory.DefaultClientCompanyName);
+            this.clientDetailViewModel.FirstName.Should().Be(ModelFactory.DefaultClientFirstName);
+            this.clientDetailViewModel.LastName.Should().Be(ModelFactory.DefaultClientLastName);
+            this.clientDetailViewModel.Street.Should().Be(ModelFactory.DefaultClientStreet);
+            this.clientDetailViewModel.HouseNumber.Should().Be(ModelFactory.DefaultClientHouseNumber);
+            this.clientDetailViewModel.PostalCode.Should().Be(ModelFactory.DefaultCityToPostalCodePostalCode);
+            this.clientDetailViewModel.City.Should().Be(ModelFactory.DefaultCityToPostalCodeCity);
+            this.clientDetailViewModel.DateOfBirth.Should().Be(ModelFactory.DefaultClientDateOfBirth);
+            this.clientDetailViewModel.MobileNumber.Should().Be(ModelFactory.DefaultClientMobileNumber);
+            this.clientDetailViewModel.PhoneNumber1.Should().Be(ModelFactory.DefaultClientPhoneNumber1);
+            this.clientDetailViewModel.PhoneNumber2.Should().Be(ModelFactory.DefaultClientPhoneNumber2);
+            this.clientDetailViewModel.Telefax.Should().Be(ModelFactory.DefaultClientTelefax);
+            this.clientDetailViewModel.Email.Should().Be(ModelFactory.DefaultClientEmail);
             this.clientDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Id);
             this.clientDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Title);
+            this.clientDetailViewModel.ShouldRaisePropertyChangeFor(x => x.CompanyName);
             this.clientDetailViewModel.ShouldRaisePropertyChangeFor(x => x.FirstName);
             this.clientDetailViewModel.ShouldRaisePropertyChangeFor(x => x.LastName);
             this.clientDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Street);
@@ -195,7 +214,7 @@ namespace EpAccounting.Test.UI.ViewModel
         {
             // Arrange
             const int ExpectedId = 5;
-            string ExpectedString = string.Format(Resources.Client_ToString, ExpectedId,
+            string ExpectedString = string.Format(ModelProperties.Resources.Client_ToString, ExpectedId,
                                                   ModelFactory.DefaultClientFirstName, ModelFactory.DefaultClientLastName,
                                                   ModelFactory.DefaultClientStreet, ModelFactory.DefaultClientHouseNumber,
                                                   ModelFactory.DefaultCityToPostalCodePostalCode, ModelFactory.DefaultCityToPostalCodeCity);
@@ -235,6 +254,35 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             this.clientDetailViewModel.City.Should().Be(null);
+        }
+
+        [Test]
+        public void SendsUpdateCompanyEnableStateWhenTitleChanges()
+        {
+            // Arrange
+            NotificationMessage message = null;
+            Messenger.Default.Register<NotificationMessage>(this, x => message = x);
+
+            // Act
+            this.clientDetailViewModel.Title = ClientTitle.Frau;
+
+            // Assert
+            message.Should().NotBeNull();
+            message.Notification.Should().Be(Resources.Message_UpdateCompanyNameEnableStateForClientEditVM);
+        }
+
+        [Test]
+        public void ClearsCompanyNameWhenTitleNotACompany()
+        {
+            // Arrange
+            this.clientDetailViewModel.Title = ClientTitle.Firma;
+            this.clientDetailViewModel.CompanyName = ModelFactory.DefaultClientCompanyName;
+            
+            // Act
+            this.clientDetailViewModel.Title = ClientTitle.Frau;
+
+            // Assert
+            this.clientDetailViewModel.CompanyName.Should().BeEmpty();
         }
 
         #endregion

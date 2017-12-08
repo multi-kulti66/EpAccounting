@@ -46,8 +46,9 @@
             </i:Interaction.Behaviors>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Id}" Header="Kundennummer" />
+                    <GridViewColumn  Width="Auto" DisplayMemberBinding="{Binding Path=Id}" Header="Kundennr." />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Title}" Header="Anrede" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=CompanyName}" Header="Firmenname" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=FirstName}" Header="Vorname" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=LastName}" Header="Nachname" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Street}" Header="Straße" />

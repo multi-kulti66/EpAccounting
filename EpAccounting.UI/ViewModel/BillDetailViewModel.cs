@@ -98,6 +98,12 @@ namespace EpAccounting.UI.ViewModel
             set { this.SetProperty(() => this.bill.Client.Title = value, () => this.bill.Client.Title == value); }
         }
 
+        public string CompanyName
+        {
+            get { return this.bill.Client.CompanyName; }
+            set { this.SetProperty(() => this.bill.Client.CompanyName = value, () => this.bill.Client.CompanyName == value); }
+        }
+
         public string FirstName
         {
             get { return this.bill.Client.FirstName; }

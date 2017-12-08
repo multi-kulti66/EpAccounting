@@ -26,6 +26,7 @@ namespace EpAccounting.Test
         public const decimal DefaultArticlePrice = 2.5m;
 
         public const ClientTitle DefaultClientTitle = ClientTitle.Herr;
+        public const string DefaultClientCompanyName = "Test GmbH & Co. KG";
         public const string DefaultClientFirstName = "Andre";
         public const string DefaultClientLastName = "Multerer";
         public const string DefaultClientStreet = "Schmidstraße";
@@ -62,6 +63,7 @@ namespace EpAccounting.Test
             return new Client
                    {
                        Title = DefaultClientTitle,
+                       CompanyName = DefaultClientCompanyName,
                        FirstName = DefaultClientFirstName,
                        LastName = DefaultClientLastName,
                        Street = DefaultClientStreet,

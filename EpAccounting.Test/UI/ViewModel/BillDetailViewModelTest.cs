@@ -70,6 +70,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billDetailViewModel.Date.Should().Be(ModelFactory.DefaultBillDate);
             this.billDetailViewModel.ClientId.Should().Be(0); // not in database
             this.billDetailViewModel.Title.Should().Be(ModelFactory.DefaultClientTitle);
+            this.billDetailViewModel.CompanyName.Should().Be(ModelFactory.DefaultClientCompanyName);
             this.billDetailViewModel.FirstName.Should().Be(ModelFactory.DefaultClientFirstName);
             this.billDetailViewModel.LastName.Should().Be(ModelFactory.DefaultClientLastName);
             this.billDetailViewModel.Street.Should().Be(ModelFactory.DefaultClientStreet);
@@ -89,6 +90,7 @@ namespace EpAccounting.Test.UI.ViewModel
             const string Date = "14.04.2014";
             ClientTitle Title = ClientTitle.Frau;
             const int ClientId = 10;
+            const string CompanyName = "hololulu";
             const string FirstName = "Mia";
             const string LastName = "Meier";
             const string Street = "Benzstraße";
@@ -102,8 +104,9 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billDetailViewModel.KindOfVat = KindOfVat;
             this.billDetailViewModel.VatPercentage = VatPercentage;
             this.billDetailViewModel.Date = Date;
-            this.billDetailViewModel.Title = Title;
             this.billDetailViewModel.ClientId = ClientId;
+            this.billDetailViewModel.Title = Title;
+            this.billDetailViewModel.CompanyName = CompanyName;
             this.billDetailViewModel.FirstName = FirstName;
             this.billDetailViewModel.LastName = LastName;
             this.billDetailViewModel.Street = Street;
@@ -117,8 +120,9 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billDetailViewModel.KindOfVat.Should().Be(KindOfVat);
             this.billDetailViewModel.VatPercentage.Should().Be(VatPercentage);
             this.billDetailViewModel.Date.Should().Be(Date);
-            this.billDetailViewModel.Title.Should().Be(Title);
             this.billDetailViewModel.ClientId.Should().Be(ClientId);
+            this.billDetailViewModel.Title.Should().Be(Title);
+            this.billDetailViewModel.CompanyName.Should().Be(CompanyName);
             this.billDetailViewModel.FirstName.Should().Be(FirstName);
             this.billDetailViewModel.LastName.Should().Be(LastName);
             this.billDetailViewModel.Street.Should().Be(Street);

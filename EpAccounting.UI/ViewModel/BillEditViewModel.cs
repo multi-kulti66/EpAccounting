@@ -338,6 +338,10 @@ namespace EpAccounting.UI.ViewModel
             {
                 clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == this.CurrentBillDetailViewModel.Title));
             }
+            if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.CompanyName))
+            {
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.CompanyName.IsLike(this.CurrentBillDetailViewModel.CompanyName, MatchMode.Anywhere)));
+            }
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.FirstName))
             {
                 clientConjunction.Add(Restrictions.Where<Client>(c => c.FirstName.IsLike(this.CurrentBillDetailViewModel.FirstName, MatchMode.Anywhere)));

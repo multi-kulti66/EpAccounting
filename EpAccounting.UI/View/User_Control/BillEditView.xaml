@@ -40,7 +40,7 @@
         <Grid Grid.Row="3">
             <Grid.RowDefinitions>
                 <!--  0  -->
-                <RowDefinition Height="60" />
+                <RowDefinition Height="40" />
                 <RowDefinition Height="40" />
                 <!--  2  -->
                 <RowDefinition Height="35" />
@@ -101,7 +101,7 @@
         <Grid Grid.Row="5">
             <Grid.RowDefinitions>
                 <!--  0  -->
-                <RowDefinition Height="60" />
+                <RowDefinition Height="40" />
                 <RowDefinition Height="40" />
                 <!--  2  -->
                 <RowDefinition Height="35" />
@@ -116,6 +116,9 @@
                 <RowDefinition Height="35" />
                 <RowDefinition Height="40" />
                 <!--  10  -->
+                <RowDefinition Height="35" />
+                <RowDefinition Height="40" />
+                <!-- 12 -->
                 <RowDefinition Height="35" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -142,22 +145,25 @@
                       ItemsSource="{Binding Source={markup:EnumBindingMarkup {x:Type enum:ClientTitle}}}"
                       SelectedItem="{Binding Path=CurrentBillDetailViewModel.Title}" />
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Vorname:" />
-            <TextBox Grid.Row="5" Grid.Column="1" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.FirstName}" />
-            <TextBlock Grid.Row="5" Grid.Column="2" Text="Nachname:" />
-            <TextBox Grid.Row="5" Grid.Column="3" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.LastName}" />
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Firmenname:" />
+            <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.CompanyName}" />
 
-            <TextBlock Grid.Row="7" Grid.Column="0" Text="Straße:" />
-            <TextBox Grid.Row="7" Grid.Column="1" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.Street}" />
-            <TextBlock Grid.Row="7" Grid.Column="2" Text="Hausnr.:" />
-            <TextBox Grid.Row="7" Grid.Column="3" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.HouseNumber}" />
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Vorname:" />
+            <TextBox Grid.Row="7" Grid.Column="1" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.FirstName}" />
+            <TextBlock Grid.Row="7" Grid.Column="2" Text="Nachname:" />
+            <TextBox Grid.Row="7" Grid.Column="3" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.LastName}" />
 
-            <TextBlock Grid.Row="9" Grid.Column="0" Text="PLZ:" />
-            <TextBox Grid.Row="9" Grid.Column="1" behavior:TextBoxNumericBehavior.IsTextBoxNumericEnabled="True"
+            <TextBlock Grid.Row="9" Grid.Column="0" Text="Straße:" />
+            <TextBox Grid.Row="9" Grid.Column="1" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.Street}" />
+            <TextBlock Grid.Row="9" Grid.Column="2" Text="Hausnr.:" />
+            <TextBox Grid.Row="9" Grid.Column="3" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.HouseNumber}" />
+
+            <TextBlock Grid.Row="11" Grid.Column="0" Text="PLZ:" />
+            <TextBox Grid.Row="11" Grid.Column="1" behavior:TextBoxNumericBehavior.IsTextBoxNumericEnabled="True"
                      IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
                      Text="{Binding Path=CurrentBillDetailViewModel.PostalCode}" />
-            <TextBlock Grid.Row="9" Grid.Column="2" Text="Ort:" />
-            <TextBox Grid.Row="9" Grid.Column="3" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.City}" />
+            <TextBlock Grid.Row="11" Grid.Column="2" Text="Ort:" />
+            <TextBox Grid.Row="11" Grid.Column="3" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.City}" />
         </Grid>
     </Grid>
 </UserControl>

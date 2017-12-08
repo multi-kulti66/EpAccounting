@@ -40,7 +40,7 @@
             </i:Interaction.Behaviors>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Id}" Header="Rechnungsnr" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Id}" Header="Rechnungsnr." />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=KindOfBill}" Header="Rechnungsart" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Date}" Header="Datum" />
                     <GridViewColumn Header="Druckstatus">
@@ -50,8 +50,9 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=ClientId}" Header="Kundennummer" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=ClientId}" Header="Kundennr." />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Title}" Header="Anrede" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=CompanyName}" Header="Firmenname" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=FirstName}" Header="Vorname" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=LastName}" Header="Nachname" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Street}" Header="Straße" />

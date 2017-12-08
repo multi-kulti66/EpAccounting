@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditViewModel.cs
-// Last Change: 05.11.2017  22:01
+// Last Change: 08.12.2017  13:59
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -15,6 +15,7 @@ namespace EpAccounting.UI.ViewModel
     using System.Threading.Tasks;
     using EpAccounting.Business;
     using EpAccounting.Model;
+    using EpAccounting.Model.Enum;
     using EpAccounting.UI.Properties;
     using EpAccounting.UI.Service;
     using EpAccounting.UI.State;
@@ -64,6 +65,7 @@ namespace EpAccounting.UI.ViewModel
             this.SetCurrentClient(new Client { CityToPostalCode = new CityToPostalCode() });
 
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
+            Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
         }
 
         #endregion
@@ -102,6 +104,19 @@ namespace EpAccounting.UI.ViewModel
             get
             {
                 if (this.repository.IsConnected && this.CanCommit())
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        public bool CanEditCompanyName
+        {
+            get
+            {
+                if (this.repository.IsConnected && this.CanCommit() && (this.currentClient.Title == ClientTitle.Firma || this.currentState == this.GetClientSearchState()))
                 {
                     return true;
                 }
@@ -274,6 +289,10 @@ namespace EpAccounting.UI.ViewModel
             {
                 conjunction.Add(Restrictions.Where<Client>(c => c.Title == this.CurrentClientDetailViewModel.Title));
             }
+            if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.CompanyName))
+            {
+                conjunction.Add(Restrictions.Where<Client>(c => c.CompanyName.IsLike(this.CurrentClientDetailViewModel.CompanyName, MatchMode.Anywhere)));
+            }
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.FirstName))
             {
                 conjunction.Add(Restrictions.Where<Client>(c => c.FirstName.IsLike(this.CurrentClientDetailViewModel.FirstName, MatchMode.Anywhere)));
@@ -444,6 +463,14 @@ namespace EpAccounting.UI.ViewModel
 
 
         #region Messenger
+
+        private void ExecuteNotificationMessage(NotificationMessage message)
+        {
+            if (message.Notification == Resources.Message_UpdateCompanyNameEnableStateForClientEditVM)
+            {
+                this.RaisePropertyChanged(() => this.CanEditCompanyName);
+            }
+        }
 
         private void ExecuteNotificationMessage(NotificationMessage<int> message)
         {

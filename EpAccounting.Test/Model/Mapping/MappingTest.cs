@@ -107,6 +107,7 @@ namespace EpAccounting.Test.Model.Mapping
             new PersistenceSpecification<Client>(sessionManager.OpenSession(), new ObjectEqualityComparer())
                     .CheckProperty(c => c.Id, ModelFactory.DefaultId)
                     .CheckProperty(c => c.Title, ModelFactory.DefaultClientTitle)
+                    .CheckProperty(c => c.CompanyName, ModelFactory.DefaultClientCompanyName)
                     .CheckProperty(c => c.FirstName, ModelFactory.DefaultClientFirstName)
                     .CheckProperty(c => c.LastName, ModelFactory.DefaultClientLastName)
                     .CheckProperty(c => c.Street, ModelFactory.DefaultClientStreet)

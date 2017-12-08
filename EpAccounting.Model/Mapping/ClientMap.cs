@@ -20,6 +20,7 @@ namespace EpAccounting.Model.Mapping
         {
             this.Id(x => x.Id);
             this.Map(x => x.Title);
+            this.Map(x => x.CompanyName);
             this.Map(x => x.FirstName);
             this.Map(x => x.LastName);
             this.Map(x => x.Street);

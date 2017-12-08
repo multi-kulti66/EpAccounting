@@ -87,6 +87,22 @@ namespace EpAccounting.UI.Service
 
             // Find Place Holders and Replace them with values.
             this.FindAndReplace(this.wordApp, "<Anrede>", billItemEditViewModel.CurrentBillDetailViewModel.Title.ToString());
+
+            if (string.IsNullOrEmpty(billItemEditViewModel.CurrentBillDetailViewModel.CompanyName))
+            {
+                var range = this.wordDoc.Content;
+
+                if (range.Find.Execute("<Firmenname>"))
+                {
+                    range.Expand(WdUnits.wdSentence); // or change to .wdSentence or .wdParagraph
+                    range.Delete();
+                }
+            }
+            else
+            {
+                this.FindAndReplace(this.wordApp, "<Firmenname>", billItemEditViewModel.CurrentBillDetailViewModel.CompanyName);
+            }
+
             this.FindAndReplace(this.wordApp, "<Vorname>", billItemEditViewModel.CurrentBillDetailViewModel.FirstName);
             this.FindAndReplace(this.wordApp, "<Nachname>", billItemEditViewModel.CurrentBillDetailViewModel.LastName);
             this.FindAndReplace(this.wordApp, "<Strasse>", billItemEditViewModel.CurrentBillDetailViewModel.Street);

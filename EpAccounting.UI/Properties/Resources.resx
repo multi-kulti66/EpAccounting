@@ -415,4 +415,7 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   <data name="Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM" xml:space="preserve">
     <value>Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM</value>
   </data>
+  <data name="Message_UpdateCompanyNameEnableStateForClientEditVM" xml:space="preserve">
+    <value>Message_UpdateCompanyNameEnableStateForClientEditVM</value>
+  </data>
 </root>

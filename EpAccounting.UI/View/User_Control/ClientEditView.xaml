@@ -39,39 +39,42 @@
                 <RowDefinition Height="25" />
                 <RowDefinition Height="40" />
                 <!--  2  -->
-                <RowDefinition Height="30" />
+                <RowDefinition Height="25" />
                 <RowDefinition Height="40" />
                 <!--  4  -->
-                <RowDefinition Height="30" />
+                <RowDefinition Height="25" />
                 <RowDefinition Height="40" />
                 <!--  6  -->
-                <RowDefinition Height="30" />
+                <RowDefinition Height="25" />
                 <RowDefinition Height="40" />
                 <!--  8  -->
-                <RowDefinition Height="30" />
+                <RowDefinition Height="25" />
                 <RowDefinition Height="40" />
                 <!--  10  -->
-                <RowDefinition Height="30" />
+                <RowDefinition Height="25" />
                 <RowDefinition Height="40" />
                 <!--  12  -->
-                <RowDefinition Height="30" />
+                <RowDefinition Height="25" />
                 <RowDefinition Height="40" />
                 <!--  14  -->
-                <RowDefinition Height="30" />
+                <RowDefinition Height="25" />
                 <RowDefinition Height="40" />
                 <!--  16  -->
-                <RowDefinition Height="30" />
+                <RowDefinition Height="25" />
                 <RowDefinition Height="40" />
                 <!--  18  -->
-                <RowDefinition Height="30" />
+                <RowDefinition Height="25" />
                 <RowDefinition Height="40" />
                 <!--  20  -->
-                <RowDefinition Height="30" />
+                <RowDefinition Height="25" />
                 <RowDefinition Height="40" />
                 <!--  22  -->
-                <RowDefinition Height="30" />
-                <RowDefinition Height="60" />
+                <RowDefinition Height="25" />
+                <RowDefinition Height="40" />
                 <!--  24  -->
+                <RowDefinition Height="25" />
+                <RowDefinition Height="60" />
+                <!--  26  -->
                 <RowDefinition Height="10" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -102,73 +105,78 @@
                       ItemsSource="{Binding Source={markup:EnumBindingMarkup {x:Type enum:ClientTitle}}}"
                       SelectedItem="{Binding Path=CurrentClientDetailViewModel.Title}" />
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Vorname:" />
-            <TextBox Grid.Row="5" Grid.Column="1"
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Firmenname:" />
+            <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"
+                     IsEnabled="{Binding Path=CanEditCompanyName, Mode=OneWay}"
+                     Text="{Binding Path=CurrentClientDetailViewModel.CompanyName}" />
+
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Vorname:" />
+            <TextBox Grid.Row="7" Grid.Column="1"
                      IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
                      Text="{Binding Path=CurrentClientDetailViewModel.FirstName}" />
-            <TextBlock Grid.Row="5" Grid.Column="2" Text="Nachname:" />
-            <TextBox Grid.Row="5" Grid.Column="3"
+            <TextBlock Grid.Row="7" Grid.Column="2" Text="Nachname:" />
+            <TextBox Grid.Row="7" Grid.Column="3"
                      IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
                      Text="{Binding Path=CurrentClientDetailViewModel.LastName}" />
 
-            <TextBlock Grid.Row="7" Grid.Column="0" Text="Straße:" />
-            <TextBox Grid.Row="7" Grid.Column="1"
+            <TextBlock Grid.Row="9" Grid.Column="0" Text="Straße:" />
+            <TextBox Grid.Row="9" Grid.Column="1"
                      IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
                      Text="{Binding Path=CurrentClientDetailViewModel.Street}" />
-            <TextBlock Grid.Row="7" Grid.Column="2" Text="Hausnr.:" />
-            <TextBox Grid.Row="7" Grid.Column="3"
+            <TextBlock Grid.Row="9" Grid.Column="2" Text="Hausnr.:" />
+            <TextBox Grid.Row="9" Grid.Column="3"
                      IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
                      Text="{Binding Path=CurrentClientDetailViewModel.HouseNumber}" />
 
-            <TextBlock Grid.Row="9" Grid.Column="0" Text="PLZ:" />
-            <TextBox Grid.Row="9" Grid.Column="1"
+            <TextBlock Grid.Row="11" Grid.Column="0" Text="PLZ:" />
+            <TextBox Grid.Row="11" Grid.Column="1"
                      behavior:TextBoxNumericBehavior.IsTextBoxNumericEnabled="True"
                      IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
                      Text="{Binding Path=CurrentClientDetailViewModel.PostalCode}" />
-            <TextBlock Grid.Row="9" Grid.Column="2" Text="Ort:" />
-            <TextBox Grid.Row="9" Grid.Column="3"
+            <TextBlock Grid.Row="11" Grid.Column="2" Text="Ort:" />
+            <TextBox Grid.Row="11" Grid.Column="3"
                      IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
                      Text="{Binding Path=CurrentClientDetailViewModel.City}" />
 
-            <TextBlock Grid.Row="11" Grid.Column="0" Text="Geburtstag:" />
-            <TextBox Grid.Row="11" Grid.Column="1"
-                     IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
-                     Text="{Binding Path=CurrentClientDetailViewModel.DateOfBirth, ValidatesOnDataErrors=True}" />
-
-            <TextBlock Grid.Row="13" Grid.Column="0" Text="Telefonnr. 1:" />
+            <TextBlock Grid.Row="13" Grid.Column="0" Text="Geburtstag:" />
             <TextBox Grid.Row="13" Grid.Column="1"
                      IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
+                     Text="{Binding Path=CurrentClientDetailViewModel.DateOfBirth}" />
+
+            <TextBlock Grid.Row="15" Grid.Column="0" Text="Telefonnr. 1:" />
+            <TextBox Grid.Row="15" Grid.Column="1"
+                     IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
                      Text="{Binding Path=CurrentClientDetailViewModel.PhoneNumber1}" />
-            <TextBlock Grid.Row="13" Grid.Column="2" Text="Telefonnr. 2:" />
-            <TextBox Grid.Row="13" Grid.Column="3"
+            <TextBlock Grid.Row="15" Grid.Column="2" Text="Telefonnr. 2:" />
+            <TextBox Grid.Row="15" Grid.Column="3"
                      IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
                      Text="{Binding Path=CurrentClientDetailViewModel.PhoneNumber2}" />
 
-            <TextBlock Grid.Row="15" Grid.Column="0" Text="Handynr.:" />
-            <TextBox Grid.Row="15" Grid.Column="1"
+            <TextBlock Grid.Row="17" Grid.Column="0" Text="Handynr.:" />
+            <TextBox Grid.Row="17" Grid.Column="1"
                      IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
                      Text="{Binding Path=CurrentClientDetailViewModel.MobileNumber}" />
-            <TextBlock Grid.Row="15" Grid.Column="2" Text="Telefax:" />
-            <TextBox Grid.Row="15" Grid.Column="3"
+            <TextBlock Grid.Row="17" Grid.Column="2" Text="Telefax:" />
+            <TextBox Grid.Row="17" Grid.Column="3"
                      IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
                      Text="{Binding Path=CurrentClientDetailViewModel.Telefax}" />
 
-            <TextBlock Grid.Row="17" Grid.Column="0" Text="Email:" />
-            <TextBox Grid.Row="17" Grid.Column="1" Grid.ColumnSpan="3"
+            <TextBlock Grid.Row="19" Grid.Column="0" Text="Email:" />
+            <TextBox Grid.Row="19" Grid.Column="1" Grid.ColumnSpan="3"
                      IsEnabled="{Binding Path=CanEditClientData, Mode=OneWay}"
                      Text="{Binding Path=CurrentClientDetailViewModel.Email}" />
 
-            <TextBlock Grid.Row="19" Grid.Column="0" Text="Rechnungsanz:" />
-            <TextBlock Grid.Row="19" Grid.Column="1" Text="{Binding Path=CurrentClientDetailViewModel.NumberOfBills, Mode=OneWay}" />
-            <Button Grid.Row="19" Grid.Column="3"
+            <TextBlock Grid.Row="21" Grid.Column="0" Text="Rechnungsanz:" />
+            <TextBlock Grid.Row="21" Grid.Column="1" Text="{Binding Path=CurrentClientDetailViewModel.NumberOfBills, Mode=OneWay}" />
+            <Button Grid.Row="21" Grid.Column="3"
                     Command="{Binding Path=LoadBillsFromClientCommand}"
                     Content="Rechnungen"
                     IsEnabled="{Binding Path=CanLoadBills, Mode=OneWay}" />
 
-            <TextBlock Grid.Row="21" Grid.Column="0" Text="Bish. Umsatz:" />
-            <TextBlock Grid.Row="21" Grid.Column="1" Text="{Binding Path=CurrentClientDetailViewModel.Sales, Mode=OneWay, StringFormat=C, ConverterCulture=de-DE}" />
+            <TextBlock Grid.Row="23" Grid.Column="0" Text="Bish. Umsatz:" />
+            <TextBlock Grid.Row="23" Grid.Column="1" Text="{Binding Path=CurrentClientDetailViewModel.Sales, Mode=OneWay, StringFormat=C, ConverterCulture=de-DE}" />
 
-            <Button Grid.Row="23" Grid.Column="0" Grid.ColumnSpan="4"
+            <Button Grid.Row="25" Grid.Column="0" Grid.ColumnSpan="4"
                     Command="{Binding Path=CreateNewBillCommand}"
                     Content="Neuer Auftrag"
                     IsEnabled="{Binding Path=CanLoadBills, Mode=OneWay}" />
