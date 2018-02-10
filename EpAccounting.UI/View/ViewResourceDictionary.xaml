@@ -1,13 +1,16 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:behavior="clr-namespace:EpAccounting.UI.Behavior"
-                    xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-                    xmlns:converter="clr-namespace:EpAccounting.UI.Converter"
-                    xmlns:userControl="clr-namespace:EpAccounting.UI.View.User_Control"
-                    xmlns:viewModel="clr-namespace:EpAccounting.UI.ViewModel">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behavior="clr-namespace:EpAccounting.UI.Behavior"
+    xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:converter="clr-namespace:EpAccounting.UI.Converter"
+    xmlns:prop="clr-namespace:EpAccounting.UI.Properties"
+    xmlns:userControl="clr-namespace:EpAccounting.UI.View.User_Control"
+    xmlns:viewModel="clr-namespace:EpAccounting.UI.ViewModel">
 
     <!--  Converter  -->
     <converter:BitmapToBitmapImageConverter x:Key="BitmapToBitmapImageConverter" />
+    <converter:ButtonDisplayNameToIsDefaultConverter x:Key="ButtonDisplayNameToIsDefaultConverter" />
     <converter:BoolInverterConverter x:Key="BoolInverterConverter" />
     <converter:UnitToDoubleConverter x:Key="UnitToDoubleConverter" />
 
@@ -80,7 +83,10 @@
     </Style>
 
     <!--  Style: ListBox  -->
-    <Style x:Key="MainMenuListBoxStyle" BasedOn="{StaticResource {x:Type ListBox}}" TargetType="ListBox">
+    <Style
+        x:Key="MainMenuListBoxStyle"
+        BasedOn="{StaticResource {x:Type ListBox}}"
+        TargetType="ListBox">
         <Setter Property="Background" Value="Gray" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Width" Value="Auto" />
@@ -115,11 +121,17 @@
         <Setter Property="behavior:SelectAllTextOnFocusBehavior.SelectTextOnFocus" Value="True" />
     </Style>
 
-    <Style x:Key="LeftTextAlignTextBoxStyle" BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox">
+    <Style
+        x:Key="LeftTextAlignTextBoxStyle"
+        BasedOn="{StaticResource {x:Type TextBox}}"
+        TargetType="TextBox">
         <Setter Property="TextAlignment" Value="Left" />
     </Style>
 
-    <Style x:Key="EditIdTextBoxStyle" BasedOn="{StaticResource {x:Type TextBox}}" TargetType="{x:Type TextBox}">
+    <Style
+        x:Key="EditIdTextBoxStyle"
+        BasedOn="{StaticResource {x:Type TextBox}}"
+        TargetType="{x:Type TextBox}">
         <Setter Property="Background" Value="DarkGray" />
         <Setter Property="Foreground" Value="White" />
     </Style>
@@ -133,20 +145,29 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <Style x:Key="CaptionTextBlockStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+    <Style
+        x:Key="CaptionTextBlockStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="TextBlock">
         <Setter Property="FontSize" Value="22" />
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="Margin" Value="5" />
         <Setter Property="TextDecorations" Value="Underline" />
     </Style>
 
-    <Style x:Key="TitleTextBlockStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+    <Style
+        x:Key="TitleTextBlockStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="TextBlock">
         <Setter Property="FontSize" Value="30" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="TextAlignment" Value="Center" />
     </Style>
 
-    <Style x:Key="UnderlinedTextBlockStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+    <Style
+        x:Key="UnderlinedTextBlockStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="TextBlock">
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="TextDecorations" Value="Underline" />
     </Style>
@@ -155,8 +176,11 @@
 
     <!--  DataTemplate: WorkspaceViewModel  -->
     <DataTemplate x:Key="MenuWorkspaceViewModelStyle" DataType="{x:Type viewModel:WorkspaceViewModel}">
-        <Image Width="30" Height="30" Margin="5"
-               Source="{Binding Path=Image, Converter={StaticResource BitmapToBitmapImageConverter}}" />
+        <Image
+            Width="30"
+            Height="30"
+            Margin="5"
+            Source="{Binding Path=Image, Converter={StaticResource BitmapToBitmapImageConverter}}" />
     </DataTemplate>
 
     <!--  DataTemplate: ClientViewModel  -->
@@ -191,8 +215,12 @@
 
     <!--  DataTemplate: ImageCommandViewModel  -->
     <DataTemplate x:Key="ImageCommandDataTemplate" DataType="{x:Type viewModel:ImageCommandViewModel}">
-        <Button Width="40" Height="40" Margin="10,0,10,0"
-                Command="{Binding Path=RelayCommand}">
+        <Button
+            Width="40"
+            Height="40"
+            Margin="10,0,10,0"
+            Command="{Binding Path=RelayCommand}"
+            IsDefault="{Binding Path=DisplayName, Converter={StaticResource ButtonDisplayNameToIsDefaultConverter}}">
             <Image Source="{Binding Path=Image, Converter={StaticResource BitmapToBitmapImageConverter}}" />
             <Button.ToolTip>
                 <TextBlock Text="{Binding Path=DisplayName}" />
@@ -203,7 +231,10 @@
     <DataTemplate x:Key="ImageCommandContextMenuDataTemplate" DataType="{x:Type viewModel:ImageCommandViewModel}">
         <MenuItem Command="{Binding Path=RelayCommand}" Header="{Binding Path=DisplayName}">
             <MenuItem.Icon>
-                <Image Width="20" Height="20" Source="{Binding Path=Image, Converter={StaticResource BitmapToBitmapImageConverter}}" />
+                <Image
+                    Width="20"
+                    Height="20"
+                    Source="{Binding Path=Image, Converter={StaticResource BitmapToBitmapImageConverter}}" />
             </MenuItem.Icon>
         </MenuItem>
     </DataTemplate>

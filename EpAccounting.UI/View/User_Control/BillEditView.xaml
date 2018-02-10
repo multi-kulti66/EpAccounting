@@ -1,12 +1,15 @@
-﻿<UserControl x:Class="EpAccounting.UI.View.User_Control.BillEditView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:behavior="clr-namespace:EpAccounting.UI.Behavior" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:enum="clr-namespace:EpAccounting.Model.Enum;assembly=EpAccounting.Model"
-             xmlns:markup="clr-namespace:EpAccounting.UI.Markup"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:viewModel="clr-namespace:EpAccounting.UI.ViewModel"
-             d:DataContext="{d:DesignInstance viewModel:BillEditViewModel}"
-             mc:Ignorable="d">
+﻿<UserControl
+    x:Class="EpAccounting.UI.View.User_Control.BillEditView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behavior="clr-namespace:EpAccounting.UI.Behavior"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:enum="clr-namespace:EpAccounting.Model.Enum;assembly=EpAccounting.Model"
+    xmlns:markup="clr-namespace:EpAccounting.UI.Markup"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModel="clr-namespace:EpAccounting.UI.ViewModel"
+    d:DataContext="{d:DesignInstance viewModel:BillEditViewModel}"
+    mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary Source="/View/ViewResourceDictionary.xaml" />
     </UserControl.Resources>
@@ -27,7 +30,11 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <ItemsControl Grid.Row="1" IsTabStop="False" ItemTemplate="{StaticResource ImageCommandDataTemplate}" ItemsSource="{Binding Path=BillCommands}">
+        <ItemsControl
+            Grid.Row="1"
+            IsTabStop="False"
+            ItemTemplate="{StaticResource ImageCommandDataTemplate}"
+            ItemsSource="{Binding Path=BillCommands}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" />
@@ -64,36 +71,80 @@
                 <ColumnDefinition Width="150" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Rechnungsnr.:" />
-            <TextBox Grid.Row="1" Grid.Column="1" behavior:TextBoxNumericBehavior.IsTextBoxNumericEnabled="True"
-                     IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
-                     Style="{StaticResource EditIdTextBoxStyle}"
-                     Text="{Binding Path=CurrentBillDetailViewModel.Id, Mode=TwoWay}" />
-            <Button Grid.Row="1" Grid.Column="3" Command="{Binding Path=ClearFieldsCommand}" Content="Felder leeren" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                Text="Rechnungsnr.:" />
+            <TextBox
+                Grid.Row="1"
+                Grid.Column="1"
+                behavior:TextBoxNumericBehavior.IsTextBoxNumericEnabled="True"
+                IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
+                Style="{StaticResource EditIdTextBoxStyle}"
+                Text="{Binding Path=CurrentBillDetailViewModel.Id, Mode=TwoWay}" />
+            <Button
+                Grid.Row="1"
+                Grid.Column="3"
+                Command="{Binding Path=ClearFieldsCommand}"
+                Content="Felder leeren" />
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Rechnungsart:" />
-            <ComboBox Grid.Row="3" Grid.Column="1"
-                      IsEnabled="{Binding Path=CanEditData, Mode=OneWay}"
-                      ItemsSource="{Binding Source={markup:EnumBindingMarkup {x:Type enum:KindOfBill}}}"
-                      SelectedItem="{Binding Path=CurrentBillDetailViewModel.KindOfBill}" />
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="0"
+                Text="Rechnungsart:" />
+            <ComboBox
+                Grid.Row="3"
+                Grid.Column="1"
+                IsEnabled="{Binding Path=CanEditData, Mode=OneWay}"
+                ItemsSource="{Binding Source={markup:EnumBindingMarkup {x:Type enum:KindOfBill}}}"
+                SelectedItem="{Binding Path=CurrentBillDetailViewModel.KindOfBill}" />
 
-            <ComboBox Grid.Row="3" Grid.Column="2"
-                      IsEnabled="{Binding Path=CanEditData, Mode=OneWay}"
-                      ItemsSource="{Binding Source={markup:EnumBindingMarkup {x:Type enum:KindOfVat}}}"
-                      SelectedItem="{Binding Path=CurrentBillDetailViewModel.KindOfVat}" />
-            <TextBlock Grid.Row="3" Grid.Column="3" Text="MwSt" />
+            <ComboBox
+                Grid.Row="3"
+                Grid.Column="2"
+                IsEnabled="{Binding Path=CanEditData, Mode=OneWay}"
+                ItemsSource="{Binding Source={markup:EnumBindingMarkup {x:Type enum:KindOfVat}}}"
+                SelectedItem="{Binding Path=CurrentBillDetailViewModel.KindOfVat}" />
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="3"
+                Text="MwSt" />
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Datum:" />
-            <TextBox Grid.Row="5" Grid.Column="1" IsEnabled="{Binding Path=CanEditData, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.Date}" />
+            <TextBlock
+                Grid.Row="5"
+                Grid.Column="0"
+                Text="Datum:" />
+            <TextBox
+                Grid.Row="5"
+                Grid.Column="1"
+                IsEnabled="{Binding Path=CanEditData, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                Text="{Binding Path=CurrentBillDetailViewModel.Date}" />
 
-            <TextBlock Grid.Row="7" Grid.Column="0" Text="Druckstatus:" />
-            <StackPanel Grid.Row="7" Grid.Column="1" HorizontalAlignment="Center"
-                        IsEnabled="{Binding Path=CanEditPrintedStatus, Mode=OneWay}"
-                        Orientation="Horizontal">
-                <RadioButton Margin="15,0,15,0" Content="gedruckt" GroupName="printed" IsChecked="{Binding Path=CurrentBillDetailViewModel.Printed}" />
-                <RadioButton Margin="15,0,15,0" Content="nicht gedruckt" GroupName="printed" IsChecked="{Binding Path=CurrentBillDetailViewModel.Printed, Converter={StaticResource BoolInverterConverter}}" />
+            <TextBlock
+                Grid.Row="7"
+                Grid.Column="0"
+                Text="Druckstatus:" />
+            <StackPanel
+                Grid.Row="7"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                IsEnabled="{Binding Path=CanEditPrintedStatus, Mode=OneWay}"
+                Orientation="Horizontal">
+                <RadioButton
+                    Margin="15,0,15,0"
+                    Content="gedruckt"
+                    GroupName="printed"
+                    IsChecked="{Binding Path=CurrentBillDetailViewModel.Printed}" />
+                <RadioButton
+                    Margin="15,0,15,0"
+                    Content="nicht gedruckt"
+                    GroupName="printed"
+                    IsChecked="{Binding Path=CurrentBillDetailViewModel.Printed, Converter={StaticResource BoolInverterConverter}}" />
             </StackPanel>
-            <Image Grid.Row="7" Grid.Column="2" Style="{StaticResource PrintedImageStyle}" />
+            <Image
+                Grid.Row="7"
+                Grid.Column="2"
+                Style="{StaticResource PrintedImageStyle}" />
         </Grid>
 
         <GridSplitter Grid.Row="4" Style="{StaticResource HorizontalGridSplitterStyle}" />
@@ -118,7 +169,7 @@
                 <!--  10  -->
                 <RowDefinition Height="35" />
                 <RowDefinition Height="40" />
-                <!-- 12 -->
+                <!--  12  -->
                 <RowDefinition Height="35" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -132,38 +183,99 @@
                 <ColumnDefinition Width="200" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Kundennr.:" />
-            <TextBox Grid.Row="1" Grid.Column="1" behavior:TextBoxNumericBehavior.IsTextBoxNumericEnabled="True"
-                     IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
-                     Style="{StaticResource EditIdTextBoxStyle}"
-                     Text="{Binding Path=CurrentBillDetailViewModel.ClientId, Mode=TwoWay}" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                Text="Kundennr.:" />
+            <TextBox
+                Grid.Row="1"
+                Grid.Column="1"
+                behavior:TextBoxNumericBehavior.IsTextBoxNumericEnabled="True"
+                IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
+                Style="{StaticResource EditIdTextBoxStyle}"
+                Text="{Binding Path=CurrentBillDetailViewModel.ClientId, Mode=TwoWay}" />
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Anrede:" />
-            <ComboBox Grid.Row="3" Grid.Column="1" Height="40"
-                      VerticalAlignment="Bottom"
-                      IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
-                      ItemsSource="{Binding Source={markup:EnumBindingMarkup {x:Type enum:ClientTitle}}}"
-                      SelectedItem="{Binding Path=CurrentBillDetailViewModel.Title}" />
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="0"
+                Text="Anrede:" />
+            <ComboBox
+                Grid.Row="3"
+                Grid.Column="1"
+                Height="40"
+                VerticalAlignment="Bottom"
+                IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
+                ItemsSource="{Binding Source={markup:EnumBindingMarkup {x:Type enum:ClientTitle}}}"
+                SelectedItem="{Binding Path=CurrentBillDetailViewModel.Title}" />
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Firmenname:" />
-            <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.CompanyName}" />
+            <TextBlock
+                Grid.Row="5"
+                Grid.Column="0"
+                Text="Firmenname:" />
+            <TextBox
+                Grid.Row="5"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
+                Text="{Binding Path=CurrentBillDetailViewModel.CompanyName}" />
 
-            <TextBlock Grid.Row="7" Grid.Column="0" Text="Vorname:" />
-            <TextBox Grid.Row="7" Grid.Column="1" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.FirstName}" />
-            <TextBlock Grid.Row="7" Grid.Column="2" Text="Nachname:" />
-            <TextBox Grid.Row="7" Grid.Column="3" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.LastName}" />
+            <TextBlock
+                Grid.Row="7"
+                Grid.Column="0"
+                Text="Vorname:" />
+            <TextBox
+                Grid.Row="7"
+                Grid.Column="1"
+                IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
+                Text="{Binding Path=CurrentBillDetailViewModel.FirstName}" />
+            <TextBlock
+                Grid.Row="7"
+                Grid.Column="2"
+                Text="Nachname:" />
+            <TextBox
+                Grid.Row="7"
+                Grid.Column="3"
+                IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
+                Text="{Binding Path=CurrentBillDetailViewModel.LastName}" />
 
-            <TextBlock Grid.Row="9" Grid.Column="0" Text="Straße:" />
-            <TextBox Grid.Row="9" Grid.Column="1" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.Street}" />
-            <TextBlock Grid.Row="9" Grid.Column="2" Text="Hausnr.:" />
-            <TextBox Grid.Row="9" Grid.Column="3" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.HouseNumber}" />
+            <TextBlock
+                Grid.Row="9"
+                Grid.Column="0"
+                Text="Straße:" />
+            <TextBox
+                Grid.Row="9"
+                Grid.Column="1"
+                IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
+                Text="{Binding Path=CurrentBillDetailViewModel.Street}" />
+            <TextBlock
+                Grid.Row="9"
+                Grid.Column="2"
+                Text="Hausnr.:" />
+            <TextBox
+                Grid.Row="9"
+                Grid.Column="3"
+                IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
+                Text="{Binding Path=CurrentBillDetailViewModel.HouseNumber}" />
 
-            <TextBlock Grid.Row="11" Grid.Column="0" Text="PLZ:" />
-            <TextBox Grid.Row="11" Grid.Column="1" behavior:TextBoxNumericBehavior.IsTextBoxNumericEnabled="True"
-                     IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
-                     Text="{Binding Path=CurrentBillDetailViewModel.PostalCode}" />
-            <TextBlock Grid.Row="11" Grid.Column="2" Text="Ort:" />
-            <TextBox Grid.Row="11" Grid.Column="3" IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}" Text="{Binding Path=CurrentBillDetailViewModel.City}" />
+            <TextBlock
+                Grid.Row="11"
+                Grid.Column="0"
+                Text="PLZ:" />
+            <TextBox
+                Grid.Row="11"
+                Grid.Column="1"
+                behavior:TextBoxNumericBehavior.IsTextBoxNumericEnabled="True"
+                IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
+                Text="{Binding Path=CurrentBillDetailViewModel.PostalCode}" />
+            <TextBlock
+                Grid.Row="11"
+                Grid.Column="2"
+                Text="Ort:" />
+            <TextBox
+                Grid.Row="11"
+                Grid.Column="3"
+                IsEnabled="{Binding Path=CanInsertIDs, Mode=OneWay}"
+                Text="{Binding Path=CurrentBillDetailViewModel.City}" />
         </Grid>
     </Grid>
 </UserControl>

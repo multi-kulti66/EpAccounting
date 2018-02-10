@@ -159,7 +159,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM));
 
             // Assert
-            propertyChangedList.Count.Should().Be(14);
+            propertyChangedList.Count.Should().Be(15);
             this.mockRepository.Verify(x => x.GetById<Bill>(0), Times.Once);
         }
 
