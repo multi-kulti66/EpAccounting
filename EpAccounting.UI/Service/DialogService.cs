@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: DialogService.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 19:12
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.Service
 {
@@ -12,11 +10,10 @@ namespace EpAccounting.UI.Service
     using System.Drawing.Printing;
     using System.Threading.Tasks;
     using System.Windows.Forms;
-    using EpAccounting.UI.Properties;
     using MahApps.Metro.Controls;
     using MahApps.Metro.Controls.Dialogs;
+    using Properties;
     using Application = System.Windows.Application;
-
 
 
     public class DialogService : IDialogService
@@ -27,6 +24,18 @@ namespace EpAccounting.UI.Service
         {
             MetroWindow metroWindow = Application.Current.MainWindow as MetroWindow;
             await metroWindow.ShowMessageAsync(title, message);
+        }
+
+        public async Task ShowExceptionMessage(Exception e, string title = "An error occured!")
+        {
+            MetroWindow metroWindow = Application.Current.MainWindow as MetroWindow;
+
+            if (e.InnerException != null)
+            {
+                await metroWindow.ShowMessageAsync(e.Message, e.InnerException.Message);
+            }
+
+            await metroWindow.ShowMessageAsync(title, e.Message);
         }
 
         public async Task<bool> ShowDialogYesNo(string title, string message)

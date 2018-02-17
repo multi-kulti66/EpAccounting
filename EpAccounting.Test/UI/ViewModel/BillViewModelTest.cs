@@ -27,17 +27,10 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class BillViewModelTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private Mock<IDialogService> mockDialogService;
         private BillViewModel billViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -55,11 +48,6 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billViewModel = null;
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void BillEditViewModelInitializedAfterCreation()
@@ -108,7 +96,5 @@ namespace EpAccounting.Test.UI.ViewModel
             // Assert
             this.billViewModel.BillWorkspaceViewModel.Should().BeOfType<BillSearchViewModel>();
         }
-
-        #endregion
     }
 }

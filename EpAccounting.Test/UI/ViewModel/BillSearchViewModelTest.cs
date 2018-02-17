@@ -28,16 +28,9 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class BillSearchViewModelTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private BillSearchViewModel billSearchViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -54,11 +47,6 @@ namespace EpAccounting.Test.UI.ViewModel
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void DerivesFromBindableViewModelBase()
@@ -203,7 +191,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(expectedBill, this.mockRepository.Object));
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_RemoveBillForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_ReloadBillForBillSearchVM));
 
             // Assert
             this.billSearchViewModel.FoundBills.Should().HaveCount(0);
@@ -441,7 +429,5 @@ namespace EpAccounting.Test.UI.ViewModel
             // Assert
             this.billSearchViewModel.FoundBills.Count.Should().Be(1);
         }
-
-        #endregion
     }
 }

@@ -21,8 +21,6 @@ namespace EpAccounting.Test.UI.State
     [TestFixture]
     public class ClientEmptyStateTest
     {
-        #region Test Methods
-
         [Test]
         public void CanSwitchToSearchAndAddMode()
         {
@@ -83,9 +81,6 @@ namespace EpAccounting.Test.UI.State
             // Assert
             mockClientEditViewModel.Verify(x => x.ChangeToCreationMode(), Times.Once);
         }
-
-        #endregion
-
 
 
         private ClientEmptyState GetDefaultState()

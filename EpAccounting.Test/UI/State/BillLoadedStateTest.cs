@@ -22,8 +22,6 @@ namespace EpAccounting.Test.UI.State
     [TestFixture]
     public class BillLoadedStateTest
     {
-        #region Test Methods
-
         [Test]
         public void CanSwitchToAllModes()
         {
@@ -117,9 +115,6 @@ namespace EpAccounting.Test.UI.State
             mockBillEditViewModel.Verify(x => x.DeleteBillAsync(), Times.Once);
             mockBillEditViewModel.Verify(x => x.ChangeToEmptyMode(), Times.Never);
         }
-
-        #endregion
-
 
 
         private BillLoadedState GetDefaultBillLoadedState()

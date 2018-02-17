@@ -27,16 +27,9 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class BillDetailViewModelTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private BillDetailViewModel billDetailViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -53,11 +46,6 @@ namespace EpAccounting.Test.UI.ViewModel
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void GetDefaultValues()
@@ -179,6 +167,5 @@ namespace EpAccounting.Test.UI.ViewModel
             propertyChangedList.Count.Should().Be(0);
             this.mockRepository.Verify(x => x.GetById<Bill>(It.IsAny<int>()), Times.Never());
         }
-        #endregion
     }
 }

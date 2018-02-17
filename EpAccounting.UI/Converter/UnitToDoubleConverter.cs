@@ -1,17 +1,14 @@
 ﻿// ///////////////////////////////////
 // File: UnitToDoubleConverter.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.Converter
 {
     using System;
     using System.Globalization;
     using System.Windows.Data;
-
 
 
     public class UnitToDoubleConverter : IValueConverter
@@ -27,12 +24,12 @@ namespace EpAccounting.UI.Converter
 
             if (value is double)
             {
-                return (double)value;
+                return (double) value;
             }
 
             if (value is decimal)
             {
-                return (decimal)value;
+                return (decimal) value;
             }
 
             return value;

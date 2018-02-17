@@ -1,22 +1,19 @@
 ﻿// ///////////////////////////////////
 // File: BillDetailViewModel.cs
-// Last Change: 26.10.2017  21:26
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
     using System;
     using System.Linq;
     using System.Reflection;
-    using EpAccounting.Business;
-    using EpAccounting.Model;
-    using EpAccounting.Model.Enum;
-    using EpAccounting.UI.Properties;
+    using Business;
     using GalaSoft.MvvmLight.Messaging;
-
+    using Model;
+    using Model.Enum;
+    using Properties;
 
 
     public class BillDetailViewModel : BindableViewModelBase
@@ -30,7 +27,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public BillDetailViewModel(Bill bill, IRepository repository)
         {
@@ -44,7 +41,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public int Id
         {

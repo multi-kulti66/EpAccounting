@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModel.cs
-// Last Change: 26.10.2017  20:36
+// Last Change: 17.02.2018, 21:48
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
@@ -12,13 +10,12 @@ namespace EpAccounting.UI.ViewModel
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Linq.Expressions;
-    using EpAccounting.Business;
-    using EpAccounting.Model;
-    using EpAccounting.UI.Properties;
+    using Business;
     using GalaSoft.MvvmLight.Command;
     using GalaSoft.MvvmLight.Messaging;
+    using Model;
     using NHibernate.Criterion;
-
+    using Properties;
 
 
     public class BillSearchViewModel : BillWorkspaceViewModel
@@ -33,6 +30,8 @@ namespace EpAccounting.UI.ViewModel
         private BillDetailViewModel _selectedBillDetailViewModel;
 
         private RelayCommand _loadSelectedBillCommand;
+        private ImageCommandViewModel _loadFirstPageCommand;
+        private ImageCommandViewModel _loadLastPageCommand;
         private ImageCommandViewModel _loadNextPageCommand;
         private ImageCommandViewModel _loadPreviousPageCommand;
 
@@ -40,12 +39,13 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public BillSearchViewModel(IRepository repository)
         {
             this.repository = repository;
 
+            Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
@@ -54,7 +54,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public int NumberOfAllPages
         {
@@ -87,6 +87,79 @@ namespace EpAccounting.UI.ViewModel
             set { this.SetProperty(ref this._selectedBillDetailViewModel, value); }
         }
 
+        public RelayCommand LoadSelectedBillCommand
+        {
+            get
+            {
+                if (this._loadSelectedBillCommand == null)
+                {
+                    this._loadSelectedBillCommand = new RelayCommand(this.SendLoadSelectedBillMessage, this.CanLoadSelectedBill);
+                }
+
+                return this._loadSelectedBillCommand;
+            }
+        }
+
+        public ImageCommandViewModel LoadFirstPageCommand
+        {
+            get
+            {
+                if (this._loadFirstPageCommand == null)
+                {
+                    this._loadFirstPageCommand = new ImageCommandViewModel(Resources.img_arrow_first,
+                                                                           Resources.Command_DisplayName_First_Page,
+                                                                           new RelayCommand(this.LoadFirstPage, this.CanLoadFirstPage));
+                }
+
+                return this._loadFirstPageCommand;
+            }
+        }
+
+        public ImageCommandViewModel LoadLastPageCommand
+        {
+            get
+            {
+                if (this._loadLastPageCommand == null)
+                {
+                    this._loadLastPageCommand = new ImageCommandViewModel(Resources.img_arrow_last,
+                                                                          Resources.Command_DisplayName_Last_Page,
+                                                                          new RelayCommand(this.LoadLastPage, this.CanLoadLastPage));
+                }
+
+                return this._loadLastPageCommand;
+            }
+        }
+
+        public ImageCommandViewModel LoadNextPageCommand
+        {
+            get
+            {
+                if (this._loadNextPageCommand == null)
+                {
+                    this._loadNextPageCommand = new ImageCommandViewModel(Resources.img_arrow_right,
+                                                                          Resources.Command_DisplayName_Next_Page,
+                                                                          new RelayCommand(this.LoadNextPage, this.CanLoadNextPage));
+                }
+
+                return this._loadNextPageCommand;
+            }
+        }
+
+        public ImageCommandViewModel LoadPreviousPageCommand
+        {
+            get
+            {
+                if (this._loadPreviousPageCommand == null)
+                {
+                    this._loadPreviousPageCommand = new ImageCommandViewModel(Resources.img_arrow_left,
+                                                                              Resources.Command_DisplayName_Previous_Page,
+                                                                              new RelayCommand(this.LoadPreviousPage, this.CanLoadPreviousPage));
+                }
+
+                return this._loadPreviousPageCommand;
+            }
+        }
+
         private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> LastCriterion { get; set; }
 
         #endregion
@@ -106,8 +179,8 @@ namespace EpAccounting.UI.ViewModel
         }
 
         private void LoadSearchedBills(Tuple<ICriterion,
-            Expression<Func<Bill, Client>>,
-            ICriterion> tupleCriterion, int page = 1)
+                                           Expression<Func<Bill, Client>>,
+                                           ICriterion> tupleCriterion, int page = 1)
         {
             // ReSharper disable once PossibleLossOfFraction
             int numberOfBills;
@@ -167,16 +240,8 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        private void RemoveBill(int id)
+        private void ReloadBill()
         {
-            for (int i = this.FoundBills.Count - 1; i >= 0; i--)
-            {
-                if (this.FoundBills[i].Id == id)
-                {
-                    this.FoundBills.RemoveAt(i);
-                }
-            }
-
             this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
         }
 
@@ -197,18 +262,22 @@ namespace EpAccounting.UI.ViewModel
             this.LoadNextPageCommand.RelayCommand.RaiseCanExecuteChanged();
         }
 
-
-
-        #region Messenger
-
         private void ExecuteNotificationMessage(NotificationMessage<Tuple<ICriterion,
-            Expression<Func<Bill, Client>>,
-            ICriterion>> message)
+                                                    Expression<Func<Bill, Client>>,
+                                                    ICriterion>> message)
         {
             if (message.Notification == Resources.Message_BillSearchCriteriaForBillSearchVM)
             {
                 this.LastCriterion = message.Content;
                 this.LoadSearchedBills(message.Content);
+            }
+        }
+
+        private void ExecuteNotificationMessage(NotificationMessage message)
+        {
+            if (message.Notification == Resources.Message_ReloadBillForBillSearchVM)
+            {
+                this.ReloadBill();
             }
         }
 
@@ -222,10 +291,6 @@ namespace EpAccounting.UI.ViewModel
             {
                 this.UpdateBillViaClientId(message.Content);
             }
-            else if (message.Notification == Resources.Message_RemoveBillForBillSearchVM)
-            {
-                this.RemoveBill(message.Content);
-            }
             else if (message.Notification == Resources.Message_LoadBillsFromClientForBillSearchVM)
             {
                 this.LoadBillsFromClient(message.Content);
@@ -233,25 +298,6 @@ namespace EpAccounting.UI.ViewModel
             else if (message.Notification == Resources.Message_RemoveClientForBillSearchVM)
             {
                 this.RemoveBillsViaClientId(message.Content);
-            }
-        }
-
-        #endregion
-
-
-
-        #region Commands
-
-        public RelayCommand LoadSelectedBillCommand
-        {
-            get
-            {
-                if (this._loadSelectedBillCommand == null)
-                {
-                    this._loadSelectedBillCommand = new RelayCommand(this.SendLoadSelectedBillMessage, this.CanLoadSelectedBill);
-                }
-
-                return this._loadSelectedBillCommand;
             }
         }
 
@@ -270,19 +316,26 @@ namespace EpAccounting.UI.ViewModel
             Messenger.Default.Send(new NotificationMessage<int>(this.SelectedBillDetailViewModel.Id, Resources.Message_LoadSelectedBillForBillEditVM));
         }
 
-        public ImageCommandViewModel LoadNextPageCommand
+        private bool CanLoadFirstPage()
         {
-            get
-            {
-                if (this._loadNextPageCommand == null)
-                {
-                    this._loadNextPageCommand = new ImageCommandViewModel(Resources.img_arrow_right,
-                                                                          Resources.Command_DisplayName_Next_Page,
-                                                                          new RelayCommand(this.LoadNextPage, this.CanLoadNextPage));
-                }
+            return this.CurrentPage > 1;
+        }
 
-                return this._loadNextPageCommand;
-            }
+        private void LoadFirstPage()
+        {
+            this.CurrentPage = 1;
+            this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
+        }
+
+        private bool CanLoadLastPage()
+        {
+            return this.CurrentPage < this.NumberOfAllPages;
+        }
+
+        private void LoadLastPage()
+        {
+            this.CurrentPage = this.NumberOfAllPages;
+            this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
         }
 
         private bool CanLoadNextPage()
@@ -301,21 +354,6 @@ namespace EpAccounting.UI.ViewModel
             this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
         }
 
-        public ImageCommandViewModel LoadPreviousPageCommand
-        {
-            get
-            {
-                if (this._loadPreviousPageCommand == null)
-                {
-                    this._loadPreviousPageCommand = new ImageCommandViewModel(Resources.img_arrow_left,
-                                                                              Resources.Command_DisplayName_Previous_Page,
-                                                                              new RelayCommand(this.LoadPreviousPage, this.CanLoadPreviousPage));
-                }
-
-                return this._loadPreviousPageCommand;
-            }
-        }
-
         private bool CanLoadPreviousPage()
         {
             if (this.CurrentPage > 1)
@@ -331,7 +369,5 @@ namespace EpAccounting.UI.ViewModel
             this.CurrentPage--;
             this.LoadSearchedBills(this.LastCriterion, this.CurrentPage);
         }
-
-        #endregion
     }
 }

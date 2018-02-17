@@ -20,8 +20,6 @@ namespace EpAccounting.Test.UI.State
 
     public class BillEmptyStateTest
     {
-        #region Test Methods
-
         [Test]
         public void CanSwitchToSearchAndAddMode()
         {
@@ -67,9 +65,6 @@ namespace EpAccounting.Test.UI.State
             // Assert
             mockBillEditViewModel.Verify(x => x.ChangeToSearchMode(), Times.Once);
         }
-
-        #endregion
-
 
 
         private BillEmptyState GetDefaultBillEmptyState()

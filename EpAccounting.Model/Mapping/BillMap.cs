@@ -1,20 +1,17 @@
 ﻿// ///////////////////////////////////
 // File: BillMap.cs
-// Last Change: 28.10.2017  11:51
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.Model.Mapping
 {
     using FluentNHibernate.Mapping;
 
 
-
     public class BillMap : ClassMap<Bill>
     {
-        #region Constructors / Destructor
+        #region Constructors
 
         public BillMap()
         {

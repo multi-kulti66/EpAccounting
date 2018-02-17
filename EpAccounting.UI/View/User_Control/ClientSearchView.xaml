@@ -20,13 +20,19 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <ContentPresenter Content="{Binding Path=LoadPreviousPageCommand}" ContentTemplate="{StaticResource ImageCommandDataTemplate}" />
+            <ContentPresenter Content="{Binding Path=LoadFirstPageCommand}"
+                              ContentTemplate="{StaticResource ImageCommandDataTemplate}" />
+            <ContentPresenter Content="{Binding Path=LoadPreviousPageCommand}"
+                              ContentTemplate="{StaticResource ImageCommandDataTemplate}" />
             <TextBlock>
                 <Run Text="{Binding Path=CurrentPage, Mode=OneWay}" />
                 <Run Text="/" />
                 <Run Text="{Binding Path=NumberOfAllPages, Mode=OneWay}" />
             </TextBlock>
-            <ContentPresenter Content="{Binding Path=LoadNextPageCommand}" ContentTemplate="{StaticResource ImageCommandDataTemplate}" />
+            <ContentPresenter Content="{Binding Path=LoadNextPageCommand}"
+                              ContentTemplate="{StaticResource ImageCommandDataTemplate}" />
+            <ContentPresenter Content="{Binding Path=LoadLastPageCommand}"
+                              ContentTemplate="{StaticResource ImageCommandDataTemplate}" />
         </StackPanel>
 
         <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
@@ -46,7 +52,7 @@
             </i:Interaction.Behaviors>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn  Width="Auto" DisplayMemberBinding="{Binding Path=Id}" Header="Kundennr." />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Id}" Header="Kundennr." />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Title}" Header="Anrede" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=CompanyName}" Header="Firmenname" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=FirstName}" Header="Vorname" />
@@ -55,8 +61,10 @@
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=HouseNumber}" Header="Hausnummer" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=PostalCode}" Header="PLZ" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=City}" Header="Ort" />
-                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=PhoneNumber1}" Header="Telefonnummer 1" />
-                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=MobileNumber}" Header="Handynummer" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=PhoneNumber1}"
+                                    Header="Telefonnummer 1" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=MobileNumber}"
+                                    Header="Handynummer" />
                 </GridView>
             </ListView.View>
         </ListView>

@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: WordService.cs
-// Last Change: 25.10.2017  22:40
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.Service
 {
@@ -13,11 +11,10 @@ namespace EpAccounting.UI.Service
     using System.IO;
     using System.Reflection;
     using System.Windows.Forms;
-    using EpAccounting.UI.Properties;
-    using EpAccounting.UI.ViewModel;
     using Microsoft.Office.Interop.Word;
+    using Properties;
+    using ViewModel;
     using Application = Microsoft.Office.Interop.Word.Application;
-
 
 
     public class WordService : IWordService
@@ -166,7 +163,7 @@ namespace EpAccounting.UI.Service
             // Changes the background color of the header and centers the text
             for (int i = 1; i <= 7; i++)
             {
-                objTable.Cell(1, i).Range.Shading.BackgroundPatternColor = (WdColor)ColorTranslator.ToOle(Color.LightGray);
+                objTable.Cell(1, i).Range.Shading.BackgroundPatternColor = (WdColor) ColorTranslator.ToOle(Color.LightGray);
                 objTable.Cell(1, i).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
             }
 

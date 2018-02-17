@@ -10,12 +10,8 @@ namespace EpAccounting.Model
 {
     public class CityToPostalCode
     {
-        #region Properties
-
         public virtual string PostalCode { get; set; }
 
         public virtual string City { get; set; }
-
-        #endregion
     }
 }

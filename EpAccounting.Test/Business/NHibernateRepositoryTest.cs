@@ -22,15 +22,8 @@ namespace EpAccounting.Test.Business
     [TestFixture]
     public class NHibernateRepositoryTest
     {
-        #region Fields
-
         private IRepository repository;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void TestInit()
@@ -46,11 +39,6 @@ namespace EpAccounting.Test.Business
             DatabaseFactory.ClearSavedFilePath();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void EmptyFilePathIfNotConnected()
@@ -1043,9 +1031,6 @@ namespace EpAccounting.Test.Business
             this.repository.GetQuantityByCriteria<Bill, Client>(billConjunction, b => b.Client, clientConjunction).Should().Be(quantity);
         }
 
-        #endregion
-
-
 
         private void CreateDatabaseAndSetPath()
         {
@@ -1066,12 +1051,8 @@ namespace EpAccounting.Test.Business
 
         private class Person
         {
-            #region Properties
-
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public string Name { get; set; }
-
-            #endregion
         }
     }
 }

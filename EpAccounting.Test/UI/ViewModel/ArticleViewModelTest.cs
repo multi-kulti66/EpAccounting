@@ -24,16 +24,9 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class ArticleViewModelTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private ArticleViewModel articleViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -51,11 +44,6 @@ namespace EpAccounting.Test.UI.ViewModel
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void PropertiesInitialized()
@@ -126,7 +114,5 @@ namespace EpAccounting.Test.UI.ViewModel
             // Assert
             this.mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Article>()), Times.Once);
         }
-
-        #endregion
     }
 }

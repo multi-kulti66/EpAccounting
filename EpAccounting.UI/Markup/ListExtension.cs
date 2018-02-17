@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: ListExtension.cs
-// Last Change: 28.10.2017  12:24
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.Markup
 {
@@ -13,12 +11,11 @@ namespace EpAccounting.UI.Markup
     using System.Linq;
 
 
-
     public static class ListExtension
     {
         public static void InsertOrderedBy<TSource, TKey>(this IList<TSource> source, TSource item, Func<TSource, TKey> keySelector) where TKey : IComparable<TKey>
         {
-            var i = source.Select((Value, Index) => new { Value, Index }).FirstOrDefault(x => keySelector(x.Value).CompareTo(keySelector(item)) > 0);
+            var i = source.Select((Value, Index) => new {Value, Index}).FirstOrDefault(x => keySelector(x.Value).CompareTo(keySelector(item)) > 0);
 
             if (i == null)
             {

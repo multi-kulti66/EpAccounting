@@ -1,20 +1,16 @@
 ﻿// ///////////////////////////////////
-// File: AddressMap.cs
-// Last Change: 22.10.2017  11:32
+// File: CityToPostalCodeMap.cs
+// Last Change: 17.02.2018, 14:25
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.Model.Mapping
 {
     using FluentNHibernate.Mapping;
 
-
-
     public class CityToPostalCodeMap : ClassMap<CityToPostalCode>
     {
-        #region Constructors / Destructor
+        #region Constructors
 
         public CityToPostalCodeMap()
         {

@@ -14,8 +14,6 @@ namespace EpAccounting.Model
 
     public class Article
     {
-        #region Properties
-
         public virtual int Id { get; set; }
 
         public virtual int ArticleNumber { get; set; }
@@ -25,9 +23,6 @@ namespace EpAccounting.Model
         public virtual double Amount { get; set; }
 
         public virtual decimal Price { get; set; }
-
-        #endregion
-
 
 
         public override bool Equals(object obj)

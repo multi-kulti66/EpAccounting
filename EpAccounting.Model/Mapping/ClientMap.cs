@@ -1,20 +1,16 @@
 ﻿// ///////////////////////////////////
 // File: ClientMap.cs
-// Last Change: 22.10.2017  13:59
+// Last Change: 17.02.2018, 14:25
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.Model.Mapping
 {
     using FluentNHibernate.Mapping;
 
-
-
     public class ClientMap : ClassMap<Client>
     {
-        #region Constructors / Destructor
+        #region Constructors
 
         public ClientMap()
         {

@@ -86,4 +86,3 @@
                  Text="{Binding Source={x:Static properties:Settings.Default}, Path=Offer}" />
     </Grid>
 </UserControl>
-

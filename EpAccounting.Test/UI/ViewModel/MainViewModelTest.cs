@@ -25,15 +25,8 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class MainViewModelTest
     {
-        #region Fields
-
         private MainViewModel mainViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -51,11 +44,6 @@ namespace EpAccounting.Test.UI.ViewModel
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void DerivesFromBindableViewModelBase()
@@ -176,9 +164,6 @@ namespace EpAccounting.Test.UI.ViewModel
             // Assert
             this.mainViewModel.CanChangeWorkspace.Should().BeFalse();
         }
-
-        #endregion
-
 
 
         private MainViewModel GetDefaultViewModel()

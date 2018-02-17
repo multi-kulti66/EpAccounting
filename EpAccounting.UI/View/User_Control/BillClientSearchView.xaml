@@ -34,8 +34,10 @@
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=HouseNumber}" Header="Hausnummer" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=PostalCode}" Header="PLZ" />
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=City}" Header="Ort" />
-                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=PhoneNumber1}" Header="Telefonnummer 1" />
-                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=MobileNumber}" Header="Handynummer" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=PhoneNumber1}"
+                                    Header="Telefonnummer 1" />
+                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=MobileNumber}"
+                                    Header="Handynummer" />
                 </GridView>
             </ListView.View>
         </ListView>

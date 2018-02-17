@@ -17,14 +17,9 @@ namespace EpAccounting.Business
 
     public interface IRepository
     {
-        #region Properties
-
         bool IsConnected { get; }
 
         string FilePath { get; }
-
-        #endregion
-
 
 
         void CreateDatabase(string filePath);

@@ -22,8 +22,6 @@ namespace EpAccounting.Test.UI.State
     [TestFixture]
     public class ClientLoadedStateTest
     {
-        #region Test Methods
-
         [Test]
         public void CanSwitchToAllModes()
         {
@@ -132,9 +130,6 @@ namespace EpAccounting.Test.UI.State
             mockClientEditViewModel.Verify(x => x.DeleteClientAsync(), Times.Once);
             mockClientEditViewModel.Verify(x => x.ChangeToEmptyMode(), Times.Never);
         }
-
-        #endregion
-
 
 
         private ClientLoadedState GetDefaultState()

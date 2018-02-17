@@ -10,20 +10,20 @@ namespace EpAccounting.Test.UI.State
 {
     using System.Threading.Tasks;
     using EpAccounting.Business;
+    using EpAccounting.Model.Properties;
     using EpAccounting.UI.Service;
     using EpAccounting.UI.State;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
+    using GalaSoft.MvvmLight.Messaging;
     using Moq;
     using NUnit.Framework;
-
+    using Resources = EpAccounting.UI.Properties.Resources;
 
 
     [TestFixture]
     public class ClientCreationStateTest
     {
-        #region Test Methods
-
         [Test]
         public void CanNotSwitchToOtherModes()
         {
@@ -60,6 +60,26 @@ namespace EpAccounting.Test.UI.State
 
             // Assert
             mockClientEditViewModel.Verify(x => x.ChangeToLoadedMode(null), Times.Once);
+        }
+
+        [Test]
+        public async Task SendReloadClientSearchMessageWhenClientWasAddedSuccessfully()
+        {
+            // Arrange
+            Mock<ClientEditViewModel> mockClientEditViewModel = this.GetMockedViewModel();
+            mockClientEditViewModel.Setup(x => x.SaveOrUpdateClientAsync()).Returns(Task.FromResult(true));
+
+            NotificationMessage notificationMessage = null;
+            Messenger.Default.Register<NotificationMessage>(this, x => notificationMessage = x);
+
+            ClientCreationState clientCreationState = this.GetDefaultState(mockClientEditViewModel);
+
+            // Act
+            await clientCreationState.Commit();
+
+            // Assert
+            notificationMessage.Should().NotBeNull();
+            notificationMessage.Notification.Should().Be(Resources.Message_ReloadClientsForClientSearchVM);
         }
 
         [Test]
@@ -111,9 +131,6 @@ namespace EpAccounting.Test.UI.State
             // Assert
             clientCreationState.CanDelete().Should().BeFalse();
         }
-
-        #endregion
-
 
 
         private ClientCreationState GetDefaultState()

@@ -1,20 +1,17 @@
 ﻿// ///////////////////////////////////
 // File: BillItemDetailViewModel.cs
-// Last Change: 23.10.2017  21:00
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
     using System;
     using System.Linq;
-    using EpAccounting.Business;
-    using EpAccounting.Model;
-    using EpAccounting.Model.Enum;
+    using Business;
+    using Model;
+    using Model.Enum;
     using NHibernate.Criterion;
-
 
 
     public class BillItemDetailViewModel : BindableViewModelBase
@@ -28,7 +25,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public BillItemDetailViewModel(BillItem billItem, IRepository repository)
         {
@@ -40,7 +37,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public int Id
         {
@@ -103,7 +100,7 @@ namespace EpAccounting.UI.ViewModel
 
         public decimal Sum
         {
-            get { return ((decimal)this.billItem.Amount * this.billItem.Price) / 100 * (100 - (decimal)this.billItem.Discount); }
+            get { return ((decimal) this.billItem.Amount * this.billItem.Price) / 100 * (100 - (decimal) this.billItem.Discount); }
         }
 
         #endregion
@@ -130,7 +127,7 @@ namespace EpAccounting.UI.ViewModel
 
                 if (this.billItem.Bill.KindOfVat == KindOfVat.inkl_MwSt)
                 {
-                    this.Price = article.Price * (100 + (decimal)this.billItem.Bill.VatPercentage) / 100;
+                    this.Price = article.Price * (100 + (decimal) this.billItem.Bill.VatPercentage) / 100;
                 }
                 else
                 {

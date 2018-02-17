@@ -1,22 +1,19 @@
 ﻿// ///////////////////////////////////
 // File: OptionViewModel.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:29
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
     using System;
     using System.Drawing;
     using System.IO;
-    using EpAccounting.Business;
-    using EpAccounting.UI.Properties;
-    using EpAccounting.UI.Service;
+    using Business;
     using GalaSoft.MvvmLight.Command;
     using GalaSoft.MvvmLight.Messaging;
-
+    using Properties;
+    using Service;
 
 
     public class OptionViewModel : WorkspaceViewModel
@@ -33,10 +30,10 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public OptionViewModel(string title, Bitmap image,
-            IRepository repository, IDialogService dialogService) : base(title, image)
+                               IRepository repository, IDialogService dialogService) : base(title, image)
         {
             this.repository = repository;
             this.dialogService = dialogService;
@@ -46,7 +43,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public string FilePath
         {
@@ -59,12 +56,6 @@ namespace EpAccounting.UI.ViewModel
                 }
             }
         }
-
-        #endregion
-
-
-
-        #region Commands
 
         public RelayCommand CreateDatabaseCommand
         {
@@ -91,6 +82,10 @@ namespace EpAccounting.UI.ViewModel
                 return this._loadDatabaseCommand;
             }
         }
+
+        #endregion
+
+
 
         private async void CreateDatabase()
         {
@@ -150,7 +145,5 @@ namespace EpAccounting.UI.ViewModel
             this.FilePath = databaseFilePath;
             Messenger.Default.Send(new NotificationMessage(Resources.Message_UpdateConnectionStateForMainVM));
         }
-
-        #endregion
     }
 }

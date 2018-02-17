@@ -1,23 +1,20 @@
 ﻿// ///////////////////////////////////
 // File: SessionManager.cs
-// Last Change: 28.10.2017  12:25
+// Last Change: 17.02.2018, 19:15
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.Data
 {
     using System;
     using System.IO;
-    using EpAccounting.Data.Properties;
     using NHibernate;
-
+    using Properties;
 
 
     public abstract class SessionManager : ISessionManager
     {
-        #region Properties
+        #region Properties, Indexers
 
         private ISessionFactory SessionFactory { get; set; }
 
@@ -29,15 +26,7 @@ namespace EpAccounting.Data
 
         public bool IsConnected
         {
-            get
-            {
-                if (this.SessionFactory != null)
-                {
-                    return true;
-                }
-
-                return false;
-            }
+            get { return this.SessionFactory != null; }
         }
 
         public string FilePath { get; private set; }
@@ -76,12 +65,14 @@ namespace EpAccounting.Data
 
         public void CloseDatabase()
         {
-            if (this.IsConnected)
+            if (!this.IsConnected)
             {
-                this.SessionFactory.Close();
-                this.SessionFactory = null;
-                this.FilePath = null;
+                return;
             }
+
+            this.SessionFactory.Close();
+            this.SessionFactory = null;
+            this.FilePath = null;
         }
 
         #endregion

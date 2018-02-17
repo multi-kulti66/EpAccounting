@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: BitmapToBitmapImageConverter.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.Converter
 {
@@ -15,7 +13,6 @@ namespace EpAccounting.UI.Converter
     using System.IO;
     using System.Windows.Data;
     using System.Windows.Media.Imaging;
-
 
 
     [ValueConversion(typeof(Bitmap), typeof(BitmapImage))]
@@ -32,7 +29,7 @@ namespace EpAccounting.UI.Converter
 
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                Bitmap bitmap = (Bitmap)value;
+                Bitmap bitmap = (Bitmap) value;
                 bitmap.Save(memoryStream, ImageFormat.Png);
                 memoryStream.Position = 0;
 

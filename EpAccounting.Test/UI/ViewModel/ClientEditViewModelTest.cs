@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditViewModelTest.cs
-// Last Change: 22.10.2017  14:40
+// Last Change: 17.02.2018, 19:57
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.Test.UI.ViewModel
 {
@@ -26,20 +24,9 @@ namespace EpAccounting.Test.UI.ViewModel
     using NUnit.Framework;
 
 
-
     [TestFixture]
     public class ClientEditViewModelTest
     {
-        #region Fields
-
-        private Mock<IRepository> mockRepository;
-        private Mock<IDialogService> mockDialogService;
-        private ClientEditViewModel clientEditViewModel;
-
-        #endregion
-
-
-
         #region Setup/Teardown
 
         [SetUp]
@@ -63,7 +50,9 @@ namespace EpAccounting.Test.UI.ViewModel
 
 
 
-        #region Test Methods
+        private Mock<IRepository> mockRepository;
+        private Mock<IDialogService> mockDialogService;
+        private ClientEditViewModel clientEditViewModel;
 
         [Test]
         public void DerivesFromBindableViewModelBase()
@@ -319,12 +308,25 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.clientEditViewModel.Reload();
+            this.clientEditViewModel.Load();
 
             // Assert
             this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentClientDetailViewModel);
             this.clientEditViewModel.CurrentClientDetailViewModel.FirstName.Should().Be(ModelFactory.DefaultClientFirstName);
             this.clientEditViewModel.CurrentClientDetailViewModel.LastName.Should().Be(ModelFactory.DefaultClientLastName);
+        }
+
+        [Test]
+        public void ShowsExceptionMessageWhenClientCouldNotBeReloaded()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Throws<Exception>();
+
+            // Act
+            this.clientEditViewModel.Load();
+
+            // Assert
+            this.mockDialogService.Verify(x => x.ShowExceptionMessage(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]
@@ -561,6 +563,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
 
             List<string> notificationMessages = new List<string>();
+            Messenger.Default.Register<NotificationMessage>(this, x => notificationMessages.Add(x.Notification));
             Messenger.Default.Register<NotificationMessage<int>>(this, x => notificationMessages.Add(x.Notification));
 
             // Act
@@ -568,7 +571,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             notificationMessages.Count.Should().Be(4);
-            notificationMessages.Should().Contain(Resources.Message_RemoveClientForClientSearchVM);
+            notificationMessages.Should().Contain(Resources.Message_ReloadClientsForClientSearchVM);
             notificationMessages.Should().Contain(Resources.Message_RemoveClientForBillEditVM);
             notificationMessages.Should().Contain(Resources.Message_RemoveClientForBillSearchVM);
             notificationMessages.Should().Contain(Resources.Message_RemoveClientForBillItemEditVM);
@@ -1010,7 +1013,5 @@ namespace EpAccounting.Test.UI.ViewModel
             // Assert
             this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CanEditCompanyName);
         }
-
-        #endregion
     }
 }

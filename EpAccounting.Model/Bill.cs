@@ -17,8 +17,6 @@ namespace EpAccounting.Model
 
     public class Bill : ICloneable
     {
-        #region Properties
-
         public virtual int Id { get; set; }
 
         public virtual Client Client { get; set; }
@@ -35,19 +33,11 @@ namespace EpAccounting.Model
 
         public virtual IList<BillItem> BillItems { get; set; } = new List<BillItem>();
 
-        #endregion
-
-
-
-        #region ICloneable Members
 
         public virtual object Clone()
         {
             return (Bill)this.MemberwiseClone();
         }
-
-        #endregion
-
 
 
         public virtual void AddBillItem(BillItem billItem)

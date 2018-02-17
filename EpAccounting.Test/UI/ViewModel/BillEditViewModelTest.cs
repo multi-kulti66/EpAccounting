@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: BillEditViewModelTest.cs
-// Last Change: 22.10.2017  12:07
+// Last Change: 17.02.2018, 21:21
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.Test.UI.ViewModel
 {
@@ -27,20 +25,9 @@ namespace EpAccounting.Test.UI.ViewModel
     using NUnit.Framework;
 
 
-
     [TestFixture]
     public class BillEditViewModelTest
     {
-        #region Fields
-
-        private Mock<IRepository> mockRepository;
-        private Mock<IDialogService> mockDialogService;
-        private BillEditViewModel billEditViewModel;
-
-        #endregion
-
-
-
         #region Setup/Teardown
 
         [SetUp]
@@ -64,7 +51,9 @@ namespace EpAccounting.Test.UI.ViewModel
 
 
 
-        #region Test Methods
+        private Mock<IRepository> mockRepository;
+        private Mock<IDialogService> mockDialogService;
+        private BillEditViewModel billEditViewModel;
 
         [Test]
         public void DerivesFromBindableViewModelBase()
@@ -295,6 +284,19 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
+        public void ShowsExceptionMessageWhenBillCouldNotBeReloaded()
+        {
+            // Arrange
+            this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Throws<Exception>();
+
+            // Act
+            this.billEditViewModel.Reload();
+
+            // Assert
+            this.mockDialogService.Verify(x => x.ShowExceptionMessage(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
         public void RaisePropertyChangedEvenWhenEqualBillStateWillBeSet()
         {
             // Arrange
@@ -413,6 +415,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public async Task ShowMessageWhenBillCouldNotBeDeletedBecauseOfAnException()
         {
             // Arrange
+            this.mockRepository.Setup(x => x.Delete(It.IsAny<Bill>())).Throws(new Exception());
             this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
 
             // Act
@@ -765,7 +768,5 @@ namespace EpAccounting.Test.UI.ViewModel
             // Assert
             this.billEditViewModel.CurrentBillDetailViewModel.Printed.Should().BeFalse();
         }
-
-        #endregion
     }
 }

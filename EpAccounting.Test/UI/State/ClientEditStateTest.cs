@@ -22,8 +22,6 @@ namespace EpAccounting.Test.UI.State
     [TestFixture]
     public class ClientEditStateTest
     {
-        #region Test Methods
-
         [Test]
         public void CanNotSwitchToOtherModes()
         {
@@ -132,11 +130,8 @@ namespace EpAccounting.Test.UI.State
             clientEditState.Cancel();
 
             // Assert
-            mockClientEditViewModel.Verify(x => x.Reload(), Times.Once);
+            mockClientEditViewModel.Verify(x => x.Load(It.IsAny<int>()), Times.Once);
         }
-
-        #endregion
-
 
 
         private ClientEditState GetDefaultState()

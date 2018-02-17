@@ -23,18 +23,11 @@ namespace EpAccounting.Test.UI.State
     [TestFixture]
     public class ArticleLoadedStateTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private Mock<IDialogService> mockDialogService;
         private Mock<ArticlesOptionViewModel> mockArticlesOptionViewModel;
         private ArticleLoadedState articleLoadedState;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -57,11 +50,6 @@ namespace EpAccounting.Test.UI.State
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void CanSwitchToEditMode()
@@ -87,7 +75,5 @@ namespace EpAccounting.Test.UI.State
             // Assert
             this.mockArticlesOptionViewModel.Verify(x => x.ChangeToEditMode(), Times.Once);
         }
-
-        #endregion
     }
 }

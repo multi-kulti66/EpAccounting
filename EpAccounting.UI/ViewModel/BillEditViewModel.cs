@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: BillEditViewModel.cs
-// Last Change: 26.10.2017  22:21
+// Last Change: 17.02.2018, 21:47
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
@@ -14,26 +12,25 @@ namespace EpAccounting.UI.ViewModel
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
-    using EpAccounting.Business;
-    using EpAccounting.Model;
-    using EpAccounting.Model.Enum;
-    using EpAccounting.UI.Properties;
-    using EpAccounting.UI.Service;
-    using EpAccounting.UI.State;
+    using Business;
     using GalaSoft.MvvmLight.Command;
     using GalaSoft.MvvmLight.Messaging;
+    using Model;
+    using Model.Enum;
     using NHibernate.Criterion;
+    using Properties;
+    using Service;
+    using State;
 
 
-
-    public class BillEditViewModel : BindableViewModelBase
+    public class BillEditViewModel : BindableViewModelBase, IDisposable
     {
         #region Fields
 
-        private readonly IRepository repository;
-        private readonly IDialogService dialogService;
+        private readonly IRepository _repository;
+        private readonly IDialogService _dialogService;
 
-        private Bill currentBill;
+        private Bill _currentBill;
         private BillDetailViewModel _currentBillDetailViewModel;
 
         private IBillState _currentBillState;
@@ -49,19 +46,19 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public BillEditViewModel(IRepository repository, IDialogService dialogService)
         {
-            this.repository = repository;
-            this.dialogService = dialogService;
+            this._repository = repository;
+            this._dialogService = dialogService;
 
             this.InitPropertyInfos();
             this.InitBillStateList();
             this.InitBillCommands();
 
             this._currentBillState = this.GetBillEmptyState();
-
+            
             Messenger.Default.Register<NotificationMessage<Client>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
@@ -70,7 +67,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public BillDetailViewModel CurrentBillDetailViewModel
         {
@@ -86,41 +83,21 @@ namespace EpAccounting.UI.ViewModel
 
         public bool CanInsertIDs
         {
-            get
-            {
-                if (this.repository.IsConnected && this.CurrentBillState is BillSearchState)
-                {
-                    return true;
-                }
-
-                return false;
-            }
+            get { return this._repository.IsConnected && this.CurrentBillState is BillSearchState; }
         }
 
         public bool CanEditPrintedStatus
         {
             get
             {
-                if (this.repository.IsConnected && this.CurrentBillState is BillSearchState || this.CurrentBillState is BillEditState)
-                {
-                    return true;
-                }
-
-                return false;
+                return this._repository.IsConnected &&
+                       (this.CurrentBillState is BillSearchState || this.CurrentBillState is BillEditState);
             }
         }
 
         public bool CanEditData
         {
-            get
-            {
-                if (this.repository.IsConnected && this.CanCommit())
-                {
-                    return true;
-                }
-
-                return false;
-            }
+            get { return this._repository.IsConnected && this.CanCommit(); }
         }
 
         public RelayCommand ClearFieldsCommand
@@ -131,11 +108,25 @@ namespace EpAccounting.UI.ViewModel
                 {
                     this._clearFieldsCommand = new RelayCommand(this.ClearFields, this.CanClearFields);
                 }
+
                 return this._clearFieldsCommand;
             }
         }
 
+        public List<ImageCommandViewModel> BillCommands { get; private set; }
+
         private PropertyInfo[] PropertyInfos { get; set; }
+
+        #endregion
+
+
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            Messenger.Default.Unregister(this);
+        }
 
         #endregion
 
@@ -160,7 +151,7 @@ namespace EpAccounting.UI.ViewModel
             this.LoadBill(bill);
             this.LoadBillState(this.GetBillLoadedState());
             this.UpdateViewModel();
-            this.SendLoadBillItemEditViewModelMessage(this.currentBill);
+            this.SendLoadBillItemEditViewModelMessage(this._currentBill);
         }
 
         public virtual void ChangeToEditMode()
@@ -169,9 +160,21 @@ namespace EpAccounting.UI.ViewModel
             this.UpdateViewModel();
         }
 
-        public virtual void Reload()
+        public virtual void Reload(int billId = -1)
         {
-            this.ChangeToLoadedMode(this.repository.GetById<Bill>(this.currentBill.Id));
+            try
+            {
+                if (billId == -1)
+                {
+                    billId = this._currentBill.Id;
+                }
+
+                this.ChangeToLoadedMode(this._repository.GetById<Bill>(billId));
+            }
+            catch (Exception e)
+            {
+                this._dialogService.ShowExceptionMessage(e, "Could not reload bill!");
+            }
         }
 
         public virtual async Task<bool> SaveOrUpdateBillAsync()
@@ -183,21 +186,21 @@ namespace EpAccounting.UI.ViewModel
                     this.CurrentBillDetailViewModel.Printed = false;
                 }
 
-                this.repository.SaveOrUpdate(this.currentBill);
+                this._repository.SaveOrUpdate(this._currentBill);
                 this.SendUpdateClientMessage();
                 return true;
             }
             catch (Exception e)
             {
-                await this.dialogService.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateBill, e.Message);
+                await this._dialogService.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateBill, e.Message);
                 return false;
             }
         }
 
         public virtual async Task<bool> DeleteBillAsync()
         {
-            bool shouldDelete = await this.dialogService.ShowDialogYesNo(Resources.Dialog_Title_Attention,
-                                                                         Resources.Dialog_Question_DeleteBill);
+            bool shouldDelete = await this._dialogService.ShowDialogYesNo(Resources.Dialog_Title_Attention,
+                                                                          Resources.Dialog_Question_DeleteBill);
 
             if (!shouldDelete)
             {
@@ -206,13 +209,13 @@ namespace EpAccounting.UI.ViewModel
 
             try
             {
-                this.repository.Delete(this.currentBill);
+                this._repository.Delete(this._currentBill);
                 this.SendRemoveBillMessage();
                 return true;
             }
             catch (Exception e)
             {
-                await this.dialogService.ShowMessage(Resources.Dialog_Title_CanNotDeleteBill, e.Message);
+                await this._dialogService.ShowMessage(Resources.Dialog_Title_CanNotDeleteBill, e.Message);
                 return false;
             }
         }
@@ -221,7 +224,7 @@ namespace EpAccounting.UI.ViewModel
         {
             Bill bill = new Bill
                         {
-                            Client = this.repository.GetById<Client>(clientId),
+                            Client = this._repository.GetById<Client>(clientId),
                             KindOfBill = KindOfBill.Rechnung,
                             KindOfVat = KindOfVat.inkl_MwSt,
                             VatPercentage = Settings.Default.VatPercentage,
@@ -246,8 +249,8 @@ namespace EpAccounting.UI.ViewModel
 
         private void SetCurrentBill(Bill bill)
         {
-            this.currentBill = bill;
-            this.CurrentBillDetailViewModel = new BillDetailViewModel(this.currentBill, this.repository);
+            this._currentBill = bill;
+            this.CurrentBillDetailViewModel = new BillDetailViewModel(this._currentBill, this._repository);
         }
 
         private void LoadBillState(IBillState billState)
@@ -338,30 +341,37 @@ namespace EpAccounting.UI.ViewModel
             {
                 clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == this.CurrentBillDetailViewModel.Title));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.CompanyName))
             {
                 clientConjunction.Add(Restrictions.Where<Client>(c => c.CompanyName.IsLike(this.CurrentBillDetailViewModel.CompanyName, MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.FirstName))
             {
                 clientConjunction.Add(Restrictions.Where<Client>(c => c.FirstName.IsLike(this.CurrentBillDetailViewModel.FirstName, MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.LastName))
             {
                 clientConjunction.Add(Restrictions.Where<Client>(c => c.LastName.IsLike(this.CurrentBillDetailViewModel.LastName, MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.Street))
             {
                 clientConjunction.Add(Restrictions.Where<Client>(c => c.Street.IsLike(this.CurrentBillDetailViewModel.Street, MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.HouseNumber))
             {
                 clientConjunction.Add(Restrictions.Where<Client>(c => c.HouseNumber.IsLike(this.CurrentBillDetailViewModel.HouseNumber, MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.PostalCode))
             {
                 clientConjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode.IsLike(this.CurrentBillDetailViewModel.PostalCode, MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.City))
             {
                 clientConjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.City.IsLike(this.CurrentBillDetailViewModel.City, MatchMode.Anywhere)));
@@ -372,12 +382,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanClearFields()
         {
-            if (this.CurrentBillState == this.GetBillLoadedState())
-            {
-                return true;
-            }
-
-            return false;
+            return this.CurrentBillState == this.GetBillLoadedState();
         }
 
         private void ClearFields()
@@ -394,10 +399,6 @@ namespace EpAccounting.UI.ViewModel
                                                     prop.CanRead && prop.GetMethod.IsPublic &&
                                                     prop.PropertyType != typeof(RelayCommand)).ToArray();
         }
-
-
-
-        #region BillState Methods
 
         private void InitBillStateList()
         {
@@ -433,12 +434,6 @@ namespace EpAccounting.UI.ViewModel
             return this._billEditState;
         }
 
-        #endregion
-
-
-
-        #region Messenger
-
         private void ExecuteNotificationMessage(NotificationMessage<Client> message)
         {
             if (message.Notification == Resources.Message_SwitchToSearchModeAndLoadClientDataForBillEditVM)
@@ -452,7 +447,7 @@ namespace EpAccounting.UI.ViewModel
         {
             if (message.Notification == Resources.Message_LoadSelectedBillForBillEditVM)
             {
-                this.ChangeToLoadedMode(this.repository.GetById<Bill>(message.Content));
+                this.Reload(message.Content);
             }
             else if (message.Notification == Resources.Message_CreateNewBillForBillEditVM)
             {
@@ -490,14 +485,18 @@ namespace EpAccounting.UI.ViewModel
 
         public virtual void SendRemoveBillMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentBillDetailViewModel.Id,
-                                                                Resources.Message_RemoveBillForBillSearchVM));
+            this.SendReloadBillSearchMessage();
             Messenger.Default.Send(new NotificationMessage(Resources.Message_ResetBillItemEditVMAndChangeToSearchWorkspaceForBillVM));
+        }
+
+        public void SendReloadBillSearchMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_ReloadBillForBillSearchVM));
         }
 
         private void SendUpdateClientMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.currentBill.Client.Id,
+            Messenger.Default.Send(new NotificationMessage<int>(this._currentBill.Client.Id,
                                                                 Resources.Message_UpdateClientForClientEditVM));
         }
 
@@ -524,14 +523,6 @@ namespace EpAccounting.UI.ViewModel
                                                                      Resources.Message_WorkspaceEnableStateForMainVM));
             }
         }
-
-        #endregion
-
-
-
-        #region State Commands
-
-        public List<ImageCommandViewModel> BillCommands { get; private set; }
 
         private void InitBillCommands()
         {
@@ -562,12 +553,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanSwitchToSearchMode()
         {
-            if (this.repository.IsConnected && this.CurrentBillState.CanSwitchToSearchMode())
-            {
-                return true;
-            }
-
-            return false;
+            return this._repository.IsConnected && this.CurrentBillState.CanSwitchToSearchMode();
         }
 
         private void SwitchToSearchMode()
@@ -577,12 +563,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanSwitchToEditMode()
         {
-            if (this.repository.IsConnected && this.CurrentBillState.CanSwitchToEditMode())
-            {
-                return true;
-            }
-
-            return false;
+            return this._repository.IsConnected && this.CurrentBillState.CanSwitchToEditMode();
         }
 
         private void SwitchToEditMode()
@@ -592,12 +573,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanCommit()
         {
-            if (this.repository.IsConnected && this.CurrentBillState.CanCommit())
-            {
-                return true;
-            }
-
-            return false;
+            return this._repository.IsConnected && this.CurrentBillState.CanCommit();
         }
 
         private void Commit()
@@ -607,12 +583,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanCancel()
         {
-            if (this.repository.IsConnected && this.CurrentBillState.CanCancel())
-            {
-                return true;
-            }
-
-            return false;
+            return this._repository.IsConnected && this.CurrentBillState.CanCancel();
         }
 
         private void Cancel()
@@ -622,19 +593,12 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanDelete()
         {
-            if (this.repository.IsConnected && this.CurrentBillState.CanDelete())
-            {
-                return true;
-            }
-
-            return false;
+            return this._repository.IsConnected && this.CurrentBillState.CanDelete();
         }
 
         private void Delete()
         {
             this.CurrentBillState.Delete();
         }
-
-        #endregion
     }
 }

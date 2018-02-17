@@ -1,15 +1,12 @@
 ﻿// ///////////////////////////////////
 // File: IWordService.cs
-// Last Change: 25.10.2017  21:54
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
 
-
-
 namespace EpAccounting.UI.Service
 {
-    using EpAccounting.UI.ViewModel;
-
+    using ViewModel;
 
 
     public interface IWordService

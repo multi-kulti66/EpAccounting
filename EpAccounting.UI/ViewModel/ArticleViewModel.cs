@@ -1,17 +1,14 @@
 ﻿// ///////////////////////////////////
 // File: ArticleViewModel.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
     using System;
-    using EpAccounting.Business;
-    using EpAccounting.Model;
-
+    using Business;
+    using Model;
 
 
     public class ArticleViewModel : BindableViewModelBase
@@ -25,7 +22,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public ArticleViewModel(Article article, IRepository repository)
         {
@@ -37,7 +34,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public int Id
         {

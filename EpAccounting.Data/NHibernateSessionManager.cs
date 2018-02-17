@@ -1,28 +1,25 @@
 ﻿// ///////////////////////////////////
 // File: NHibernateSessionManager.cs
-// Last Change: 28.10.2017  12:25
+// Last Change: 17.02.2018, 19:15
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.Data
 {
     using System.Data.SQLite;
     using System.Reflection;
-    using EpAccounting.Model;
     using FluentNHibernate.Cfg;
     using FluentNHibernate.Cfg.Db;
+    using Model;
     using NHibernate;
     using NHibernate.Tool.hbm2ddl;
-
 
 
     public class NHibernateSessionManager : SessionManager
     {
         #region Fields
 
-        private readonly Assembly assembly = typeof(Client).Assembly;
+        private readonly Assembly _assembly = typeof(Client).Assembly;
 
         #endregion
 
@@ -32,7 +29,7 @@ namespace EpAccounting.Data
         {
             ISessionFactory sessionFactory = Fluently.Configure()
                                                      .Database(SQLiteConfiguration.Standard.UsingFile(filePath))
-                                                     .Mappings(m => m.FluentMappings.AddFromAssembly(this.assembly))
+                                                     .Mappings(m => m.FluentMappings.AddFromAssembly(this._assembly))
                                                      .ExposeConfiguration(cfg => new SchemaExport(cfg).Create(false, true))
                                                      .BuildSessionFactory();
 
@@ -67,7 +64,7 @@ namespace EpAccounting.Data
         {
             return Fluently.Configure()
                            .Database(SQLiteConfiguration.Standard.UsingFile(filePath))
-                           .Mappings(m => m.FluentMappings.AddFromAssembly(this.assembly))
+                           .Mappings(m => m.FluentMappings.AddFromAssembly(this._assembly))
                            .ExposeConfiguration(cfg => new SchemaUpdate(cfg).Execute(false, true))
                            .BuildSessionFactory();
         }

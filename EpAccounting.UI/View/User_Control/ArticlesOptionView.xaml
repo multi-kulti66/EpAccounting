@@ -1,5 +1,6 @@
 ﻿<UserControl x:Class="EpAccounting.UI.View.User_Control.ArticlesOptionView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:customControl="clr-namespace:EpAccounting.UI.View.CustomControl"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -28,7 +29,8 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <ItemsControl Grid.Column="0" IsTabStop="False" ItemTemplate="{StaticResource ImageCommandDataTemplate}" ItemsSource="{Binding Path=StateCommands}">
+            <ItemsControl Grid.Column="0" IsTabStop="False" ItemTemplate="{StaticResource ImageCommandDataTemplate}"
+                          ItemsSource="{Binding Path=StateCommands}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
@@ -38,7 +40,8 @@
 
             <GridSplitter Grid.Column="1" Style="{StaticResource VerticalGridSplitterStyle}" />
 
-            <ItemsControl Grid.Column="2" IsTabStop="False" ItemTemplate="{StaticResource ImageCommandDataTemplate}" ItemsSource="{Binding Path=Commands}">
+            <ItemsControl Grid.Column="2" IsTabStop="False" ItemTemplate="{StaticResource ImageCommandDataTemplate}"
+                          ItemsSource="{Binding Path=Commands}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
@@ -62,13 +65,20 @@
                 <KeyBinding Key="Delete" Command="{Binding Path=DeleteItemCommand.RelayCommand}" />
             </DataGrid.InputBindings>
             <DataGrid.ContextMenu>
-                <ContextMenu ItemTemplate="{StaticResource ImageCommandContextMenuDataTemplate}" ItemsSource="{Binding Path=Commands}" />
+                <ContextMenu ItemTemplate="{StaticResource ImageCommandContextMenuDataTemplate}"
+                             ItemsSource="{Binding Path=Commands}" />
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
-                <customControl:DataGridNumericColumn Binding="{Binding Path=ArticleNumber, UpdateSourceTrigger=LostFocus}" Header="Artikelnummer" />
-                <DataGridTextColumn Binding="{Binding Path=Description, UpdateSourceTrigger=LostFocus}" Header="Beschreibung" />
-                <DataGridTextColumn Binding="{Binding Path=Amount, UpdateSourceTrigger=LostFocus, ConverterCulture=de-DE}" Header="Menge" />
-                <DataGridTextColumn Binding="{Binding Path=Price, UpdateSourceTrigger=LostFocus, StringFormat=C, ConverterCulture=de-DE, Converter={StaticResource UnitToDoubleConverter}}" Header="Preis" />
+                <customControl:DataGridNumericColumn
+                    Binding="{Binding Path=ArticleNumber, UpdateSourceTrigger=LostFocus}" Header="Artikelnummer" />
+                <DataGridTextColumn Binding="{Binding Path=Description, UpdateSourceTrigger=LostFocus}"
+                                    Header="Beschreibung" />
+                <DataGridTextColumn
+                    Binding="{Binding Path=Amount, UpdateSourceTrigger=LostFocus, ConverterCulture=de-DE}"
+                    Header="Menge" />
+                <DataGridTextColumn
+                    Binding="{Binding Path=Price, UpdateSourceTrigger=LostFocus, StringFormat=C, ConverterCulture=de-DE, Converter={StaticResource UnitToDoubleConverter}}"
+                    Header="Preis" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

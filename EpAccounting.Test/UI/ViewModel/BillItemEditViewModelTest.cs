@@ -27,18 +27,11 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class BillItemEditViewModelTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private Mock<IDialogService> mockDialogService;
         private Mock<IWordService> mockWordService;
         private BillItemEditViewModel billItemEditViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -59,11 +52,6 @@ namespace EpAccounting.Test.UI.ViewModel
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void DerivesFromBillWorkspaceViewModel()
@@ -713,7 +701,5 @@ namespace EpAccounting.Test.UI.ViewModel
             this.mockWordService.Verify(x => x.CloseDocument(), Times.Once);
             this.mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Bill>()), Times.Never);
         }
-
-        #endregion
     }
 }

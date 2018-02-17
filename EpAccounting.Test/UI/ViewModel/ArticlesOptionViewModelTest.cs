@@ -26,17 +26,10 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class ArticlesOptionViewModelTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private Mock<IDialogService> mockDialogService;
         private ArticlesOptionViewModel articlesOptionViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -56,11 +49,6 @@ namespace EpAccounting.Test.UI.ViewModel
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void ArticleListInitializedAfterCreation()
@@ -342,7 +330,5 @@ namespace EpAccounting.Test.UI.ViewModel
             notificationMessage.Notification.Should().Be(Resources.Message_WorkspaceEnableStateForMainVM);
             notificationMessage.Content.Should().BeTrue();
         }
-
-        #endregion
     }
 }

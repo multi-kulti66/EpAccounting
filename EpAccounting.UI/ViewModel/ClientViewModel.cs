@@ -1,17 +1,14 @@
 ﻿// ///////////////////////////////////
 // File: ClientViewModel.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:29
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
     using System.Drawing;
-    using EpAccounting.Business;
-    using EpAccounting.UI.Service;
-
+    using Business;
+    using Service;
 
 
     public class ClientViewModel : WorkspaceViewModel
@@ -28,7 +25,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public ClientViewModel(string title, Bitmap image, IRepository repository, IDialogService dialogService) : base(title, image)
         {
@@ -42,7 +39,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public ClientEditViewModel ClientEditViewModel
         {

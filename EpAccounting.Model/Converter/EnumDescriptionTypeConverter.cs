@@ -1,12 +1,10 @@
 ﻿// ///////////////////////////////////
 // File: EnumDescriptionTypeConverter.cs
-// Last Change: 02.09.2017  10:30
+// Last Change: 17.02.2018, 14:31
 // Author: Andre Multerer
 // ///////////////////////////////////
 
-
-
-namespace EpAccounting.UI.Converter
+namespace EpAccounting.Model.Converter
 {
     using System;
     using System.ComponentModel;
@@ -14,10 +12,9 @@ namespace EpAccounting.UI.Converter
     using System.Reflection;
 
 
-
     public class EnumDescriptionTypeConverter : EnumConverter
     {
-        #region Constructors / Destructor
+        #region Constructors
 
         public EnumDescriptionTypeConverter(Type type)
             : base(type)
@@ -29,22 +26,25 @@ namespace EpAccounting.UI.Converter
 
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
-            if (destinationType == typeof(string))
+            if (destinationType != typeof(string))
             {
-                if (value != null)
-                {
-                    FieldInfo fi = value.GetType().GetField(value.ToString());
-                    if (fi != null)
-                    {
-                        DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-                        return ((attributes.Length > 0) && (!string.IsNullOrEmpty(attributes[0].Description))) ? attributes[0].Description : value.ToString();
-                    }
-                }
+                return base.ConvertTo(context, culture, value, destinationType);
+            }
 
+            if (value == null)
+            {
                 return string.Empty;
             }
 
-            return base.ConvertTo(context, culture, value, destinationType);
+            FieldInfo fi = value.GetType().GetField(value.ToString());
+
+            if (fi == null)
+            {
+                return string.Empty;
+            }
+
+            DescriptionAttribute[] attributes = (DescriptionAttribute[]) fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+            return ((attributes.Length > 0) && (!string.IsNullOrEmpty(attributes[0].Description))) ? attributes[0].Description : value.ToString();
         }
     }
 }

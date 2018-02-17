@@ -17,9 +17,11 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <userControl1:ClientEditView x:Name="ClientEditView" Grid.Column="0" DataContext="{Binding Path=ClientEditViewModel}" />
+        <userControl1:ClientEditView x:Name="ClientEditView" Grid.Column="0"
+                                     DataContext="{Binding Path=ClientEditViewModel}" />
         <GridSplitter Grid.Column="1" Style="{StaticResource VerticalGridSplitterStyle}" />
-        <userControl1:ClientSearchView Grid.Column="2" MaxHeight="{Binding ActualHeight, ElementName=ClientEditView}" DataContext="{Binding Path=ClientSearchViewModel}" />
+        <userControl1:ClientSearchView Grid.Column="2" MaxHeight="{Binding ActualHeight, ElementName=ClientEditView}"
+                                       DataContext="{Binding Path=ClientSearchViewModel}" />
 
     </Grid>
 </UserControl>

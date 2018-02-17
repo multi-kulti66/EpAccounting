@@ -25,17 +25,10 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class OptionViewModelTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private Mock<IDialogService> mockDialogService;
         private OptionViewModel optionViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -59,11 +52,6 @@ namespace EpAccounting.Test.UI.ViewModel
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void DerivesFromBindableViewModelBase()
@@ -288,7 +276,5 @@ namespace EpAccounting.Test.UI.ViewModel
             // Assert
             this.mockDialogService.Verify(x => x.ShowMessage(Resources.Exception_Message_CouldNotLoadDatabase, It.IsAny<string>()), Times.Once);
         }
-
-        #endregion
     }
 }

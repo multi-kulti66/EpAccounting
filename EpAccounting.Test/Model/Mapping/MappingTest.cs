@@ -19,8 +19,6 @@ namespace EpAccounting.Test.Model.Mapping
     [TestFixture]
     public class MappingTest
     {
-        #region Setup/Teardown
-
         [SetUp]
         public void TestInit()
         {
@@ -34,11 +32,6 @@ namespace EpAccounting.Test.Model.Mapping
             DatabaseFactory.DeleteTestFolderAndFile();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void CanMapArticle()
@@ -135,7 +128,5 @@ namespace EpAccounting.Test.Model.Mapping
                     .CheckProperty(c => c.City, ModelFactory.DefaultCityToPostalCodeCity)
                     .VerifyTheMappings();
         }
-
-        #endregion
     }
 }

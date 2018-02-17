@@ -1,17 +1,14 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditView.xaml.cs
-// Last Change: 04.11.2017  08:42
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.View.User_Control
 {
     using System.Windows.Controls;
     using System.Windows.Input;
     using GalaSoft.MvvmLight.Messaging;
-
 
 
     /// <summary>
@@ -27,7 +24,7 @@ namespace EpAccounting.UI.View.User_Control
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public BillItemEditView()
         {
@@ -68,7 +65,7 @@ namespace EpAccounting.UI.View.User_Control
             if (this.unloadedRow && this.BillDataGrid.SelectedIndex >= 0)
             {
                 this.unloadedRow = false;
-                DataGridRow selectedRow = (DataGridRow)this.BillDataGrid.ItemContainerGenerator.ContainerFromIndex(this.BillDataGrid.SelectedIndex);
+                DataGridRow selectedRow = (DataGridRow) this.BillDataGrid.ItemContainerGenerator.ContainerFromIndex(this.BillDataGrid.SelectedIndex);
                 selectedRow?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
             }
         }

@@ -1,17 +1,14 @@
 ﻿// ///////////////////////////////////
 // File: ArticlesOptionView.xaml.cs
-// Last Change: 04.11.2017  08:40
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.View.User_Control
 {
     using System.Windows.Controls;
     using System.Windows.Input;
     using GalaSoft.MvvmLight.Messaging;
-
 
 
     /// <summary>
@@ -27,7 +24,7 @@ namespace EpAccounting.UI.View.User_Control
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public ArticlesOptionView()
         {
@@ -64,7 +61,7 @@ namespace EpAccounting.UI.View.User_Control
             if (this.unloadedRow && this.ArticleDataGrid.SelectedIndex >= 0)
             {
                 this.unloadedRow = false;
-                DataGridRow selectedRow = (DataGridRow)this.ArticleDataGrid.ItemContainerGenerator.ContainerFromIndex(this.ArticleDataGrid.SelectedIndex);
+                DataGridRow selectedRow = (DataGridRow) this.ArticleDataGrid.ItemContainerGenerator.ContainerFromIndex(this.ArticleDataGrid.SelectedIndex);
                 selectedRow?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
             }
         }

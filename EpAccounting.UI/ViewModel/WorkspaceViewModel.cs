@@ -1,20 +1,17 @@
 ﻿// ///////////////////////////////////
 // File: WorkspaceViewModel.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:29
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
     using System.Drawing;
 
 
-
     public class WorkspaceViewModel : BindableViewModelBase
     {
-        #region Constructors / Destructor
+        #region Constructors
 
         public WorkspaceViewModel(string title, Bitmap image)
         {
@@ -26,7 +23,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public string Title { get; }
 

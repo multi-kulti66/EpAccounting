@@ -26,16 +26,9 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class ClientSearchViewModelTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private ClientSearchViewModel clientSearchViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -52,11 +45,6 @@ namespace EpAccounting.Test.UI.ViewModel
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void DerivesFromBindableViewModelBase()
@@ -219,7 +207,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientSearchViewModel.FoundClients.Add(new ClientDetailViewModel(expectedClient, this.mockRepository.Object));
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_RemoveClientForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_ReloadClientsForClientSearchVM));
 
             // Assert
             this.clientSearchViewModel.FoundClients.Should().HaveCount(0);
@@ -297,7 +285,7 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
-        public void CanLoadNexPage()
+        public void CanLoadNextPage()
         {
             // Arrange
             const int NumberOfElements = 55;
@@ -315,7 +303,7 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
-        public void LoadsNexPage()
+        public void LoadsNextPage()
         {
             // Arrange
             const int NumberOfElements = 55;
@@ -331,6 +319,43 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Assert
             this.clientSearchViewModel.CurrentPage.Should().Be(2);
+        }
+
+        [Test]
+        public void CanLoadLastPage()
+        {
+            // Arrange
+            const int NumberOfElements = 55;
+
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
+
+            // Assert
+            this.clientSearchViewModel.LoadLastPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
+        }
+
+        [Test]
+        public void LoadsLastPage()
+        {
+            // Arrange
+            const int NumberOfElements = 55;
+
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>()))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
+            this.clientSearchViewModel.LoadLastPageCommand.RelayCommand.Execute(null);
+
+            // Assert
+            this.clientSearchViewModel.CurrentPage.Should().Be(Convert.ToInt32(Math.Ceiling((double)NumberOfElements / Settings.Default.PageSize)));
         }
 
         [Test]
@@ -391,6 +416,67 @@ namespace EpAccounting.Test.UI.ViewModel
         }
 
         [Test]
+        public void CanNotLoadFirstPageWhenOnPage1()
+        {
+            // Arrange
+            const int NumberOfElements = 55;
+
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
+
+            // Assert
+            this.clientSearchViewModel.LoadFirstPageCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+        }
+
+        [Test]
+        public void CanLoadFirstPageWhenNotOnPage1()
+        {
+            // Arrange
+            const int NumberOfElements = 55;
+
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>()))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
+            this.clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this.clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this.clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+
+            // Assert
+            this.clientSearchViewModel.LoadPreviousPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
+        }
+
+        [Test]
+        public void LoadsFirstPage()
+        {
+            // Arrange
+            const int NumberOfElements = 55;
+
+            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>()))
+                .Returns(new List<Client>());
+            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>()))
+                .Returns(NumberOfElements);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_ClientSearchCriteriaForClientSearchVM));
+            this.clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this.clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this.clientSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this.clientSearchViewModel.LoadFirstPageCommand.RelayCommand.Execute(null);
+
+            // Assert
+            this.clientSearchViewModel.CurrentPage.Should().Be(1);
+        }
+
+        [Test]
         public void ChangesToPreviousPageWhenClientWasDeletedAndNoClientLeftOnPage()
         {
             // Arrange
@@ -413,7 +499,5 @@ namespace EpAccounting.Test.UI.ViewModel
             this.clientSearchViewModel.CurrentPage.Should().Be(1);
             this.clientSearchViewModel.NumberOfAllPages.Should().Be(1);
         }
-
-        #endregion
     }
 }

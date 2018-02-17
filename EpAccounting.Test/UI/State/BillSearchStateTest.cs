@@ -21,8 +21,6 @@ namespace EpAccounting.Test.UI.State
     [TestFixture]
     public class BillSearchStateTest
     {
-        #region Test Methods
-
         [Test]
         public void CanNotSwitchToOtherModes()
         {
@@ -91,9 +89,6 @@ namespace EpAccounting.Test.UI.State
             // Assert
             billSearchState.CanDelete().Should().BeFalse();
         }
-
-        #endregion
-
 
 
         private BillSearchState GetDefaultState()

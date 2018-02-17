@@ -28,16 +28,9 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class ClientDetailViewModelTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private ClientDetailViewModel clientDetailViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -53,11 +46,6 @@ namespace EpAccounting.Test.UI.ViewModel
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void DerivesFromBindableViewModelBase()
@@ -284,7 +272,5 @@ namespace EpAccounting.Test.UI.ViewModel
             // Assert
             this.clientDetailViewModel.CompanyName.Should().BeEmpty();
         }
-
-        #endregion
     }
 }

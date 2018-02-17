@@ -223,7 +223,7 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   <data name="Message_UpdateBillValuesMessageForBillSearchVM" xml:space="preserve">
     <value>Message_UpdateBillValuesMessageForBillSearchVM</value>
   </data>
-  <data name="Message_RemoveClientForClientSearchVM" xml:space="preserve">
+  <data name="Message_ReloadClientsForClientSearchVM" xml:space="preserve">
     <value>Message_RemoveClientForClientSearchVM</value>
   </data>
   <data name="Dialog_Title_CanNotSaveOrUpdateBill" xml:space="preserve">
@@ -235,7 +235,7 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   <data name="Dialog_Title_CanNotDeleteBill" xml:space="preserve">
     <value>Die Rechnung konnte nicht gelöscht werden!</value>
   </data>
-  <data name="Message_RemoveBillForBillSearchVM" xml:space="preserve">
+  <data name="Message_ReloadBillForBillSearchVM" xml:space="preserve">
     <value>Message_RemoveBillForBillSearchVM</value>
   </data>
   <data name="img_edit" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -417,5 +417,17 @@ Wollen Sie den Kunden trotzdem speichern?</value>
   </data>
   <data name="img_client_add" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\img_client_add.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_arrow_first" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_arrow_first.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_arrow_last" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_arrow_last.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Command_DisplayName_First_Page" xml:space="preserve">
+    <value>Command_DisplayName_First_Page</value>
+  </data>
+  <data name="Command_DisplayName_Last_Page" xml:space="preserve">
+    <value>Command_DisplayName_Last_Page</value>
   </data>
 </root>

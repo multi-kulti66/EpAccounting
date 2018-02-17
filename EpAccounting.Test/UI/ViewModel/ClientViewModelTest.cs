@@ -22,17 +22,10 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class ClientViewModelTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private Mock<IDialogService> mockDialogService;
         private ClientViewModel clientViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -52,11 +45,6 @@ namespace EpAccounting.Test.UI.ViewModel
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void DerivesFromWorkspaceViewModel()
@@ -78,7 +66,5 @@ namespace EpAccounting.Test.UI.ViewModel
             // Assert
             this.clientViewModel.ClientSearchViewModel.Should().NotBeNull();
         }
-
-        #endregion
     }
 }

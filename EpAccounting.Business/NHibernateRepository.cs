@@ -1,38 +1,35 @@
 ﻿// ///////////////////////////////////
 // File: NHibernateRepository.cs
-// Last Change: 28.10.2017  12:25
+// Last Change: 17.02.2018, 19:16
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.Business
 {
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
-    using EpAccounting.Data;
+    using Data;
     using NHibernate;
     using NHibernate.Criterion;
-
 
 
     public class NHibernateRepository : IRepository
     {
         #region Fields
 
-        private const int pageSize = 50;
-        private readonly ISessionManager sessionManager;
+        private const int PageSize = 50;
+        private readonly ISessionManager _sessionManager;
 
         #endregion
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public NHibernateRepository(ISessionManager sessionManager)
         {
-            this.sessionManager = sessionManager;
+            this._sessionManager = sessionManager;
         }
 
         #endregion
@@ -43,32 +40,32 @@ namespace EpAccounting.Business
 
         public bool IsConnected
         {
-            get { return this.sessionManager.IsConnected; }
+            get { return this._sessionManager.IsConnected; }
         }
 
         public string FilePath
         {
-            get { return this.sessionManager.FilePath; }
+            get { return this._sessionManager.FilePath; }
         }
 
         public void CreateDatabase(string filePath)
         {
-            this.sessionManager.CreateDatabase(filePath);
+            this._sessionManager.CreateDatabase(filePath);
         }
 
         public void LoadDatabase(string filePath)
         {
-            this.sessionManager.LoadDatabase(filePath);
+            this._sessionManager.LoadDatabase(filePath);
         }
 
         public void CloseDatabase()
         {
-            this.sessionManager.CloseDatabase();
+            this._sessionManager.CloseDatabase();
         }
 
         public void SaveOrUpdate<T>(T t) where T : class
         {
-            using (ISession session = this.sessionManager.OpenSession())
+            using (ISession session = this._sessionManager.OpenSession())
             {
                 using (ITransaction transaction = session.BeginTransaction())
                 {
@@ -88,7 +85,7 @@ namespace EpAccounting.Business
 
         public void Delete<T>(T t) where T : class
         {
-            using (ISession session = this.sessionManager.OpenSession())
+            using (ISession session = this._sessionManager.OpenSession())
             {
                 using (ITransaction transaction = session.BeginTransaction())
                 {
@@ -110,7 +107,7 @@ namespace EpAccounting.Business
 
         public int GetQuantity<T>() where T : class
         {
-            using (ISession session = this.sessionManager.OpenSession())
+            using (ISession session = this._sessionManager.OpenSession())
             {
                 return session.QueryOver<T>().RowCount();
             }
@@ -118,15 +115,15 @@ namespace EpAccounting.Business
 
         public ICollection<T> GetAll<T>(int page) where T : class
         {
-            using (ISession session = this.sessionManager.OpenSession())
+            using (ISession session = this._sessionManager.OpenSession())
             {
-                return session.QueryOver<T>().Skip((page - 1) * pageSize).Take(pageSize).List();
+                return session.QueryOver<T>().Skip((page - 1) * PageSize).Take(PageSize).List();
             }
         }
 
         public T GetById<T>(int id) where T : class
         {
-            using (ISession session = this.sessionManager.OpenSession())
+            using (ISession session = this._sessionManager.OpenSession())
             {
                 return session.Get<T>(id);
             }
@@ -134,17 +131,17 @@ namespace EpAccounting.Business
 
         public int GetQuantityByCriteria<T>(ICriterion criterion) where T : class
         {
-            using (ISession session = this.sessionManager.OpenSession())
+            using (ISession session = this._sessionManager.OpenSession())
             {
                 return session.QueryOver<T>().Where(criterion).RowCount();
             }
         }
 
         public int GetQuantityByCriteria<T, U>(ICriterion criterion1,
-            Expression<Func<T, U>> combinationCriterion,
-            ICriterion criterion2) where T : class
+                                               Expression<Func<T, U>> combinationCriterion,
+                                               ICriterion criterion2) where T : class
         {
-            using (ISession session = this.sessionManager.OpenSession())
+            using (ISession session = this._sessionManager.OpenSession())
             {
                 return session.QueryOver<T>().Where(criterion1).JoinQueryOver(combinationCriterion).Where(criterion2).RowCount();
             }
@@ -152,19 +149,19 @@ namespace EpAccounting.Business
 
         public ICollection<T> GetByCriteria<T>(ICriterion criterion, int page) where T : class
         {
-            using (ISession session = this.sessionManager.OpenSession())
+            using (ISession session = this._sessionManager.OpenSession())
             {
-                return session.QueryOver<T>().Where(criterion).Skip((page - 1) * pageSize).Take(pageSize).List();
+                return session.QueryOver<T>().Where(criterion).Skip((page - 1) * PageSize).Take(PageSize).List();
             }
         }
 
         public ICollection<T> GetByCriteria<T, U>(ICriterion criterion1,
-            Expression<Func<T, U>>combinationCriterion,
-            ICriterion criterion2, int page) where T : class
+                                                  Expression<Func<T, U>> combinationCriterion,
+                                                  ICriterion criterion2, int page) where T : class
         {
-            using (ISession session = this.sessionManager.OpenSession())
+            using (ISession session = this._sessionManager.OpenSession())
             {
-                return session.QueryOver<T>().Where(criterion1).JoinQueryOver(combinationCriterion).Where(criterion2).Skip((page - 1) * pageSize).Take(pageSize).List();
+                return session.QueryOver<T>().Where(criterion1).JoinQueryOver(combinationCriterion).Where(criterion2).Skip((page - 1) * PageSize).Take(PageSize).List();
             }
         }
 

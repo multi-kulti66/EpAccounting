@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: DataGridNumericColumn.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.View.CustomControl
 {
@@ -12,7 +10,6 @@ namespace EpAccounting.UI.View.CustomControl
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
-
 
 
     public class DataGridNumericColumn : DataGridTextColumn

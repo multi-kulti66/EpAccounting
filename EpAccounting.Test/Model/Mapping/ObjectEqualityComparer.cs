@@ -16,15 +16,8 @@ namespace EpAccounting.Test.Model.Mapping
 
     public class ObjectEqualityComparer : IEqualityComparer
     {
-        #region Fields
-
         private const double MAX_VARIATION = 0.01;
 
-        #endregion
-
-
-
-        #region IEqualityComparer Members
 
         public new bool Equals(object firstObject, object secondObject)
         {
@@ -60,9 +53,6 @@ namespace EpAccounting.Test.Model.Mapping
         {
             throw new NotImplementedException();
         }
-
-        #endregion
-
 
 
         private static bool AreEqualClients(Client client1, Client client2)

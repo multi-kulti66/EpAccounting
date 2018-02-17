@@ -1,16 +1,13 @@
 ﻿// ///////////////////////////////////
 // File: BillEditState.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.State
 {
     using System.Threading.Tasks;
-    using EpAccounting.UI.ViewModel;
-
+    using ViewModel;
 
 
     public class BillEditState : IBillState
@@ -23,7 +20,7 @@ namespace EpAccounting.UI.State
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public BillEditState(BillEditViewModel billEditViewModel)
         {

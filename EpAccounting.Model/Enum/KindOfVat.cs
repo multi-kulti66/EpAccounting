@@ -9,8 +9,7 @@
 namespace EpAccounting.Model.Enum
 {
     using System.ComponentModel;
-    using EpAccounting.UI.Converter;
-
+    using Converter;
 
 
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]

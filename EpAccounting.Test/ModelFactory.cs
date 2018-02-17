@@ -16,8 +16,6 @@ namespace EpAccounting.Test
 
     public static class ModelFactory
     {
-        #region Fields
-
         public const int DefaultId = 25001;
 
         public const int DefaultArticleNumber = 3;
@@ -53,9 +51,6 @@ namespace EpAccounting.Test
         public const decimal DefaultBillItemPrice = 23.32m;
         public const double DefaultBillItemDiscount = 5.5;
         public const string DefaultBillDate = "01.01.2017";
-
-        #endregion
-
 
 
         public static Client GetDefaultClient()

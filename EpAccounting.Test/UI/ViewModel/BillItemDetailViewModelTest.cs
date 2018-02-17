@@ -26,16 +26,9 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class BillItemDetailViewModelTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private BillItemDetailViewModel billItemDetailViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -52,11 +45,6 @@ namespace EpAccounting.Test.UI.ViewModel
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void CanReadVariableValues()
@@ -248,7 +236,5 @@ namespace EpAccounting.Test.UI.ViewModel
             this.billItemDetailViewModel.Amount.Should().Be(ModelFactory.DefaultArticleAmount);
             this.billItemDetailViewModel.Price.Should().Be(ModelFactory.DefaultArticlePrice);
         }
-
-        #endregion
     }
 }

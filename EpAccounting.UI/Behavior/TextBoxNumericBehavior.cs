@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: TextBoxNumericBehavior.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.Behavior
 {
@@ -16,16 +14,15 @@ namespace EpAccounting.UI.Behavior
     using System.Windows.Interactivity;
 
 
-
     public class TextBoxNumericBehavior : Behavior<TextBox>
     {
         #region Fields
 
         public static readonly DependencyProperty IsTextBoxNumericEnabledProperty =
-                DependencyProperty.RegisterAttached("IsTextBoxNumericEnabled",
-                                                    typeof(bool),
-                                                    typeof(TextBoxNumericBehavior),
-                                                    new UIPropertyMetadata(false, OnValueChanged));
+            DependencyProperty.RegisterAttached("IsTextBoxNumericEnabled",
+                                                typeof(bool),
+                                                typeof(TextBoxNumericBehavior),
+                                                new UIPropertyMetadata(false, OnValueChanged));
 
         #endregion
 
@@ -33,7 +30,7 @@ namespace EpAccounting.UI.Behavior
 
         public static bool GetIsTextBoxNumericEnabled(Control control)
         {
-            return (bool)control.GetValue(IsTextBoxNumericEnabledProperty);
+            return (bool) control.GetValue(IsTextBoxNumericEnabledProperty);
         }
 
         public static void SetIsTextBoxNumericEnabled(Control control, bool value)
@@ -50,7 +47,7 @@ namespace EpAccounting.UI.Behavior
                 return;
             }
 
-            if (e.NewValue is bool && (bool)e.NewValue)
+            if (e.NewValue is bool && (bool) e.NewValue)
             {
                 uiElement.PreviewTextInput += OnTextInput;
                 uiElement.PreviewKeyDown += OnPreviewKeyDown;

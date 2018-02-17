@@ -1,62 +1,59 @@
 ﻿// ///////////////////////////////////
 // File: ClientDetailViewModel.cs
-// Last Change: 08.12.2017  13:57
+// Last Change: 17.02.2018, 20:13
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
     using System.Linq;
-    using EpAccounting.Business;
-    using EpAccounting.Model;
-    using EpAccounting.Model.Enum;
-    using EpAccounting.UI.Properties;
+    using Business;
     using GalaSoft.MvvmLight.Messaging;
+    using Model;
+    using Model.Enum;
     using NHibernate.Criterion;
-
+    using Properties;
 
 
     public class ClientDetailViewModel : BindableViewModelBase
     {
         #region Fields
 
-        private readonly Client client;
-        private readonly IRepository repository;
+        private readonly Client _client;
+        private readonly IRepository _repository;
 
         #endregion
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public ClientDetailViewModel(Client client, IRepository repository)
         {
-            this.client = client;
-            this.repository = repository;
+            this._client = client;
+            this._repository = repository;
         }
 
         #endregion
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public int Id
         {
-            get { return this.client.Id; }
-            set { this.SetProperty(() => this.client.Id = value, () => this.client.Id == value); }
+            get { return this._client.Id; }
+            set { this.SetProperty(() => this._client.Id = value, () => this._client.Id == value); }
         }
 
         public ClientTitle? Title
         {
-            get { return this.client.Title; }
+            get { return this._client.Title; }
             set
             {
-                if (this.SetProperty(() => this.client.Title = value, () => this.client.Title == value))
+                if (this.SetProperty(() => this._client.Title = value, () => this._client.Title == value))
                 {
-                    if (this.client.Title != ClientTitle.Firma)
+                    if (this._client.Title != ClientTitle.Firma)
                     {
                         this.CompanyName = string.Empty;
                     }
@@ -68,40 +65,40 @@ namespace EpAccounting.UI.ViewModel
 
         public string CompanyName
         {
-            get { return this.client.CompanyName; }
-            set { this.SetProperty(() => this.client.CompanyName = value, () => this.client.CompanyName == value); }
+            get { return this._client.CompanyName; }
+            set { this.SetProperty(() => this._client.CompanyName = value, () => this._client.CompanyName == value); }
         }
 
         public string FirstName
         {
-            get { return this.client.FirstName; }
-            set { this.SetProperty(() => this.client.FirstName = value, () => this.client.FirstName == value); }
+            get { return this._client.FirstName; }
+            set { this.SetProperty(() => this._client.FirstName = value, () => this._client.FirstName == value); }
         }
 
         public string LastName
         {
-            get { return this.client.LastName; }
-            set { this.SetProperty(() => this.client.LastName = value, () => this.client.LastName == value); }
+            get { return this._client.LastName; }
+            set { this.SetProperty(() => this._client.LastName = value, () => this._client.LastName == value); }
         }
 
         public string Street
         {
-            get { return this.client.Street; }
-            set { this.SetProperty(() => this.client.Street = value, () => this.client.Street == value); }
+            get { return this._client.Street; }
+            set { this.SetProperty(() => this._client.Street = value, () => this._client.Street == value); }
         }
 
         public string HouseNumber
         {
-            get { return this.client.HouseNumber; }
-            set { this.SetProperty(() => this.client.HouseNumber = value, () => this.client.HouseNumber == value); }
+            get { return this._client.HouseNumber; }
+            set { this.SetProperty(() => this._client.HouseNumber = value, () => this._client.HouseNumber == value); }
         }
 
         public string PostalCode
         {
-            get { return this.client.CityToPostalCode.PostalCode; }
+            get { return this._client.CityToPostalCode.PostalCode; }
             set
             {
-                if (this.SetProperty(() => this.client.CityToPostalCode.PostalCode = value, () => this.client.CityToPostalCode.PostalCode == value))
+                if (this.SetProperty(() => this._client.CityToPostalCode.PostalCode = value, () => this._client.CityToPostalCode.PostalCode == value))
                 {
                     this.FillCity();
                 }
@@ -110,49 +107,49 @@ namespace EpAccounting.UI.ViewModel
 
         public string City
         {
-            get { return this.client.CityToPostalCode.City; }
-            set { this.SetProperty(() => this.client.CityToPostalCode.City = value, () => this.client.CityToPostalCode.City == value); }
+            get { return this._client.CityToPostalCode.City; }
+            set { this.SetProperty(() => this._client.CityToPostalCode.City = value, () => this._client.CityToPostalCode.City == value); }
         }
 
         public string DateOfBirth
         {
-            get { return this.client.DateOfBirth; }
-            set { this.SetProperty(() => this.client.DateOfBirth = value, () => this.client.DateOfBirth == value); }
+            get { return this._client.DateOfBirth; }
+            set { this.SetProperty(() => this._client.DateOfBirth = value, () => this._client.DateOfBirth == value); }
         }
 
         public string PhoneNumber1
         {
-            get { return this.client.PhoneNumber1; }
-            set { this.SetProperty(() => this.client.PhoneNumber1 = value, () => this.client.PhoneNumber1 == value); }
+            get { return this._client.PhoneNumber1; }
+            set { this.SetProperty(() => this._client.PhoneNumber1 = value, () => this._client.PhoneNumber1 == value); }
         }
 
         public string PhoneNumber2
         {
-            get { return this.client.PhoneNumber2; }
-            set { this.SetProperty(() => this.client.PhoneNumber2 = value, () => this.client.PhoneNumber2 == value); }
+            get { return this._client.PhoneNumber2; }
+            set { this.SetProperty(() => this._client.PhoneNumber2 = value, () => this._client.PhoneNumber2 == value); }
         }
 
         public string MobileNumber
         {
-            get { return this.client.MobileNumber; }
-            set { this.SetProperty(() => this.client.MobileNumber = value, () => this.client.MobileNumber == value); }
+            get { return this._client.MobileNumber; }
+            set { this.SetProperty(() => this._client.MobileNumber = value, () => this._client.MobileNumber == value); }
         }
 
         public string Telefax
         {
-            get { return this.client.Telefax; }
-            set { this.SetProperty(() => this.client.Telefax = value, () => this.client.Telefax == value); }
+            get { return this._client.Telefax; }
+            set { this.SetProperty(() => this._client.Telefax = value, () => this._client.Telefax == value); }
         }
 
         public string Email
         {
-            get { return this.client.Email; }
-            set { this.SetProperty(() => this.client.Email = value, () => this.client.Email == value); }
+            get { return this._client.Email; }
+            set { this.SetProperty(() => this._client.Email = value, () => this._client.Email == value); }
         }
 
         public int NumberOfBills
         {
-            get { return this.client.Bills.Count; }
+            get { return this._client.Bills.Count; }
         }
 
         public decimal Sales
@@ -161,20 +158,20 @@ namespace EpAccounting.UI.ViewModel
             {
                 decimal sum = 0;
 
-                foreach (Bill bill in this.client.Bills)
+                foreach (Bill bill in this._client.Bills)
                 {
                     if (bill.KindOfVat == KindOfVat.inkl_MwSt || bill.KindOfVat == KindOfVat.without_MwSt)
                     {
                         foreach (BillItem billDetail in bill.BillItems)
                         {
-                            sum += billDetail.Price * ((100 - (decimal)billDetail.Discount) / 100) * (decimal)billDetail.Amount;
+                            sum += billDetail.Price * ((100 - (decimal) billDetail.Discount) / 100) * (decimal) billDetail.Amount;
                         }
                     }
                     else if (bill.KindOfVat == KindOfVat.zzgl_MwSt)
                     {
                         foreach (BillItem billDetail in bill.BillItems)
                         {
-                            sum += billDetail.Price * ((100 - (decimal)billDetail.Discount) / 100) * (decimal)billDetail.Amount * (100 + (decimal)bill.VatPercentage) / 100;
+                            sum += billDetail.Price * ((100 - (decimal) billDetail.Discount) / 100) * (decimal) billDetail.Amount * (100 + (decimal) bill.VatPercentage) / 100;
                         }
                     }
                 }
@@ -185,15 +182,7 @@ namespace EpAccounting.UI.ViewModel
 
         public bool HasMissingValues
         {
-            get
-            {
-                if (string.IsNullOrEmpty(this.LastName) || string.IsNullOrEmpty(this.PostalCode))
-                {
-                    return true;
-                }
-
-                return false;
-            }
+            get { return string.IsNullOrEmpty(this.LastName) || string.IsNullOrEmpty(this.PostalCode); }
         }
 
         #endregion
@@ -202,7 +191,7 @@ namespace EpAccounting.UI.ViewModel
 
         public override string ToString()
         {
-            return this.client.ToString();
+            return this._client.ToString();
         }
 
         private void FillCity()
@@ -211,7 +200,7 @@ namespace EpAccounting.UI.ViewModel
 
             try
             {
-                cityToPostalCode = this.repository
+                cityToPostalCode = this._repository
                                        .GetByCriteria<CityToPostalCode>(Restrictions.Where<CityToPostalCode>(x => x.PostalCode == this.PostalCode), 1)
                                        .FirstOrDefault();
             }

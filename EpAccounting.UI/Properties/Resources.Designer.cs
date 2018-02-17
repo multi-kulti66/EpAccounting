@@ -124,6 +124,24 @@ namespace EpAccounting.UI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Command_DisplayName_First_Page.
+        /// </summary>
+        public static string Command_DisplayName_First_Page {
+            get {
+                return ResourceManager.GetString("Command_DisplayName_First_Page", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command_DisplayName_Last_Page.
+        /// </summary>
+        public static string Command_DisplayName_Last_Page {
+            get {
+                return ResourceManager.GetString("Command_DisplayName_Last_Page", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Nächste Seite.
         /// </summary>
         public static string Command_DisplayName_Next_Page {
@@ -398,6 +416,26 @@ namespace EpAccounting.UI.Properties {
         public static System.Drawing.Bitmap img_arrow_down {
             get {
                 object obj = ResourceManager.GetObject("img_arrow_down", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap img_arrow_first {
+            get {
+                object obj = ResourceManager.GetObject("img_arrow_first", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap img_arrow_last {
+            get {
+                object obj = ResourceManager.GetObject("img_arrow_last", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -780,9 +818,18 @@ namespace EpAccounting.UI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Message_RemoveBillForBillSearchVM.
         /// </summary>
-        public static string Message_RemoveBillForBillSearchVM {
+        public static string Message_ReloadBillForBillSearchVM {
             get {
-                return ResourceManager.GetString("Message_RemoveBillForBillSearchVM", resourceCulture);
+                return ResourceManager.GetString("Message_ReloadBillForBillSearchVM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message_RemoveClientForClientSearchVM.
+        /// </summary>
+        public static string Message_ReloadClientsForClientSearchVM {
+            get {
+                return ResourceManager.GetString("Message_ReloadClientsForClientSearchVM", resourceCulture);
             }
         }
         
@@ -810,15 +857,6 @@ namespace EpAccounting.UI.Properties {
         public static string Message_RemoveClientForBillSearchVM {
             get {
                 return ResourceManager.GetString("Message_RemoveClientForBillSearchVM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Message_RemoveClientForClientSearchVM.
-        /// </summary>
-        public static string Message_RemoveClientForClientSearchVM {
-            get {
-                return ResourceManager.GetString("Message_RemoveClientForClientSearchVM", resourceCulture);
             }
         }
         
@@ -923,12 +961,13 @@ namespace EpAccounting.UI.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///
         ///&lt;Clients&gt;
         ///  &lt;Client ClientID=&quot;1&quot; Title=&quot;Herr&quot; FirstName=&quot;Andre&quot; LastName=&quot;Multerer&quot; Street=&quot;Benzstraße&quot; HouseNumber=&quot;1a&quot;
         ///          PostalCode=&quot;93053&quot; City=&quot;Regensburg&quot; DateOfBirth=&quot;06.11.1993&quot; PhoneNumber1=&quot;09942/902097&quot;
         ///          PhoneNumber2=&quot;09942/902099&quot; MobileNumber=&quot;+49 160 55-07-869&quot; Telefax=&quot;09942/902098&quot;
         ///          Email=&quot;andre.multerer@gmail.com&quot;&gt;
-        ///    &lt;Bill BillID=&quot;1&quot; Printed=&quot;false&quot; Date=&quot;27.11.2016&quot; KindOfBill=&quot;Rechnung&quot; KindOfVAT=&quot;inkl_MwSt&quot; VatPercen [rest of string was truncated]&quot;;.
+        ///    &lt;Bill BillID=&quot;1&quot; Printed=&quot;false&quot; Date=&quot;27.11.2016&quot; KindOfBill=&quot;Rechnung&quot; KindOfVAT=&quot;inkl_MwSt&quot; VatPerc [rest of string was truncated]&quot;;.
         /// </summary>
         public static string testdata {
             get {

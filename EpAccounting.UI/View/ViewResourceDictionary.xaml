@@ -173,7 +173,6 @@
     </Style>
 
 
-
     <!--  DataTemplate: WorkspaceViewModel  -->
     <DataTemplate x:Key="MenuWorkspaceViewModelStyle" DataType="{x:Type viewModel:WorkspaceViewModel}">
         <Image

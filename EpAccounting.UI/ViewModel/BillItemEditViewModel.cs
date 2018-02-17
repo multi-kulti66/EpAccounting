@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditViewModel.cs
-// Last Change: 04.11.2017  09:15
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
@@ -13,15 +11,14 @@ namespace EpAccounting.UI.ViewModel
     using System.Collections.Specialized;
     using System.ComponentModel;
     using System.Linq;
-    using EpAccounting.Business;
-    using EpAccounting.Model;
-    using EpAccounting.Model.Enum;
-    using EpAccounting.UI.Markup;
-    using EpAccounting.UI.Properties;
-    using EpAccounting.UI.Service;
+    using Business;
     using GalaSoft.MvvmLight.Command;
     using GalaSoft.MvvmLight.Messaging;
-
+    using Markup;
+    using Model;
+    using Model.Enum;
+    using Properties;
+    using Service;
 
 
     public class BillItemEditViewModel : BillWorkspaceViewModel
@@ -55,7 +52,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public BillItemEditViewModel(IRepository repository, IDialogService dialogSerivce, IWordService wordSerivce)
         {
@@ -77,7 +74,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public BillDetailViewModel CurrentBillDetailViewModel { get; private set; }
 
@@ -141,6 +138,100 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
+        public List<ImageCommandViewModel> Commands { get; private set; }
+
+        public ImageCommandViewModel MoveItemUpCommand
+        {
+            get
+            {
+                if (this._moveItemUpCommand == null)
+                {
+                    this._moveItemUpCommand = new ImageCommandViewModel(Resources.img_arrow_up,
+                                                                        Resources.Command_DisplayName_Up,
+                                                                        new RelayCommand(this.MoveItemUp, this.CanMoveItemUp));
+                }
+
+                return this._moveItemUpCommand;
+            }
+        }
+
+        public ImageCommandViewModel MoveItemDownCommand
+        {
+            get
+            {
+                if (this._moveItemDownCommand == null)
+                {
+                    this._moveItemDownCommand = new ImageCommandViewModel(Resources.img_arrow_down,
+                                                                          Resources.Command_DisplayName_Down,
+                                                                          new RelayCommand(this.MoveItemDown, this.CanMoveItemDown));
+                }
+
+                return this._moveItemDownCommand;
+            }
+        }
+
+        public ImageCommandViewModel AddItemCommand
+        {
+            get
+            {
+                if (this._addItemCommand == null)
+                {
+                    this._addItemCommand = new ImageCommandViewModel(Resources.img_add,
+                                                                     Resources.Command_DisplayName_Add,
+                                                                     new RelayCommand(this.AddItem, this.CanAddItem));
+                }
+
+                return this._addItemCommand;
+            }
+        }
+
+        public ImageCommandViewModel DeleteItemCommand
+        {
+            get
+            {
+                if (this._deleteItemCommand == null)
+                {
+                    this._deleteItemCommand = new ImageCommandViewModel(Resources.img_remove,
+                                                                        Resources.Command_DisplayName_Delete,
+                                                                        new RelayCommand(this.DeleteItem, this.CanDeleteItem));
+                }
+
+                return this._deleteItemCommand;
+            }
+        }
+
+        public List<ImageCommandViewModel> WordCommands { get; private set; }
+
+        public ImageCommandViewModel CreateDocumentCommand
+        {
+            get
+            {
+                if (this._createDocumentCommand == null)
+                {
+                    this._createDocumentCommand = new ImageCommandViewModel(Resources.img_createWord,
+                                                                            Resources.Command_DisplayName_Create,
+                                                                            new RelayCommand(this.CreateDocument, this.CanCreateDocument));
+                }
+
+                return this._createDocumentCommand;
+            }
+        }
+
+        public ImageCommandViewModel PrintDocumentCommand
+        {
+            get
+            {
+                if (this._printDocumentCommand == null)
+                {
+                    this._printDocumentCommand = new ImageCommandViewModel(Resources.img_print,
+                                                                           Resources.Command_DisplayName_Print,
+                                                                           new RelayCommand(this.PrintDocument, this.CanCreateDocument));
+                }
+
+                return this._printDocumentCommand;
+            }
+        }
+
         #endregion
 
 
@@ -180,11 +271,11 @@ namespace EpAccounting.UI.ViewModel
                 {
                     if (this.CurrentBillDetailViewModel.KindOfVat == KindOfVat.inkl_MwSt)
                     {
-                        billItemDetailViewModel.Price *= (100 + (decimal)this.CurrentBillDetailViewModel.VatPercentage) / 100;
+                        billItemDetailViewModel.Price *= (100 + (decimal) this.CurrentBillDetailViewModel.VatPercentage) / 100;
                     }
                     else if (this.CurrentBillDetailViewModel.KindOfVat == KindOfVat.zzgl_MwSt)
                     {
-                        billItemDetailViewModel.Price *= 100 / (100 + (decimal)this.CurrentBillDetailViewModel.VatPercentage);
+                        billItemDetailViewModel.Price *= 100 / (100 + (decimal) this.CurrentBillDetailViewModel.VatPercentage);
                     }
                 }
 
@@ -204,13 +295,13 @@ namespace EpAccounting.UI.ViewModel
             if (this.currentBill.KindOfVat == KindOfVat.inkl_MwSt)
             {
                 this.BruttoSum = sum;
-                this.VatSum = this.BruttoSum / (decimal)(100 + this.CurrentBillDetailViewModel.VatPercentage) * (decimal)this.CurrentBillDetailViewModel.VatPercentage;
+                this.VatSum = this.BruttoSum / (decimal) (100 + this.CurrentBillDetailViewModel.VatPercentage) * (decimal) this.CurrentBillDetailViewModel.VatPercentage;
                 this.NettoSum = this.BruttoSum - this.VatSum;
             }
             else if (this.currentBill.KindOfVat == KindOfVat.zzgl_MwSt)
             {
                 this.NettoSum = sum;
-                this.BruttoSum = sum * (100 + (decimal)this.CurrentBillDetailViewModel.VatPercentage) / 100;
+                this.BruttoSum = sum * (100 + (decimal) this.CurrentBillDetailViewModel.VatPercentage) / 100;
                 this.VatSum = this.BruttoSum - this.NettoSum;
             }
             else
@@ -245,6 +336,7 @@ namespace EpAccounting.UI.ViewModel
                     item.PropertyChanged -= this.OnItemCollectionChanged;
                 }
             }
+
             if (e.NewItems != null)
             {
                 foreach (INotifyPropertyChanged item in e.NewItems)
@@ -268,8 +360,8 @@ namespace EpAccounting.UI.ViewModel
 
         private void createBillBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            this.wordSerivce.CreateWordBill(this, (bool)e.Argument);
-            e.Result = (bool)e.Argument;
+            this.wordSerivce.CreateWordBill(this, (bool) e.Argument);
+            e.Result = (bool) e.Argument;
         }
 
         private void createBillBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -281,12 +373,12 @@ namespace EpAccounting.UI.ViewModel
             }
             else
             {
-                if ((bool)e.Result)
+                if ((bool) e.Result)
                 {
                     this.dialogService.ShowMessage(Resources.Dialog_Title_Bill_Created, Resources.Dialog_Message_Bill_Created);
                 }
 
-                if ((bool)e.Result == false)
+                if ((bool) e.Result == false)
                 {
                     if (this.wordSerivce.PrintDocument())
                     {
@@ -301,10 +393,6 @@ namespace EpAccounting.UI.ViewModel
 
             this.IsCreatingBill = false;
         }
-
-
-
-        #region Messenger
 
         private void ExecuteNotificationMessage(NotificationMessage message)
         {
@@ -333,14 +421,6 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        #endregion
-
-
-
-        #region Command Methods
-
-        public List<ImageCommandViewModel> Commands { get; private set; }
-
         private void InitCommands()
         {
             this.Commands = new List<ImageCommandViewModel>
@@ -356,21 +436,6 @@ namespace EpAccounting.UI.ViewModel
                                     this.CreateDocumentCommand,
                                     this.PrintDocumentCommand
                                 };
-        }
-
-        public ImageCommandViewModel MoveItemUpCommand
-        {
-            get
-            {
-                if (this._moveItemUpCommand == null)
-                {
-                    this._moveItemUpCommand = new ImageCommandViewModel(Resources.img_arrow_up,
-                                                                        Resources.Command_DisplayName_Up,
-                                                                        new RelayCommand(this.MoveItemUp, this.CanMoveItemUp));
-                }
-
-                return this._moveItemUpCommand;
-            }
         }
 
         private bool CanMoveItemUp()
@@ -398,21 +463,6 @@ namespace EpAccounting.UI.ViewModel
             this.SelectedBillItemDetailViewModel = this.BillItemDetailViewModels[newIndex];
         }
 
-        public ImageCommandViewModel MoveItemDownCommand
-        {
-            get
-            {
-                if (this._moveItemDownCommand == null)
-                {
-                    this._moveItemDownCommand = new ImageCommandViewModel(Resources.img_arrow_down,
-                                                                          Resources.Command_DisplayName_Down,
-                                                                          new RelayCommand(this.MoveItemDown, this.CanMoveItemDown));
-                }
-
-                return this._moveItemDownCommand;
-            }
-        }
-
         private bool CanMoveItemDown()
         {
             if (this.IsEditingEnabled && this.SelectedBillItemDetailViewModel != null && this.SelectedBillItemDetailViewModel.Position < this.BillItemDetailViewModels.Count)
@@ -438,21 +488,6 @@ namespace EpAccounting.UI.ViewModel
             this.SelectedBillItemDetailViewModel = this.BillItemDetailViewModels[newIndex];
         }
 
-        public ImageCommandViewModel AddItemCommand
-        {
-            get
-            {
-                if (this._addItemCommand == null)
-                {
-                    this._addItemCommand = new ImageCommandViewModel(Resources.img_add,
-                                                                     Resources.Command_DisplayName_Add,
-                                                                     new RelayCommand(this.AddItem, this.CanAddItem));
-                }
-
-                return this._addItemCommand;
-            }
-        }
-
         private bool CanAddItem()
         {
             return this.IsEditingEnabled;
@@ -460,27 +495,12 @@ namespace EpAccounting.UI.ViewModel
 
         private void AddItem()
         {
-            BillItem billItem = new BillItem { Position = this.BillItemDetailViewModels.Count + 1 };
+            BillItem billItem = new BillItem {Position = this.BillItemDetailViewModels.Count + 1};
             BillItemDetailViewModel billItemDetailViewModel = new BillItemDetailViewModel(billItem, this.repository);
 
             this.currentBill.AddBillItem(billItem);
             this.BillItemDetailViewModels.Add(billItemDetailViewModel);
             Messenger.Default.Send(new NotificationMessage(Resources.Message_FocusBillItemsMessageForBillItemEditView));
-        }
-
-        public ImageCommandViewModel DeleteItemCommand
-        {
-            get
-            {
-                if (this._deleteItemCommand == null)
-                {
-                    this._deleteItemCommand = new ImageCommandViewModel(Resources.img_remove,
-                                                                        Resources.Command_DisplayName_Delete,
-                                                                        new RelayCommand(this.DeleteItem, this.CanDeleteItem));
-                }
-
-                return this._deleteItemCommand;
-            }
         }
 
         private bool CanDeleteItem()
@@ -498,38 +518,6 @@ namespace EpAccounting.UI.ViewModel
             this.currentBill.BillItems.Remove(this.currentBill.BillItems.First(x => x.Position == this.SelectedBillItemDetailViewModel.Position));
             this.BillItemDetailViewModels.Remove(this.SelectedBillItemDetailViewModel);
             this.UpdatePositions();
-        }
-
-        public List<ImageCommandViewModel> WordCommands { get; private set; }
-
-        public ImageCommandViewModel CreateDocumentCommand
-        {
-            get
-            {
-                if (this._createDocumentCommand == null)
-                {
-                    this._createDocumentCommand = new ImageCommandViewModel(Resources.img_createWord,
-                                                                            Resources.Command_DisplayName_Create,
-                                                                            new RelayCommand(this.CreateDocument, this.CanCreateDocument));
-                }
-
-                return this._createDocumentCommand;
-            }
-        }
-
-        public ImageCommandViewModel PrintDocumentCommand
-        {
-            get
-            {
-                if (this._printDocumentCommand == null)
-                {
-                    this._printDocumentCommand = new ImageCommandViewModel(Resources.img_print,
-                                                                           Resources.Command_DisplayName_Print,
-                                                                           new RelayCommand(this.PrintDocument, this.CanCreateDocument));
-                }
-
-                return this._printDocumentCommand;
-            }
         }
 
         private bool CanCreateDocument()
@@ -589,7 +577,5 @@ namespace EpAccounting.UI.ViewModel
                 imageCommandViewModel.RelayCommand.RaiseCanExecuteChanged();
             }
         }
-
-        #endregion
     }
 }

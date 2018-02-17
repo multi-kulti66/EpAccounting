@@ -14,8 +14,6 @@ namespace EpAccounting.Model.Mapping
 
     public class ArticleMap : ClassMap<Article>
     {
-        #region Constructors / Destructor
-
         public ArticleMap()
         {
             this.Id(x => x.Id);
@@ -24,7 +22,5 @@ namespace EpAccounting.Model.Mapping
             this.Map(x => x.Amount);
             this.Map(x => x.Price);
         }
-
-        #endregion
     }
 }

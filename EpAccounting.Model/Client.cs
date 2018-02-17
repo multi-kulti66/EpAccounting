@@ -1,23 +1,20 @@
 ﻿// ///////////////////////////////////
 // File: Client.cs
-// Last Change: 28.10.2017  11:50
+// Last Change: 17.02.2018, 14:48
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.Model
 {
     using System;
     using System.Collections.Generic;
-    using EpAccounting.Model.Enum;
-    using EpAccounting.Model.Properties;
-
+    using Enum;
+    using Properties;
 
 
     public class Client : ICloneable
     {
-        #region Properties
+        #region Properties, Indexers
 
         public virtual int Id { get; set; }
 
@@ -77,9 +74,7 @@ namespace EpAccounting.Model
 
         public override bool Equals(object obj)
         {
-            Client otherClient = obj as Client;
-
-            if (otherClient == null)
+            if (!(obj is Client otherClient))
             {
                 return false;
             }
@@ -89,7 +84,7 @@ namespace EpAccounting.Model
                                    string.Equals(this.Street, otherClient.Street) && string.Equals(this.HouseNumber, otherClient.HouseNumber) &&
                                    Equals(this.CityToPostalCode.PostalCode, otherClient.CityToPostalCode.PostalCode) && string.Equals(this.DateOfBirth, otherClient.DateOfBirth) &&
                                    string.Equals(this.PhoneNumber1, otherClient.PhoneNumber1) && string.Equals(this.PhoneNumber2, otherClient.PhoneNumber2)
-                                   && string.Equals(this.MobileNumber, otherClient.MobileNumber) && string.Equals(this.Telefax, otherClient.Telefax) &&
+                                && string.Equals(this.MobileNumber, otherClient.MobileNumber) && string.Equals(this.Telefax, otherClient.Telefax) &&
                                    string.Equals(this.Email, otherClient.Email);
 
             if (!equalClientData || (this.Bills.Count != otherClient.Bills.Count))

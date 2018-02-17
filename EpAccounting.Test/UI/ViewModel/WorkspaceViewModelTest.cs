@@ -19,15 +19,8 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class WorkspaceViewModelTest
     {
-        #region Fields
-
         private WorkspaceViewModel workspaceViewModel;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -42,11 +35,6 @@ namespace EpAccounting.Test.UI.ViewModel
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        #region Test Methods
 
         [Test]
         public void InheritsFromBindableViewModelBase()
@@ -62,7 +50,5 @@ namespace EpAccounting.Test.UI.ViewModel
             this.workspaceViewModel.Title.Should().Be(Resources.Workspace_Title_Options);
             this.workspaceViewModel.Image.FrameDimensionsList.ShouldBeEquivalentTo(Resources.img_options.FrameDimensionsList);
         }
-
-        #endregion
     }
 }

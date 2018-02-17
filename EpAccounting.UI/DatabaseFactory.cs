@@ -1,16 +1,13 @@
 ﻿// ///////////////////////////////////
 // File: DatabaseFactory.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI
 {
     using System.IO;
-    using EpAccounting.UI.Properties;
-
+    using Properties;
 
 
     public static class DatabaseFactory
@@ -25,7 +22,7 @@ namespace EpAccounting.UI
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public static string TestFolderPath
         {

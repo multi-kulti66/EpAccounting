@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: ImageCommandViewModel.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:29
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
@@ -12,11 +10,8 @@ namespace EpAccounting.UI.ViewModel
     using GalaSoft.MvvmLight.Command;
 
 
-
     public class ImageCommandViewModel : CommandViewModel
     {
-        #region Constructors / Destructor
-
         #region Constructors
 
         public ImageCommandViewModel(Bitmap image, string displayName, RelayCommand relayCommand)
@@ -27,11 +22,9 @@ namespace EpAccounting.UI.ViewModel
 
         #endregion
 
-        #endregion
 
 
-
-        #region Properties
+        #region Properties, Indexers
 
         public Bitmap Image { get; set; }
 

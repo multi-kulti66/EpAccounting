@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: BindableViewModelBase.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
@@ -18,7 +16,6 @@ namespace EpAccounting.UI.ViewModel
     using GalaSoft.MvvmLight;
 
 
-
     public abstract class BindableViewModelBase : ViewModelBase, IDataErrorInfo
     {
         #region Fields
@@ -29,7 +26,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public bool IsValid
         {
@@ -69,8 +66,6 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Methods
-
         protected virtual bool SetProperty<T>(ref T storage, T newValue, [CallerMemberName] string propertyName = null)
         {
             if (Equals(storage, newValue))
@@ -100,7 +95,7 @@ namespace EpAccounting.UI.ViewModel
             List<ValidationResult> results = new List<ValidationResult>();
 
             bool isValid = Validator.TryValidateProperty(this.GetPropertyValue(propertyName),
-                                                         new ValidationContext(this, null, null) { MemberName = propertyName },
+                                                         new ValidationContext(this, null, null) {MemberName = propertyName},
                                                          results);
 
             return isValid ? string.Empty : results.First().ErrorMessage;
@@ -128,7 +123,5 @@ namespace EpAccounting.UI.ViewModel
 
             return this._propertyInfos;
         }
-
-        #endregion Methods
     }
 }

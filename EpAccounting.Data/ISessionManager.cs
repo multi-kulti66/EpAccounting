@@ -14,14 +14,9 @@ namespace EpAccounting.Data
 
     public interface ISessionManager
     {
-        #region Properties
-
         bool IsConnected { get; }
 
         string FilePath { get; }
-
-        #endregion
-
 
 
         void CreateDatabase(string folderPath);

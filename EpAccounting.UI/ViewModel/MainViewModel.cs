@@ -1,19 +1,16 @@
 // ///////////////////////////////////
 // File: MainViewModel.cs
-// Last Change: 27.10.2017  22:01
+// Last Change: 17.02.2018, 14:29
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
     using System.Collections.ObjectModel;
-    using EpAccounting.Business;
-    using EpAccounting.UI.Properties;
-    using EpAccounting.UI.Service;
+    using Business;
     using GalaSoft.MvvmLight.Messaging;
-
+    using Properties;
+    using Service;
 
 
     public class MainViewModel : BindableViewModelBase
@@ -35,7 +32,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public MainViewModel(IRepository repository, IDialogService dialogService)
         {
@@ -53,7 +50,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public bool IsConnected
         {
@@ -65,72 +62,6 @@ namespace EpAccounting.UI.ViewModel
             get { return this._canChangeWorkspace; }
             private set { this.SetProperty(ref this._canChangeWorkspace, value); }
         }
-
-        #endregion
-
-
-
-        private void TryConnectingAtStartup()
-        {
-            try
-            {
-                // uncomment for test purposes
-                /*DatabaseFactory.DeleteTestFolderAndFile();
-                DatabaseFactory.CreateTestFile();
-                DatabaseFactory.SetSavedFilePath();
-                this.repository.LoadDatabase(Settings.Default.DatabaseFilePath);
-                this.LoadXmlData();*/
-
-                this.repository.LoadDatabase(Settings.Default.DatabaseFilePath);
-            }
-            catch
-            {
-                // just try to connect at beginning
-                // do not throw exception when no database path was saved
-                Settings.Default.DatabaseFilePath = string.Empty;
-                Settings.Default.Save();
-            }
-        }
-
-        private void UpdateConnectionState()
-        {
-            this.RaisePropertyChanged(() => this.IsConnected);
-        }
-
-        private void ChangeToBillWorkspace()
-        {
-            this.CurrentWorkspace = this.BillWorkspace;
-        }
-
-
-
-        #region Messenger
-
-        private void ExecuteNotificationMessage(NotificationMessage message)
-        {
-            if (message.Notification == Resources.Message_UpdateConnectionStateForMainVM)
-            {
-                this.UpdateConnectionState();
-            }
-            else if (message.Notification == Resources.Message_ChangeToBillWorkspaceForMainVM)
-            {
-                this.ChangeToBillWorkspace();
-            }
-        }
-
-        private void ExecuteNotificationMessage(NotificationMessage<bool> message)
-        {
-            if (message.Notification == Resources.Message_WorkspaceEnableStateForMainVM)
-            {
-                this.CanChangeWorkspace = message.Content;
-            }
-        }
-
-        #endregion
-
-
-
-        #region Workspaces
 
         public ObservableCollection<WorkspaceViewModel> WorkspaceViewModels { get; private set; }
 
@@ -196,6 +127,62 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
+        #endregion
+
+
+
+        private void TryConnectingAtStartup()
+        {
+            try
+            {
+                // uncomment for test purposes
+                /*DatabaseFactory.DeleteTestFolderAndFile();
+                DatabaseFactory.CreateTestFile();
+                DatabaseFactory.SetSavedFilePath();
+                this.repository.LoadDatabase(Settings.Default.DatabaseFilePath);
+                this.LoadXmlData();*/
+
+                this.repository.LoadDatabase(Settings.Default.DatabaseFilePath);
+            }
+            catch
+            {
+                // just try to connect at beginning
+                // do not throw exception when no database path was saved
+                Settings.Default.DatabaseFilePath = string.Empty;
+                Settings.Default.Save();
+            }
+        }
+
+        private void UpdateConnectionState()
+        {
+            this.RaisePropertyChanged(() => this.IsConnected);
+        }
+
+        private void ChangeToBillWorkspace()
+        {
+            this.CurrentWorkspace = this.BillWorkspace;
+        }
+
+        private void ExecuteNotificationMessage(NotificationMessage message)
+        {
+            if (message.Notification == Resources.Message_UpdateConnectionStateForMainVM)
+            {
+                this.UpdateConnectionState();
+            }
+            else if (message.Notification == Resources.Message_ChangeToBillWorkspaceForMainVM)
+            {
+                this.ChangeToBillWorkspace();
+            }
+        }
+
+        private void ExecuteNotificationMessage(NotificationMessage<bool> message)
+        {
+            if (message.Notification == Resources.Message_WorkspaceEnableStateForMainVM)
+            {
+                this.CanChangeWorkspace = message.Content;
+            }
+        }
+
         private void InitWorkspaces()
         {
             this.WorkspaceViewModels = new ObservableCollection<WorkspaceViewModel>
@@ -208,12 +195,6 @@ namespace EpAccounting.UI.ViewModel
 
             this.CurrentWorkspace = this.ClientWorkspace;
         }
-
-        #endregion
-
-
-
-        #region TestData 
 
         /*private void LoadXmlData()
         {
@@ -366,7 +347,5 @@ namespace EpAccounting.UI.ViewModel
 
             return article;
         }*/
-
-        #endregion
     }
 }

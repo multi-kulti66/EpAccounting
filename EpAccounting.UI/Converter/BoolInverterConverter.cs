@@ -1,17 +1,14 @@
 ﻿// ///////////////////////////////////
 // File: BoolInverterConverter.cs
-// Last Change: 26.10.2017  22:18
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.Converter
 {
     using System;
     using System.Globalization;
     using System.Windows.Data;
-
 
 
     [ValueConversion(typeof(bool?), typeof(bool?))]

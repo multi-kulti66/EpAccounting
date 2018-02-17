@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: SelectAllTextOnFocusBehavior.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.Behavior
 {
@@ -14,16 +12,15 @@ namespace EpAccounting.UI.Behavior
     using System.Windows.Interactivity;
 
 
-
     public class SelectAllTextOnFocusBehavior : Behavior<TextBox>
     {
         #region Fields
 
         public static readonly DependencyProperty SelectTextOnFocusProperty = DependencyProperty
-                .RegisterAttached("SelectTextOnFocus",
-                                  typeof(bool),
-                                  typeof(SelectAllTextOnFocusBehavior),
-                                  new FrameworkPropertyMetadata(false, GotFocus));
+           .RegisterAttached("SelectTextOnFocus",
+                             typeof(bool),
+                             typeof(SelectAllTextOnFocusBehavior),
+                             new FrameworkPropertyMetadata(false, GotFocus));
 
         #endregion
 
@@ -57,7 +54,7 @@ namespace EpAccounting.UI.Behavior
         {
             if (e.KeyboardDevice.IsKeyDown(Key.Tab))
             {
-                ((TextBox)sender).SelectAll();
+                ((TextBox) sender).SelectAll();
             }
         }
     }

@@ -1,33 +1,30 @@
 ﻿// ///////////////////////////////////
 // File: ClientCreationState.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 20:52
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.State
 {
     using System.Threading.Tasks;
-    using EpAccounting.UI.ViewModel;
-
+    using ViewModel;
 
 
     public class ClientCreationState : IClientState
     {
         #region Fields
 
-        private readonly ClientEditViewModel clientEditViewModel;
+        private readonly ClientEditViewModel _clientEditViewModel;
 
         #endregion
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public ClientCreationState(ClientEditViewModel clientEditViewModel)
         {
-            this.clientEditViewModel = clientEditViewModel;
+            this._clientEditViewModel = clientEditViewModel;
         }
 
         #endregion
@@ -73,9 +70,10 @@ namespace EpAccounting.UI.State
 
         public async Task Commit()
         {
-            if (await this.clientEditViewModel.SaveOrUpdateClientAsync())
+            if (await this._clientEditViewModel.SaveOrUpdateClientAsync())
             {
-                this.clientEditViewModel.ChangeToLoadedMode();
+                this._clientEditViewModel.ChangeToLoadedMode();
+                this._clientEditViewModel.SendReloadClientSearchMessage();
             }
         }
 
@@ -86,7 +84,7 @@ namespace EpAccounting.UI.State
 
         public void Cancel()
         {
-            this.clientEditViewModel.ChangeToEmptyMode();
+            this._clientEditViewModel.ChangeToEmptyMode();
         }
 
         public bool CanDelete()

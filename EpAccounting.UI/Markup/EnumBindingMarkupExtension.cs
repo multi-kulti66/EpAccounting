@@ -1,16 +1,13 @@
 ﻿// ///////////////////////////////////
 // File: EnumBindingMarkupExtension.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.Markup
 {
     using System;
     using System.Windows.Markup;
-
 
 
     public class EnumBindingMarkupExtension : MarkupExtension
@@ -23,10 +20,11 @@ namespace EpAccounting.UI.Markup
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public EnumBindingMarkupExtension()
-        { }
+        {
+        }
 
         public EnumBindingMarkupExtension(Type enumType)
         {
@@ -37,7 +35,7 @@ namespace EpAccounting.UI.Markup
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public Type EnumType
         {

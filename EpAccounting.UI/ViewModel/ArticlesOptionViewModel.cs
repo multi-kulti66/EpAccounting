@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: ArticlesOptionViewModel.cs
-// Last Change: 04.11.2017  09:22
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
@@ -13,15 +11,14 @@ namespace EpAccounting.UI.ViewModel
     using System.Collections.ObjectModel;
     using System.Drawing;
     using System.Linq;
-    using EpAccounting.Business;
-    using EpAccounting.Model;
-    using EpAccounting.UI.Markup;
-    using EpAccounting.UI.Properties;
-    using EpAccounting.UI.Service;
-    using EpAccounting.UI.State;
+    using Business;
     using GalaSoft.MvvmLight.Command;
     using GalaSoft.MvvmLight.Messaging;
-
+    using Markup;
+    using Model;
+    using Properties;
+    using Service;
+    using State;
 
 
     public class ArticlesOptionViewModel : WorkspaceViewModel
@@ -47,7 +44,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public ArticlesOptionViewModel(string title, Bitmap image, IRepository repository, IDialogService dialogService)
             : base(title, image)
@@ -66,7 +63,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public bool IsEditable
         {
@@ -107,6 +104,85 @@ namespace EpAccounting.UI.ViewModel
         }
 
         public ObservableCollection<ArticleViewModel> ArticleViewModels { get; }
+
+        public List<ImageCommandViewModel> Commands { get; private set; }
+
+        public ImageCommandViewModel AddItemCommand
+        {
+            get
+            {
+                if (this._addItemCommand == null)
+                {
+                    this._addItemCommand = new ImageCommandViewModel(Resources.img_add,
+                                                                     Resources.Command_DisplayName_Add,
+                                                                     new RelayCommand(this.AddItem, this.CanAddItem));
+                }
+
+                return this._addItemCommand;
+            }
+        }
+
+        public ImageCommandViewModel DeleteItemCommand
+        {
+            get
+            {
+                if (this._deleteItemCommand == null)
+                {
+                    this._deleteItemCommand = new ImageCommandViewModel(Resources.img_delete,
+                                                                        Resources.Command_DisplayName_Delete,
+                                                                        new RelayCommand(this.DeleteItem, this.CanDeleteItem));
+                }
+
+                return this._deleteItemCommand;
+            }
+        }
+
+        public List<ImageCommandViewModel> StateCommands { get; private set; }
+
+        public ImageCommandViewModel SwitchToEditModeCommand
+        {
+            get
+            {
+                if (this._switchToEditModeCommand == null)
+                {
+                    this._switchToEditModeCommand = new ImageCommandViewModel(Resources.img_edit,
+                                                                              Resources.Command_DisplayName_Edit,
+                                                                              new RelayCommand(this.SwitchToEditMode, this.CanSwitchToEditMode));
+                }
+
+                return this._switchToEditModeCommand;
+            }
+        }
+
+        public ImageCommandViewModel SaveOrUpdateCommand
+        {
+            get
+            {
+                if (this._saveOrUpdateCommand == null)
+                {
+                    this._saveOrUpdateCommand = new ImageCommandViewModel(Resources.img_saveOrUpdate,
+                                                                          Resources.Command_DisplayName_SaveOrUpdate,
+                                                                          new RelayCommand(this.Commit, this.CanCommit));
+                }
+
+                return this._saveOrUpdateCommand;
+            }
+        }
+
+        public ImageCommandViewModel CancelCommand
+        {
+            get
+            {
+                if (this._cancelCommand == null)
+                {
+                    this._cancelCommand = new ImageCommandViewModel(Resources.img_cancel,
+                                                                    Resources.Command_DisplayName_Cancel,
+                                                                    new RelayCommand(this.Cancel, this.CanCancel));
+                }
+
+                return this._cancelCommand;
+            }
+        }
 
         #endregion
 
@@ -156,12 +232,12 @@ namespace EpAccounting.UI.ViewModel
         private void RemoveDeletedArticlesFromDatabase()
         {
             Action<Article> action = delegate(Article article)
-            {
-                if (this.ArticleViewModels.Count(x => x.Id == article.Id) == 0)
-                {
-                    this.repository.Delete(article);
-                }
-            };
+                                     {
+                                         if (this.ArticleViewModels.Count(x => x.Id == article.Id) == 0)
+                                         {
+                                             this.repository.Delete(article);
+                                         }
+                                     };
 
             this.IterateArticlesAndDoAction(action);
         }
@@ -205,42 +281,6 @@ namespace EpAccounting.UI.ViewModel
                 {
                     action(article);
                 }
-            }
-        }
-
-
-
-        #region Commands
-
-        public List<ImageCommandViewModel> Commands { get; private set; }
-
-        public ImageCommandViewModel AddItemCommand
-        {
-            get
-            {
-                if (this._addItemCommand == null)
-                {
-                    this._addItemCommand = new ImageCommandViewModel(Resources.img_add,
-                                                                     Resources.Command_DisplayName_Add,
-                                                                     new RelayCommand(this.AddItem, this.CanAddItem));
-                }
-
-                return this._addItemCommand;
-            }
-        }
-
-        public ImageCommandViewModel DeleteItemCommand
-        {
-            get
-            {
-                if (this._deleteItemCommand == null)
-                {
-                    this._deleteItemCommand = new ImageCommandViewModel(Resources.img_delete,
-                                                                        Resources.Command_DisplayName_Delete,
-                                                                        new RelayCommand(this.DeleteItem, this.CanDeleteItem));
-                }
-
-                return this._deleteItemCommand;
             }
         }
 
@@ -311,12 +351,6 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        #endregion
-
-
-
-        #region States
-
         public IArticleState GetLoadedState()
         {
             return this._articleLoadedState;
@@ -343,59 +377,6 @@ namespace EpAccounting.UI.ViewModel
             this._articleEditState = new ArticleEditState(this);
 
             this._currentState = this.GetLoadedState();
-        }
-
-        #endregion
-
-
-
-        #region State Commands
-
-        public List<ImageCommandViewModel> StateCommands { get; private set; }
-
-        public ImageCommandViewModel SwitchToEditModeCommand
-        {
-            get
-            {
-                if (this._switchToEditModeCommand == null)
-                {
-                    this._switchToEditModeCommand = new ImageCommandViewModel(Resources.img_edit,
-                                                                              Resources.Command_DisplayName_Edit,
-                                                                              new RelayCommand(this.SwitchToEditMode, this.CanSwitchToEditMode));
-                }
-
-                return this._switchToEditModeCommand;
-            }
-        }
-
-        public ImageCommandViewModel SaveOrUpdateCommand
-        {
-            get
-            {
-                if (this._saveOrUpdateCommand == null)
-                {
-                    this._saveOrUpdateCommand = new ImageCommandViewModel(Resources.img_saveOrUpdate,
-                                                                          Resources.Command_DisplayName_SaveOrUpdate,
-                                                                          new RelayCommand(this.Commit, this.CanCommit));
-                }
-
-                return this._saveOrUpdateCommand;
-            }
-        }
-
-        public ImageCommandViewModel CancelCommand
-        {
-            get
-            {
-                if (this._cancelCommand == null)
-                {
-                    this._cancelCommand = new ImageCommandViewModel(Resources.img_cancel,
-                                                                    Resources.Command_DisplayName_Cancel,
-                                                                    new RelayCommand(this.Cancel, this.CanCancel));
-                }
-
-                return this._cancelCommand;
-            }
         }
 
         private void InitStateCommands()
@@ -445,7 +426,5 @@ namespace EpAccounting.UI.ViewModel
                 imageCommandViewModel.RelayCommand.RaiseCanExecuteChanged();
             }
         }
-
-        #endregion
     }
 }

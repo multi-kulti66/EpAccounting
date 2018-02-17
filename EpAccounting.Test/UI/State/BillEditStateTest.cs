@@ -21,8 +21,6 @@ namespace EpAccounting.Test.UI.State
 
     public class BillEditStateTest
     {
-        #region Test Methods
-
         [Test]
         public void CanNotSwitchToOtherModes()
         {
@@ -130,11 +128,8 @@ namespace EpAccounting.Test.UI.State
             billEditState.Cancel();
 
             // Assert
-            mockBillEditViewModel.Verify(x => x.Reload(), Times.Once);
+            mockBillEditViewModel.Verify(x => x.Reload(It.IsAny<int>()), Times.Once);
         }
-
-        #endregion
-
 
 
         private BillEditState GetDefaultBillEditState()

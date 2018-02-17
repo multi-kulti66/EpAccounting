@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Clients>
   <Client ClientID="1" Title="Herr" FirstName="Andre" LastName="Multerer" Street="Benzstraße" HouseNumber="1a"
           PostalCode="93053" City="Regensburg" DateOfBirth="06.11.1993" PhoneNumber1="09942/902097"
@@ -6,9 +7,9 @@
           Email="andre.multerer@gmail.com">
     <Bill BillID="1" Printed="false" Date="27.11.2016" KindOfBill="Rechnung" KindOfVAT="inkl_MwSt" VatPercentage="19">
       <BillItem BillItemID="1" Position="1" ArticleNumber="0" Description="Glühbirne" Amount="3" Price="1,00"
-                  Discount="10" />
+                Discount="10" />
       <BillItem BillItemID="2" Position="2" ArticleNumber="0" Description="LCD TV" Amount="1" Price="799,00"
-                  Discount="0" />
+                Discount="0" />
     </Bill>
   </Client>
 
@@ -18,15 +19,15 @@
           Email="alfred.hanke@gmail.com">
     <Bill BillID="2" Date="01.12.2016" Printed="true" KindOfBill="Rechnung" KindOfVAT="zzgl_MwSt" VatPercentage="19">
       <BillItem BillItemID="3" Position="1" ArticleNumber="1" Description="Blitzschaden" Amount="1" Price="150,00"
-                  Discount="5" />
+                Discount="5" />
       <BillItem BillItemID="4" Position="2" ArticleNumber="0" Description="Batterie" Amount="10" Price="5,00"
-                  Discount="0" />
+                Discount="0" />
     </Bill>
     <Bill BillID="3" Printed="true" Date="02.12.2016" KindOfBill="Rechnung" KindOfVAT="without_MwSt" VatPercentage="10">
       <BillItem BillItemID="5" Position="1" ArticleNumber="0" Description="Waschmaschine" Amount="1"
-                  Price="1000,00" Discount="15" />
+                Price="1000,00" Discount="15" />
       <BillItem BillItemID="6" Position="2" ArticleNumber="2" Description="15€ Handykarte" Amount="6" Price="15,00"
-                  Discount="0" />
+                Discount="0" />
     </Bill>
   </Client>
 
@@ -38,11 +39,12 @@
   <Client ClientID="4" Title="Firma" FirstName="" LastName="Schierer" Street="Am Regen" HouseNumber="9"
           PostalCode="94234" City="Viechtach" DateOfBirth="" PhoneNumber1="09942/94640" PhoneNumber2="" MobileNumber=""
           Telefax="" Email="">
-    <Bill BillID="4" Printed="false" Date="05.06.2016" KindOfBill="Rechnung" KindOfVAT="without_MwSt" VatPercentage="19">
+    <Bill BillID="4" Printed="false" Date="05.06.2016" KindOfBill="Rechnung" KindOfVAT="without_MwSt"
+          VatPercentage="19">
       <BillItem BillItemID="7" Position="1" ArticleNumber="0" Description="Samsung Galaxy S7" Amount="1"
-                  Price="799,00" Discount="0" />
+                Price="799,00" Discount="0" />
       <BillItem BillItemID="8" Position="2" ArticleNumber="1" Description="Blitzschaden" Amount="1" Price="5,00"
-                  Discount="0" />
+                Discount="0" />
     </Bill>
   </Client>
 

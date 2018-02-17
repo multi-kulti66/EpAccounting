@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditViewModel.cs
-// Last Change: 08.12.2017  13:59
+// Last Change: 17.02.2018, 21:16
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
@@ -13,55 +11,54 @@ namespace EpAccounting.UI.ViewModel
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using EpAccounting.Business;
-    using EpAccounting.Model;
-    using EpAccounting.Model.Enum;
-    using EpAccounting.UI.Properties;
-    using EpAccounting.UI.Service;
-    using EpAccounting.UI.State;
+    using Business;
     using GalaSoft.MvvmLight.Command;
     using GalaSoft.MvvmLight.Messaging;
+    using Model;
+    using Model.Enum;
     using NHibernate.Criterion;
+    using Properties;
+    using Service;
+    using State;
 
 
-
-    public class ClientEditViewModel : BindableViewModelBase
+    public class ClientEditViewModel : BindableViewModelBase, IDisposable
     {
         #region Fields
 
-        private readonly IRepository repository;
-        private readonly IDialogService dialogService;
+        private readonly IDialogService _dialogService;
+        private readonly IRepository _repository;
 
-        private Client currentClient;
+        private Client _currentClient;
+        private IClientState _currentState;
         private ClientDetailViewModel _currentClientDetailViewModel;
 
-        private IClientState currentState;
-        private ClientEmptyState _clientEmptyState;
-        private ClientSearchState _clientSearchState;
         private ClientCreationState _clientCreationState;
-        private ClientLoadedState _clientLoadedState;
         private ClientEditState _clientEditState;
+        private ClientEmptyState _clientEmptyState;
+        private ClientLoadedState _clientLoadedState;
+        private ClientSearchState _clientSearchState;
 
         private RelayCommand _createNewBillCommand;
-        private RelayCommand _loadBillsFromClientCommand;
         private RelayCommand _clearFieldsCommand;
+        private RelayCommand _loadBillsFromClientCommand;
 
         #endregion
 
 
 
-        #region Constructors / Destructor
+        #region Constructors
 
         public ClientEditViewModel(IRepository repository, IDialogService dialogService)
         {
-            this.repository = repository;
-            this.dialogService = dialogService;
+            this._repository = repository;
+            this._dialogService = dialogService;
 
             this.InitPropertyInfos();
             this.InitStates();
             this.InitStateCommands();
 
-            this.currentState = this.GetClientEmptyState();
+            this._currentState = this.GetClientEmptyState();
             this.SetCurrentClient(new Client { CityToPostalCode = new CityToPostalCode() });
 
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
@@ -72,7 +69,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public ClientDetailViewModel CurrentClientDetailViewModel
         {
@@ -82,61 +79,74 @@ namespace EpAccounting.UI.ViewModel
 
         public IClientState CurrentState
         {
-            get { return this.currentState; }
-            private set { this.SetProperty(ref this.currentState, value); }
+            get { return this._currentState; }
+            private set { this.SetProperty(ref this._currentState, value); }
         }
 
         public bool CanInsertClientId
         {
-            get
-            {
-                if (this.repository.IsConnected && this.CurrentState is ClientSearchState)
-                {
-                    return true;
-                }
-
-                return false;
-            }
+            get { return this._repository.IsConnected && this.CurrentState is ClientSearchState; }
         }
 
         public bool CanEditClientData
         {
-            get
-            {
-                if (this.repository.IsConnected && this.CanCommit())
-                {
-                    return true;
-                }
-
-                return false;
-            }
+            get { return this._repository.IsConnected && this.CanCommit(); }
         }
 
         public bool CanEditCompanyName
         {
             get
             {
-                if (this.repository.IsConnected && this.CanCommit() && (this.currentClient.Title == ClientTitle.Firma || this.currentState == this.GetClientSearchState()))
-                {
-                    return true;
-                }
-
-                return false;
+                return this._repository.IsConnected && this.CanCommit() &&
+                       (this._currentClient.Title == ClientTitle.Firma || this._currentState == this.GetClientSearchState());
             }
         }
 
         public bool CanLoadBills
         {
+            get { return this._repository.IsConnected && this.CurrentState is ClientLoadedState; }
+        }
+
+        public RelayCommand ClearFieldsCommand
+        {
             get
             {
-                if (this.repository.IsConnected && this.CurrentState is ClientLoadedState)
+                if (this._clearFieldsCommand == null)
                 {
-                    return true;
+                    this._clearFieldsCommand = new RelayCommand(this.ClearFields, this.CanClearFields);
                 }
 
-                return false;
+                return this._clearFieldsCommand;
             }
         }
+
+        public RelayCommand CreateNewBillCommand
+        {
+            get
+            {
+                if (this._createNewBillCommand == null)
+                {
+                    this._createNewBillCommand = new RelayCommand(this.SendCreateNewBillMessage, this.CanCreateNewBill);
+                }
+
+                return this._createNewBillCommand;
+            }
+        }
+
+        public RelayCommand LoadBillsFromClientCommand
+        {
+            get
+            {
+                if (this._loadBillsFromClientCommand == null)
+                {
+                    this._loadBillsFromClientCommand = new RelayCommand(this.SendLoadBillsFromClientMessage, this.CanSendLoadBillsFromClientMessage);
+                }
+
+                return this._loadBillsFromClientCommand;
+            }
+        }
+
+        public List<ImageCommandViewModel> StateCommands { get; private set; }
 
         private PropertyInfo[] PropertyInfos { get; set; }
 
@@ -144,16 +154,39 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        public virtual void Reload()
+        #region IDisposable Members
+
+        public void Dispose()
         {
-            this.ChangeToLoadedMode(this.repository.GetById<Client>(this.currentClient.Id));
+            Messenger.Default.Unregister(this);
+        }
+
+        #endregion
+        
+        public virtual void Load(int clientId = -1)
+        {
+            try
+            {
+                // reload client when no id was given
+                if (clientId == -1)
+                {
+                    clientId = this._currentClient.Id;
+                }
+
+                this.ChangeToLoadedMode(this._repository.GetById<Client>(clientId));
+            }
+            catch (Exception e)
+            {
+                this._dialogService.ShowExceptionMessage(e, "Could not reload client!");
+            }
         }
 
         public virtual async Task<bool> SaveOrUpdateClientAsync()
         {
             if (this.CurrentClientDetailViewModel.HasMissingValues)
             {
-                await this.dialogService.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient, Resources.Dialog_Message_ClientHasMissingValues);
+                await this._dialogService.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient,
+                                                      Resources.Dialog_Message_ClientHasMissingValues);
                 return false;
             }
 
@@ -164,36 +197,37 @@ namespace EpAccounting.UI.ViewModel
 
                 if (equalClient != null)
                 {
-                    shouldSaveOrUpdate = await this.dialogService.ShowDialogYesNo(Resources.Dialog_Title_ClientExistsAlready,
-                                                                                  string.Format(Resources.Dialog_Question_AddToExistingClient, equalClient));
+                    shouldSaveOrUpdate =
+                        await this._dialogService.ShowDialogYesNo(Resources.Dialog_Title_ClientExistsAlready,
+                                                                  string.Format(Resources.Dialog_Question_AddToExistingClient,
+                                                                                equalClient));
                 }
 
-                if (shouldSaveOrUpdate)
+                if (!shouldSaveOrUpdate)
                 {
-                    Client tempClient = this.repository.GetById<Client>(this.currentClient.Id);
-
-                    this.repository.SaveOrUpdate(this.currentClient);
-
-                    if (tempClient != null)
-                    {
-                        this.DeletePreviousPostalCodeIfNecessary(tempClient);
-                    }
-
-                    return true;
+                    return false;
                 }
 
-                return false;
+                Client tempClient = this._repository.GetById<Client>(this._currentClient.Id);
+                this._repository.SaveOrUpdate(this._currentClient);
+
+                if (tempClient != null)
+                {
+                    this.DeletePostalCodeIfNecessary(tempClient.CityToPostalCode);
+                }
+
+                return true;
             }
             catch (Exception e)
             {
-                await this.dialogService.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient, e.Message);
+                await this._dialogService.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient, e.Message);
                 return false;
             }
         }
 
         public virtual async Task<bool> DeleteClientAsync()
         {
-            bool shouldDelete = await this.dialogService.ShowDialogYesNo(Resources.Dialog_Title_Attention,
+            var shouldDelete = await this._dialogService.ShowDialogYesNo(Resources.Dialog_Title_Attention,
                                                                          Resources.Dialog_Question_DeleteClient);
 
             if (!shouldDelete)
@@ -203,14 +237,15 @@ namespace EpAccounting.UI.ViewModel
 
             try
             {
-                this.repository.Delete(this.currentClient);
-                this.DeletePostalCodeIfNecessary();
+                CityToPostalCode oldCityToPostalCode = this._currentClient.CityToPostalCode;
+                this._repository.Delete(this._currentClient);
+                this.DeletePostalCodeIfNecessary(oldCityToPostalCode);
                 this.SendRemoveClientMessage();
                 return true;
             }
             catch (Exception e)
             {
-                await this.dialogService.ShowMessage(Resources.Dialog_Title_CanNotDeleteClient, e.Message);
+                await this._dialogService.ShowMessage(Resources.Dialog_Title_CanNotDeleteClient, e.Message);
                 return false;
             }
         }
@@ -227,8 +262,8 @@ namespace EpAccounting.UI.ViewModel
 
         private void SetCurrentClient(Client client)
         {
-            this.currentClient = client;
-            this.CurrentClientDetailViewModel = new ClientDetailViewModel(this.currentClient, this.repository);
+            this._currentClient = client;
+            this.CurrentClientDetailViewModel = new ClientDetailViewModel(this._currentClient, this._repository);
         }
 
         private void LoadClientState(IClientState clientState)
@@ -263,16 +298,21 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Returns an equal client when one exists in database, otherwise null.
+        /// </summary>
+        /// <returns>equal client</returns>
+        /// <exception cref="Exception">Thrown when Client could not be loaded from database.</exception>
         private Client GetEqualClient()
         {
-            return this.repository.GetByCriteria<Client>(this.GetEqualClientCriterion(), 1).FirstOrDefault();
+            return this._repository.GetByCriteria<Client>(this.GetEqualClientCriterion(), 1).FirstOrDefault();
         }
 
         private ICriterion GetEqualClientCriterion()
         {
-            return Restrictions.Where<Client>(c => (c.Id != this.CurrentClientDetailViewModel.Id &&
-                                                    c.FirstName == this.CurrentClientDetailViewModel.FirstName) &&
-                                                   (c.LastName == this.CurrentClientDetailViewModel.LastName));
+            return Restrictions.Where<Client>(c => c.Id != this.CurrentClientDetailViewModel.Id &&
+                                                   c.FirstName == this.CurrentClientDetailViewModel.FirstName &&
+                                                   c.LastName == this.CurrentClientDetailViewModel.LastName);
         }
 
         private ICriterion GetClientSearchCriterion()
@@ -289,86 +329,130 @@ namespace EpAccounting.UI.ViewModel
             {
                 conjunction.Add(Restrictions.Where<Client>(c => c.Title == this.CurrentClientDetailViewModel.Title));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.CompanyName))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.CompanyName.IsLike(this.CurrentClientDetailViewModel.CompanyName, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c =>
+                                                               c.CompanyName
+                                                                .IsLike(this.CurrentClientDetailViewModel.CompanyName,
+                                                                        MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.FirstName))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.FirstName.IsLike(this.CurrentClientDetailViewModel.FirstName, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c =>
+                                                               c.FirstName
+                                                                .IsLike(this.CurrentClientDetailViewModel.FirstName,
+                                                                        MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.LastName))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.LastName.IsLike(this.CurrentClientDetailViewModel.LastName, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c =>
+                                                               c.LastName
+                                                                .IsLike(this.CurrentClientDetailViewModel.LastName,
+                                                                        MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.Street))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.Street.IsLike(this.CurrentClientDetailViewModel.Street, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c =>
+                                                               c.Street.IsLike(this.CurrentClientDetailViewModel.Street,
+                                                                               MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.HouseNumber))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.HouseNumber.IsLike(this.CurrentClientDetailViewModel.HouseNumber, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c =>
+                                                               c.HouseNumber
+                                                                .IsLike(this.CurrentClientDetailViewModel.HouseNumber,
+                                                                        MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.PostalCode))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode.IsLike(this.CurrentClientDetailViewModel.PostalCode, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c =>
+                                                               c.CityToPostalCode.PostalCode
+                                                                .IsLike(this.CurrentClientDetailViewModel.PostalCode,
+                                                                        MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.City))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.City.IsLike(this.CurrentClientDetailViewModel.City, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c =>
+                                                               c.CityToPostalCode.City
+                                                                .IsLike(this.CurrentClientDetailViewModel.City,
+                                                                        MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.DateOfBirth))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.DateOfBirth.IsLike(this.CurrentClientDetailViewModel.DateOfBirth, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c =>
+                                                               c.DateOfBirth
+                                                                .IsLike(this.CurrentClientDetailViewModel.DateOfBirth,
+                                                                        MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.PhoneNumber1))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.PhoneNumber1.IsLike(this.CurrentClientDetailViewModel.PhoneNumber1, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c =>
+                                                               c.PhoneNumber1
+                                                                .IsLike(this.CurrentClientDetailViewModel.PhoneNumber1,
+                                                                        MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.PhoneNumber2))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.PhoneNumber2.IsLike(this.CurrentClientDetailViewModel.PhoneNumber2, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c =>
+                                                               c.PhoneNumber2
+                                                                .IsLike(this.CurrentClientDetailViewModel.PhoneNumber2,
+                                                                        MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.MobileNumber))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.MobileNumber.IsLike(this.CurrentClientDetailViewModel.MobileNumber, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c =>
+                                                               c.MobileNumber
+                                                                .IsLike(this.CurrentClientDetailViewModel.MobileNumber,
+                                                                        MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.Telefax))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.Telefax.IsLike(this.CurrentClientDetailViewModel.Telefax, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c =>
+                                                               c.Telefax
+                                                                .IsLike(this.CurrentClientDetailViewModel.Telefax,
+                                                                        MatchMode.Anywhere)));
             }
+
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.Email))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.Email.IsLike(this.CurrentClientDetailViewModel.Email, MatchMode.Anywhere)));
+                conjunction.Add(Restrictions.Where<Client>(c => c.Email.IsLike(this.CurrentClientDetailViewModel.Email,
+                                                                               MatchMode.Anywhere)));
             }
 
             return conjunction;
         }
 
-        private void DeletePreviousPostalCodeIfNecessary(Client client)
+        /// <summary>
+        /// Deletes the previous postal code - city combination when no other client possesses it.
+        /// </summary>
+        /// <exception cref="Exception">Thrown when no database connection or postal code could not be deleted.</exception>
+        private void DeletePostalCodeIfNecessary(CityToPostalCode cityToPostalCode)
         {
-            Conjunction conjunction = Restrictions.Conjunction();
-            conjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode == client.CityToPostalCode.PostalCode));
-
-            int references = this.repository.GetQuantityByCriteria<Client>(conjunction);
-
-            // here 1, because client was not updated till yet
-            if (references == 0)
+            if (cityToPostalCode == null || string.IsNullOrEmpty(cityToPostalCode.PostalCode))
             {
-                this.repository.Delete(client.CityToPostalCode);
+                return;
             }
-        }
 
-        private void DeletePostalCodeIfNecessary()
-        {
             Conjunction conjunction = Restrictions.Conjunction();
-            conjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode == this.CurrentClientDetailViewModel.PostalCode));
+            conjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode == cityToPostalCode.PostalCode));
 
-            int references = this.repository.GetQuantityByCriteria<Client>(conjunction);
+            int references = this._repository.GetQuantityByCriteria<Client>(conjunction);
 
             if (references == 0)
             {
-                this.repository.Delete(this.currentClient.CityToPostalCode);
+                this._repository.Delete(cityToPostalCode);
             }
         }
 
@@ -380,10 +464,6 @@ namespace EpAccounting.UI.ViewModel
                                                     prop.CanRead && prop.GetMethod.IsPublic &&
                                                     prop.PropertyType != typeof(RelayCommand)).ToArray();
         }
-
-
-
-        #region States
 
         public virtual void ChangeToEmptyMode()
         {
@@ -458,12 +538,6 @@ namespace EpAccounting.UI.ViewModel
             this._clientEditState = new ClientEditState(this);
         }
 
-        #endregion
-
-
-
-        #region Messenger
-
         private void ExecuteNotificationMessage(NotificationMessage message)
         {
             if (message.Notification == Resources.Message_UpdateCompanyNameEnableStateForClientEditVM)
@@ -476,13 +550,13 @@ namespace EpAccounting.UI.ViewModel
         {
             if (message.Notification == Resources.Message_LoadClientForClientEditVM)
             {
-                this.ChangeToLoadedMode(this.repository.GetById<Client>(message.Content));
+                this.Load(message.Content);
             }
             else if (message.Notification == Resources.Message_UpdateClientForClientEditVM)
             {
-                if (this.currentClient.Id == message.Content)
+                if (this._currentClient.Id == message.Content)
                 {
-                    this.Reload();
+                    this.Load();
                 }
             }
         }
@@ -490,7 +564,8 @@ namespace EpAccounting.UI.ViewModel
         public virtual void SendClientSearchCriterionMessage()
         {
             Messenger.Default.Send(new NotificationMessage<ICriterion>(this.GetClientSearchCriterion(),
-                                                                       Resources.Message_ClientSearchCriteriaForClientSearchVM));
+                                                                       Resources
+                                                                          .Message_ClientSearchCriteriaForClientSearchVM));
         }
 
         public virtual void SendUpdateClientValuesMessage()
@@ -505,8 +580,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void SendRemoveClientMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id,
-                                                                Resources.Message_RemoveClientForClientSearchVM));
+            this.SendReloadClientSearchMessage();
 
             Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id,
                                                                 Resources.Message_RemoveClientForBillEditVM));
@@ -516,6 +590,11 @@ namespace EpAccounting.UI.ViewModel
 
             Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id,
                                                                 Resources.Message_RemoveClientForBillItemEditVM));
+        }
+
+        public void SendReloadClientSearchMessage()
+        {
+            Messenger.Default.Send(new NotificationMessage(Resources.Message_ReloadClientsForClientSearchVM));
         }
 
         private void SendEnableStateForClientSearchAndWorkspaceMessage()
@@ -536,92 +615,36 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        #endregion
-
-
-
-        #region Commands
-
-        public RelayCommand CreateNewBillCommand
-        {
-            get
-            {
-                if (this._createNewBillCommand == null)
-                {
-                    this._createNewBillCommand = new RelayCommand(this.SendCreateNewBillMessage, this.CanCreateNewBill);
-                }
-
-                return this._createNewBillCommand;
-            }
-        }
-
-        public RelayCommand LoadBillsFromClientCommand
-        {
-            get
-            {
-                if (this._loadBillsFromClientCommand == null)
-                {
-                    this._loadBillsFromClientCommand = new RelayCommand(this.SendLoadBillsFromClientMessage, this.CanSendLoadBillsFromClientMessage);
-                }
-
-                return this._loadBillsFromClientCommand;
-            }
-        }
-
-        public RelayCommand ClearFieldsCommand
-        {
-            get
-            {
-                if (this._clearFieldsCommand == null)
-                {
-                    this._clearFieldsCommand = new RelayCommand(this.ClearFields, this.CanClearFields);
-                }
-
-                return this._clearFieldsCommand;
-            }
-        }
-
         private bool CanCreateNewBill()
         {
-            if (this.CurrentState == this.GetClientLoadedState())
-            {
-                return true;
-            }
-
-            return false;
+            return this.CurrentState == this.GetClientLoadedState();
         }
 
         private void SendCreateNewBillMessage()
         {
             Messenger.Default.Send(new NotificationMessage(Resources.Message_ChangeToBillWorkspaceForMainVM));
-            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id, Resources.Message_CreateNewBillForBillEditVM));
+            Messenger.Default.Send(new NotificationMessage<int>(this.CurrentClientDetailViewModel.Id,
+                                                                Resources.Message_CreateNewBillForBillEditVM));
         }
 
         private bool CanSendLoadBillsFromClientMessage()
         {
-            if (this.CurrentState == this.GetClientLoadedState())
-            {
-                return true;
-            }
-
-            return false;
+            return this.CurrentState == this.GetClientLoadedState();
         }
 
         private void SendLoadBillsFromClientMessage()
         {
             Messenger.Default.Send(new NotificationMessage(Resources.Message_ChangeToBillWorkspaceForMainVM));
-            Messenger.Default.Send(new NotificationMessage<int>(this.currentClient.Id, Resources.Message_LoadBillsFromClientForBillSearchVM));
-            Messenger.Default.Send(new NotificationMessage<Client>(this.currentClient, Resources.Message_SwitchToSearchModeAndLoadClientDataForBillEditVM));
+            Messenger.Default.Send(new NotificationMessage<int>(this._currentClient.Id,
+                                                                Resources.Message_LoadBillsFromClientForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Client>(this._currentClient,
+                                                                   Resources
+                                                                      .Message_SwitchToSearchModeAndLoadClientDataForBillEditVM));
         }
 
         private bool CanClearFields()
         {
-            if (this.CurrentState == this.GetClientLoadedState())
-            {
-                return true;
-            }
-
-            return false;
+            return this.CurrentState == this.GetClientLoadedState();
         }
 
         private void ClearFields()
@@ -629,27 +652,22 @@ namespace EpAccounting.UI.ViewModel
             this.ChangeToEmptyMode();
         }
 
-        #endregion
-
-
-
-        #region State Commands
-
-        public List<ImageCommandViewModel> StateCommands { get; private set; }
-
         private void InitStateCommands()
         {
             this.StateCommands = new List<ImageCommandViewModel>
                                  {
                                      new ImageCommandViewModel(Resources.img_client_search,
                                                                Resources.Command_DisplayName_Search,
-                                                               new RelayCommand(this.SwitchToSearchMode, this.CanSwitchToSearchMode)),
+                                                               new RelayCommand(this.SwitchToSearchMode,
+                                                                                this.CanSwitchToSearchMode)),
                                      new ImageCommandViewModel(Resources.img_client_add,
                                                                Resources.Command_DisplayName_Add,
-                                                               new RelayCommand(this.SwitchToAddMode, this.CanSwitchToAddMode)),
+                                                               new RelayCommand(this.SwitchToAddMode,
+                                                                                this.CanSwitchToAddMode)),
                                      new ImageCommandViewModel(Resources.img_client_edit,
                                                                Resources.Command_DisplayName_Edit,
-                                                               new RelayCommand(this.SwitchToEditMode, this.CanSwitchToEditMode)),
+                                                               new RelayCommand(this.SwitchToEditMode,
+                                                                                this.CanSwitchToEditMode)),
                                      new ImageCommandViewModel(Resources.img_client_saveOrUpdate,
                                                                Resources.Command_DisplayName_SaveOrUpdate,
                                                                new RelayCommand(this.Commit, this.CanCommit)),
@@ -664,7 +682,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanSwitchToSearchMode()
         {
-            return this.repository.IsConnected && this.CurrentState.CanSwitchToSearchMode();
+            return this._repository.IsConnected && this.CurrentState.CanSwitchToSearchMode();
         }
 
         private void SwitchToSearchMode()
@@ -674,7 +692,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanSwitchToAddMode()
         {
-            return this.repository.IsConnected && this.CurrentState.CanSwitchToAddMode();
+            return this._repository.IsConnected && this.CurrentState.CanSwitchToAddMode();
         }
 
         private void SwitchToAddMode()
@@ -684,7 +702,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanSwitchToEditMode()
         {
-            return this.repository.IsConnected && this.CurrentState.CanSwitchToEditMode();
+            return this._repository.IsConnected && this.CurrentState.CanSwitchToEditMode();
         }
 
         private void SwitchToEditMode()
@@ -694,7 +712,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanCommit()
         {
-            return this.repository.IsConnected && this.CurrentState.CanCommit();
+            return this._repository.IsConnected && this.CurrentState.CanCommit();
         }
 
         private void Commit()
@@ -704,7 +722,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanCancel()
         {
-            return this.repository.IsConnected && this.CurrentState.CanCancel();
+            return this._repository.IsConnected && this.CurrentState.CanCancel();
         }
 
         private void Cancel()
@@ -714,14 +732,12 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanDelete()
         {
-            return this.repository.IsConnected && this.CurrentState.CanDelete();
+            return this._repository.IsConnected && this.CurrentState.CanDelete();
         }
 
         private void Delete()
         {
             this.CurrentState.Delete();
         }
-
-        #endregion
     }
 }

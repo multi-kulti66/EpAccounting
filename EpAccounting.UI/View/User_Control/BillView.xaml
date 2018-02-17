@@ -7,7 +7,7 @@
              xmlns:viewModel="clr-namespace:EpAccounting.UI.ViewModel"
              d:DataContext="{d:DesignInstance viewModel:BillViewModel}"
              mc:Ignorable="d">
-    <UserControl.Resources >
+    <UserControl.Resources>
         <ResourceDictionary Source="/View/ViewResourceDictionary.xaml" />
     </UserControl.Resources>
     <Grid>
@@ -19,7 +19,7 @@
 
         <userControl1:BillEditView x:Name="BillEditView" Grid.Column="0" DataContext="{Binding Path=BillEditViewModel}" />
         <GridSplitter Grid.Column="1" Style="{StaticResource VerticalGridSplitterStyle}" />
-        <ContentPresenter Grid.Column="2" MaxHeight="{Binding ActualHeight, ElementName=BillEditView}" Content="{Binding Path=BillWorkspaceViewModel}" />
+        <ContentPresenter Grid.Column="2" MaxHeight="{Binding ActualHeight, ElementName=BillEditView}"
+                          Content="{Binding Path=BillWorkspaceViewModel}" />
     </Grid>
 </UserControl>
-

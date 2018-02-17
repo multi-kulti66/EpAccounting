@@ -14,8 +14,6 @@ namespace EpAccounting.Model
 
     public class BillItem : ICloneable
     {
-        #region Properties
-
         public virtual int Id { get; set; }
 
         public virtual Bill Bill { get; set; }
@@ -32,19 +30,11 @@ namespace EpAccounting.Model
 
         public virtual double Discount { get; set; }
 
-        #endregion
-
-
-
-        #region ICloneable Members
 
         public virtual object Clone()
         {
             return this.MemberwiseClone();
         }
-
-        #endregion
-
 
 
         public override bool Equals(object obj)

@@ -1,16 +1,13 @@
 ﻿// ///////////////////////////////////
 // File: App.xaml.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:28
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI
 {
     using System.Windows;
-    using EpAccounting.UI.Properties;
-
+    using Properties;
 
 
     /// <summary>

@@ -23,18 +23,11 @@ namespace EpAccounting.Test.UI.State
     [TestFixture]
     public class ArticleEditStateTest
     {
-        #region Fields
-
         private Mock<IRepository> mockRepository;
         private Mock<IDialogService> mockDialogService;
         private Mock<ArticlesOptionViewModel> mockArticlesOptionViewModel;
         private ArticleEditState articleEditState;
 
-        #endregion
-
-
-
-        #region Setup/Teardown
 
         [SetUp]
         public void Init()
@@ -56,9 +49,6 @@ namespace EpAccounting.Test.UI.State
             this.articleEditState = null;
             GC.Collect();
         }
-
-        #endregion
-
 
 
         [Test]

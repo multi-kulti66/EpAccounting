@@ -1,24 +1,21 @@
 // ///////////////////////////////////
 // File: ViewModelLocator.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:29
 // Author: Andre Multerer
 // ///////////////////////////////////
 
-
-
 namespace EpAccounting.UI.ViewModel
 {
-    using EpAccounting.Business;
-    using EpAccounting.Data;
-    using EpAccounting.UI.Service;
+    using Business;
+    using Data;
     using GalaSoft.MvvmLight.Ioc;
     using Microsoft.Practices.ServiceLocation;
-
+    using Service;
 
 
     public class ViewModelLocator
     {
-        #region Constructors / Destructor
+        #region Constructors
 
         public ViewModelLocator()
         {
@@ -34,7 +31,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public MainViewModel Main
         {

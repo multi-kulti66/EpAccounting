@@ -1,20 +1,17 @@
 ﻿// ///////////////////////////////////
 // File: CommandViewModel.cs
-// Last Change: 22.10.2017  16:05
+// Last Change: 17.02.2018, 14:29
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.UI.ViewModel
 {
     using GalaSoft.MvvmLight.Command;
 
 
-
     public class CommandViewModel : BindableViewModelBase
     {
-        #region Constructors / Destructor
+        #region Constructors
 
         public CommandViewModel(string displayName, RelayCommand relayCommand)
         {
@@ -26,7 +23,7 @@ namespace EpAccounting.UI.ViewModel
 
 
 
-        #region Properties
+        #region Properties, Indexers
 
         public string DisplayName { get; private set; }
 
