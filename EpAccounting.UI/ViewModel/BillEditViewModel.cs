@@ -230,7 +230,7 @@ namespace EpAccounting.UI.ViewModel
                        {
                            Client = this._repository.GetById<Client>(clientId),
                            KindOfBill = KindOfBill.Rechnung,
-                           KindOfVat = KindOfVat.InklMwSt,
+                           KindOfVat = KindOfVat.inkl_MwSt,
                            VatPercentage = Settings.Default.VatPercentage,
                            Date = DateTime.Now.Date.ToShortDateString()
                        };

@@ -222,7 +222,7 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             BillItem billItem = ModelFactory.GetDefaultBillItem();
             billItem.Bill = ModelFactory.GetDefaultBill();
-            billItem.Bill.KindOfVat = KindOfVat.ZzglMwSt;
+            billItem.Bill.KindOfVat = KindOfVat.zzgl_MwSt;
 
             this._billItemDetailViewModel = new BillItemDetailViewModel(billItem, this._mockRepository.Object);
             this._mockRepository.Setup(x => x.GetByCriteria<Article>(It.IsAny<ICriterion>(), 1))

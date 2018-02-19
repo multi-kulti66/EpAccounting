@@ -78,7 +78,7 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int billId = 4;
             KindOfBill kindOfBill = KindOfBill.Gutschrift;
-            KindOfVat kindOfVat = KindOfVat.ZzglMwSt;
+            KindOfVat kindOfVat = KindOfVat.zzgl_MwSt;
             const double vatPercentage = 34.234;
             const string date = "14.04.2014";
             ClientTitle title = ClientTitle.Frau;
@@ -132,7 +132,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage>(this, x => notificaton = x);
 
             // Act
-            this._billDetailViewModel.KindOfVat = KindOfVat.WithoutMwSt;
+            this._billDetailViewModel.KindOfVat = KindOfVat.without_MwSt;
 
             // Assert
             notificaton.Should().NotBeNull();

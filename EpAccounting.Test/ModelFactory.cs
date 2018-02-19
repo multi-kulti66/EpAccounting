@@ -41,7 +41,7 @@ namespace EpAccounting.Test
 
         public const bool DefaultBillPrinted = true;
         public const KindOfBill DefaultBillKindOfBill = KindOfBill.Rechnung;
-        public const KindOfVat DefaultBillKindOfVat = KindOfVat.InklMwSt;
+        public const KindOfVat DefaultBillKindOfVat = KindOfVat.inkl_MwSt;
         public const double DefaultBillVatPercentage = 19;
 
         public const int DefaultBillItemPosition = 1;

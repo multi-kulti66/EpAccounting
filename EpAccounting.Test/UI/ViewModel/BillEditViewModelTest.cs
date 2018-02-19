@@ -667,7 +667,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this._billEditViewModel.CurrentBillDetailViewModel.FirstName.Should().Be(ModelFactory.DefaultClientFirstName);
             this._billEditViewModel.CurrentBillDetailViewModel.Date.Should().Be(DateTime.Now.Date.ToShortDateString());
             this._billEditViewModel.CurrentBillDetailViewModel.KindOfBill.Should().Be(KindOfBill.Rechnung);
-            this._billEditViewModel.CurrentBillDetailViewModel.KindOfVat.Should().Be(KindOfVat.InklMwSt);
+            this._billEditViewModel.CurrentBillDetailViewModel.KindOfVat.Should().Be(KindOfVat.inkl_MwSt);
             this._billEditViewModel.CurrentBillDetailViewModel.VatPercentage.Should().Be(Settings.Default.VatPercentage);
         }
 

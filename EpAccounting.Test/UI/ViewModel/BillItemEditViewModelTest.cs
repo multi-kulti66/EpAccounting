@@ -463,7 +463,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             Bill bill = ModelFactory.GetDefaultBill();
-            bill.KindOfVat = KindOfVat.ZzglMwSt;
+            bill.KindOfVat = KindOfVat.zzgl_MwSt;
             this._billItemEditViewModel.LoadBill(bill);
 
             // Assert
@@ -480,7 +480,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             Bill bill = ModelFactory.GetDefaultBill();
-            bill.KindOfVat = KindOfVat.WithoutMwSt;
+            bill.KindOfVat = KindOfVat.without_MwSt;
             this._billItemEditViewModel.LoadBill(bill);
 
             // Assert
@@ -514,7 +514,7 @@ namespace EpAccounting.Test.UI.ViewModel
             this._billItemEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this._billItemEditViewModel.CurrentBillDetailViewModel.KindOfVat = KindOfVat.ZzglMwSt;
+            this._billItemEditViewModel.CurrentBillDetailViewModel.KindOfVat = KindOfVat.zzgl_MwSt;
 
             // Assert
             this._billItemEditViewModel.ShouldRaisePropertyChangeFor(x => x.NettoSum);

@@ -160,14 +160,14 @@ namespace EpAccounting.UI.ViewModel
 
                 foreach (Bill bill in this._client.Bills)
                 {
-                    if (bill.KindOfVat == KindOfVat.InklMwSt || bill.KindOfVat == KindOfVat.WithoutMwSt)
+                    if (bill.KindOfVat == KindOfVat.inkl_MwSt || bill.KindOfVat == KindOfVat.without_MwSt)
                     {
                         foreach (BillItem billDetail in bill.BillItems)
                         {
                             sum += billDetail.Price * ((100 - (decimal) billDetail.Discount) / 100) * (decimal) billDetail.Amount;
                         }
                     }
-                    else if (bill.KindOfVat == KindOfVat.ZzglMwSt)
+                    else if (bill.KindOfVat == KindOfVat.zzgl_MwSt)
                     {
                         foreach (BillItem billDetail in bill.BillItems)
                         {

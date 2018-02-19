@@ -125,7 +125,7 @@ namespace EpAccounting.UI.ViewModel
                 this.Description = article.Description;
                 this.Amount = article.Amount;
 
-                if (this._billItem.Bill.KindOfVat == KindOfVat.InklMwSt)
+                if (this._billItem.Bill.KindOfVat == KindOfVat.inkl_MwSt)
                 {
                     this.Price = article.Price * (100 + (decimal) this._billItem.Bill.VatPercentage) / 100;
                 }

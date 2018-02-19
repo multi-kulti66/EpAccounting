@@ -283,11 +283,11 @@ namespace EpAccounting.UI.ViewModel
             {
                 foreach (BillItemDetailViewModel billItemDetailViewModel in this.BillItemDetailViewModels)
                 {
-                    if (this.CurrentBillDetailViewModel.KindOfVat == KindOfVat.InklMwSt)
+                    if (this.CurrentBillDetailViewModel.KindOfVat == KindOfVat.inkl_MwSt)
                     {
                         billItemDetailViewModel.Price *= (100 + (decimal) this.CurrentBillDetailViewModel.VatPercentage) / 100;
                     }
-                    else if (this.CurrentBillDetailViewModel.KindOfVat == KindOfVat.ZzglMwSt)
+                    else if (this.CurrentBillDetailViewModel.KindOfVat == KindOfVat.zzgl_MwSt)
                     {
                         billItemDetailViewModel.Price *= 100 / (100 + (decimal) this.CurrentBillDetailViewModel.VatPercentage);
                     }
@@ -306,13 +306,13 @@ namespace EpAccounting.UI.ViewModel
                 sum += billItemDetailViewModel.Sum;
             }
 
-            if (this._currentBill.KindOfVat == KindOfVat.InklMwSt)
+            if (this._currentBill.KindOfVat == KindOfVat.inkl_MwSt)
             {
                 this.BruttoSum = sum;
                 this.VatSum = this.BruttoSum / (decimal) (100 + this.CurrentBillDetailViewModel.VatPercentage) * (decimal) this.CurrentBillDetailViewModel.VatPercentage;
                 this.NettoSum = this.BruttoSum - this.VatSum;
             }
-            else if (this._currentBill.KindOfVat == KindOfVat.ZzglMwSt)
+            else if (this._currentBill.KindOfVat == KindOfVat.zzgl_MwSt)
             {
                 this.NettoSum = sum;
                 this.BruttoSum = sum * (100 + (decimal) this.CurrentBillDetailViewModel.VatPercentage) / 100;

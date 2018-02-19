@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: KindOfVat.cs
-// Last Change: 05.09.2017  19:30
+// Last Change: 19.02.2018, 21:01
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.Model.Enum
 {
@@ -12,16 +10,17 @@ namespace EpAccounting.Model.Enum
     using Converter;
 
 
+    // ReSharper disable InconsistentNaming
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum KindOfVat
     {
         [Description("inkl.")]
-        InklMwSt,
+        inkl_MwSt,
 
         [Description("zzgl.")]
-        ZzglMwSt,
+        zzgl_MwSt,
 
         [Description("ohne")]
-        WithoutMwSt
+        without_MwSt
     }
 }

@@ -160,7 +160,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Client client = ModelFactory.GetDefaultClient();
 
             Bill bill = ModelFactory.GetDefaultBill();
-            bill.KindOfVat = KindOfVat.ZzglMwSt;
+            bill.KindOfVat = KindOfVat.zzgl_MwSt;
             client.AddBill(bill);
 
             // Act
