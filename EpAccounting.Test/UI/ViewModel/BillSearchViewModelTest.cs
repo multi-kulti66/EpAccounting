@@ -1,10 +1,8 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModelTest.cs
-// Last Change: 26.10.2017  20:39
+// Last Change: 19.02.2018, 20:49
 // Author: Andre Multerer
 // ///////////////////////////////////
-
-
 
 namespace EpAccounting.Test.UI.ViewModel
 {
@@ -16,6 +14,7 @@ namespace EpAccounting.Test.UI.ViewModel
     using EpAccounting.Model;
     using EpAccounting.Model.Enum;
     using EpAccounting.UI.Properties;
+    using EpAccounting.UI.Service;
     using EpAccounting.UI.ViewModel;
     using FluentAssertions;
     using GalaSoft.MvvmLight.Messaging;
@@ -24,28 +23,35 @@ namespace EpAccounting.Test.UI.ViewModel
     using NUnit.Framework;
 
 
-
     [TestFixture]
     public class BillSearchViewModelTest
     {
-        private Mock<IRepository> mockRepository;
-        private BillSearchViewModel billSearchViewModel;
+        private Mock<IRepository> _mockRepository;
+        private Mock<IDialogService> _mockDialogService;
+        private BillSearchViewModel _billSearchViewModel;
 
+
+
+        #region Setup/Teardown
 
         [SetUp]
         public void Init()
         {
-            this.mockRepository = new Mock<IRepository>();
-            this.billSearchViewModel = new BillSearchViewModel(this.mockRepository.Object);
+            this._mockRepository = new Mock<IRepository>();
+            this._mockDialogService = new Mock<IDialogService>();
+            this._billSearchViewModel = new BillSearchViewModel(this._mockRepository.Object, this._mockDialogService.Object);
         }
 
         [TearDown]
         public void Cleanup()
         {
-            this.mockRepository = null;
-            this.billSearchViewModel = null;
+            this._mockRepository = null;
+            this._billSearchViewModel = null;
             GC.Collect();
         }
+
+        #endregion
+
 
 
         [Test]
@@ -59,14 +65,14 @@ namespace EpAccounting.Test.UI.ViewModel
         public void GetEmptyListAfterCreation()
         {
             // Assert
-            this.billSearchViewModel.FoundBills.Should().HaveCount(0);
+            this._billSearchViewModel.FoundBills.Should().HaveCount(0);
         }
 
         [Test]
         public void AddSingleBillToListThatMatchesBillCriterion()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetByCriteria<Bill>(It.IsAny<ICriterion>(), 1))
+            this._mockRepository.Setup(x => x.GetByCriteria<Bill>(It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Bill> { ModelFactory.GetDefaultBill() });
 
             Conjunction billConjunction = Restrictions.Conjunction();
@@ -78,16 +84,34 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
-            this.billSearchViewModel.FoundBills.Should().HaveCount(1);
-            this.billSearchViewModel.FoundBills[0].Date.Should().Be(ModelFactory.DefaultBillDate);
-            this.billSearchViewModel.FoundBills[0].KindOfBill.Should().Be(ModelFactory.DefaultBillKindOfBill);
+            this._billSearchViewModel.FoundBills.Should().HaveCount(1);
+            this._billSearchViewModel.FoundBills[0].Date.Should().Be(ModelFactory.DefaultBillDate);
+            this._billSearchViewModel.FoundBills[0].KindOfBill.Should().Be(ModelFactory.DefaultBillKindOfBill);
+        }
+
+        [Test]
+        public void ShowMessageWhenSearchedClientsCouldNotBeLoaded()
+        {
+            // Arrange
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria<Bill>(It.IsAny<ICriterion>())).Throws<Exception>();
+
+            Conjunction billConjunction = Restrictions.Conjunction();
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
+
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, null, null);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+
+            // Assert
+            this._mockDialogService.Verify(x => x.ShowExceptionMessage(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public void AddSingleBillToListThatMatchesBillAndClientCriterion()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Bill> { ModelFactory.GetDefaultBill() });
 
             Conjunction billConjunction = Restrictions.Conjunction();
@@ -101,82 +125,114 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
-            this.billSearchViewModel.FoundBills.Should().HaveCount(1);
-            this.billSearchViewModel.FoundBills[0].Date.Should().Be(ModelFactory.DefaultBillDate);
-            this.billSearchViewModel.FoundBills[0].KindOfBill.Should().Be(ModelFactory.DefaultBillKindOfBill);
+            this._billSearchViewModel.FoundBills.Should().HaveCount(1);
+            this._billSearchViewModel.FoundBills[0].Date.Should().Be(ModelFactory.DefaultBillDate);
+            this._billSearchViewModel.FoundBills[0].KindOfBill.Should().Be(ModelFactory.DefaultBillKindOfBill);
         }
 
         [Test]
         public void SelectedBillReturnsNullAfterCreation()
         {
             // Assert
-            this.billSearchViewModel.SelectedBillDetailViewModel.Should().BeNull();
+            this._billSearchViewModel.SelectedBillDetailViewModel.Should().BeNull();
         }
 
         [Test]
         public void RaisePropertyChangedWhenSelectedBillChanges()
         {
             // Arrange
-            this.billSearchViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._billSearchViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.billSearchViewModel.SelectedBillDetailViewModel = new BillDetailViewModel(new Bill(), this.mockRepository.Object);
+            this._billSearchViewModel.SelectedBillDetailViewModel = new BillDetailViewModel(new Bill(), this._mockRepository.Object, this._mockDialogService.Object);
 
             // Assert
-            this.billSearchViewModel.ShouldRaisePropertyChangeFor(x => x.SelectedBillDetailViewModel);
+            this._billSearchViewModel.ShouldRaisePropertyChangeFor(x => x.SelectedBillDetailViewModel);
         }
 
         [Test]
         public void UpdatesBillWhenUpdateBillNotificationReceived()
         {
             // Arrange
-            const string ExpectedDate = "01.01.2015";
-            Bill expectedBill = new Bill { Id = 1, Date = ExpectedDate, KindOfVat = ModelFactory.DefaultBillKindOfVat };
-            this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
+            const string expectedDate = "01.01.2015";
+            Bill expectedBill = new Bill { Id = 1, Date = expectedDate, KindOfVat = ModelFactory.DefaultBillKindOfVat };
+            this._mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
 
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }, this.mockRepository.Object));
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 2, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }, this.mockRepository.Object));
+            this._billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }, this._mockRepository.Object, this._mockDialogService.Object));
+            this._billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 2, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }, this._mockRepository.Object, this._mockDialogService.Object));
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_UpdateBillValuesMessageForBillSearchVM));
 
             // Assert
-            this.billSearchViewModel.FoundBills.Should().HaveCount(2);
-            this.billSearchViewModel.FoundBills[0].Date.Should().Be(ExpectedDate);
-            this.billSearchViewModel.FoundBills[1].Date.Should().Be(ModelFactory.DefaultBillDate);
+            this._billSearchViewModel.FoundBills.Should().HaveCount(2);
+            this._billSearchViewModel.FoundBills[0].Date.Should().Be(expectedDate);
+            this._billSearchViewModel.FoundBills[1].Date.Should().Be(ModelFactory.DefaultBillDate);
+        }
+
+        [Test]
+        public void ShowMessageWhenBillCouldNotBeUpdatedViaNotificationMessage()
+        {
+            // Arrange
+            this._mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Throws<Exception>();
+
+            this._billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }, this._mockRepository.Object, this._mockDialogService.Object));
+            this._billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 2, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat }, this._mockRepository.Object, this._mockDialogService.Object));
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_UpdateBillValuesMessageForBillSearchVM));
+
+            // Assert
+            this._mockDialogService.Verify(x => x.ShowExceptionMessage(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public void UpdatesBillWhenUpdateClientNotificationReceived()
         {
             // Arrange
-            const string ExpectedFirstName = "Matthias";
+            const string expectedFirstName = "Matthias";
             Bill expectedBill = ModelFactory.GetDefaultBill();
-            expectedBill.Client.FirstName = ExpectedFirstName;
-            this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
+            expectedBill.Client.FirstName = expectedFirstName;
+            this._mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
 
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat, Client = new Client() }, this.mockRepository.Object));
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(ModelFactory.GetDefaultBill(), this.mockRepository.Object));
+            this._billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat, Client = new Client() }, this._mockRepository.Object, this._mockDialogService.Object));
+            this._billSearchViewModel.FoundBills.Add(new BillDetailViewModel(ModelFactory.GetDefaultBill(), this._mockRepository.Object, this._mockDialogService.Object));
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Message_UpdateClientValuesForBillSearchVM));
 
             // Assert
-            this.billSearchViewModel.FoundBills.Should().HaveCount(2);
-            this.billSearchViewModel.FoundBills[1].FirstName.Should().Be(ExpectedFirstName);
+            this._billSearchViewModel.FoundBills.Should().HaveCount(2);
+            this._billSearchViewModel.FoundBills[1].FirstName.Should().Be(expectedFirstName);
+        }
+
+        [Test]
+        public void ShowMessageWhenBillCouldNotBeUpdatedByClientIdViaNotificationMessage()
+        {
+            // Arrange
+            this._mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Throws<Exception>();
+
+            this._billSearchViewModel.FoundBills.Add(new BillDetailViewModel(new Bill { Id = 1, Date = ModelFactory.DefaultBillDate, KindOfVat = ModelFactory.DefaultBillKindOfVat, Client = new Client() { Id = 1 } }, this._mockRepository.Object, this._mockDialogService.Object));
+            this._billSearchViewModel.FoundBills.Add(new BillDetailViewModel(ModelFactory.GetDefaultBill(), this._mockRepository.Object, this._mockDialogService.Object));
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Message_UpdateClientValuesForBillSearchVM));
+
+            // Assert
+            this._mockDialogService.Verify(x => x.ShowExceptionMessage(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public void RemovesBillWhenUpdateNotificationReceived()
         {
             // Arrange
-            const int Id = 1;
-            const string Date = "01.01.2015";
-            KindOfBill KindOfBill = KindOfBill.Gutschrift;
+            const int id = 1;
+            const string date = "01.01.2015";
+            KindOfBill kindOfBill = KindOfBill.Gutschrift;
 
-            Bill expectedBill = new Bill { Id = Id, Date = Date, KindOfBill = KindOfBill };
-            this.mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
-            this.mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
+            Bill expectedBill = new Bill { Id = id, Date = date, KindOfBill = kindOfBill };
+            this._mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Bill>());
 
             Conjunction billConjunction = Restrictions.Conjunction();
@@ -188,56 +244,56 @@ namespace EpAccounting.Test.UI.ViewModel
 
             Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(expectedBill, this.mockRepository.Object));
+            this._billSearchViewModel.FoundBills.Add(new BillDetailViewModel(expectedBill, this._mockRepository.Object, this._mockDialogService.Object));
 
             // Act
             Messenger.Default.Send(new NotificationMessage(Resources.Message_ReloadBillForBillSearchVM));
 
             // Assert
-            this.billSearchViewModel.FoundBills.Should().HaveCount(0);
+            this._billSearchViewModel.FoundBills.Should().HaveCount(0);
         }
 
         [Test]
         public void RemoveBillsFromRemovedClient()
         {
             // Arrange
-            this.billSearchViewModel.FoundBills.Add(new BillDetailViewModel(ModelFactory.GetDefaultBill(), this.mockRepository.Object));
+            this._billSearchViewModel.FoundBills.Add(new BillDetailViewModel(ModelFactory.GetDefaultBill(), this._mockRepository.Object, this._mockDialogService.Object));
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(0, Resources.Message_RemoveClientForBillSearchVM));
 
             // Assert
-            this.billSearchViewModel.FoundBills.Count.Should().Be(0);
+            this._billSearchViewModel.FoundBills.Count.Should().Be(0);
         }
 
         [Test]
         public void CanNotLoadBill()
         {
             // Assert
-            this.billSearchViewModel.LoadSelectedBillCommand.CanExecute(null).Should().BeFalse();
+            this._billSearchViewModel.LoadSelectedBillCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void CanLoadBill()
         {
             // Act
-            this.billSearchViewModel.SelectedBillDetailViewModel = new BillDetailViewModel(ModelFactory.GetDefaultBill(), this.mockRepository.Object);
+            this._billSearchViewModel.SelectedBillDetailViewModel = new BillDetailViewModel(ModelFactory.GetDefaultBill(), this._mockRepository.Object, this._mockDialogService.Object);
 
             // Assert
-            this.billSearchViewModel.LoadSelectedBillCommand.CanExecute(null).Should().BeTrue();
+            this._billSearchViewModel.LoadSelectedBillCommand.CanExecute(null).Should().BeTrue();
         }
 
         [Test]
         public void SendsLoadBillMessage()
         {
             // Arrange
-            this.billSearchViewModel.SelectedBillDetailViewModel = new BillDetailViewModel(ModelFactory.GetDefaultBill(), this.mockRepository.Object);
+            this._billSearchViewModel.SelectedBillDetailViewModel = new BillDetailViewModel(ModelFactory.GetDefaultBill(), this._mockRepository.Object, this._mockDialogService.Object);
 
             string notificationMessage = null;
             Messenger.Default.Register<NotificationMessage<int>>(this, x => notificationMessage = x.Notification);
 
             // Act
-            this.billSearchViewModel.LoadSelectedBillCommand.Execute(null);
+            this._billSearchViewModel.LoadSelectedBillCommand.Execute(null);
 
             // Assert
             notificationMessage.Should().Be(Resources.Message_LoadSelectedBillForBillEditVM);
@@ -247,30 +303,30 @@ namespace EpAccounting.Test.UI.ViewModel
         public void CanNotLoadNextPageWhenJustOnePage()
         {
             // Arrange
-            const int NumberOfElements = 10;
+            const int numberOfElements = 10;
 
-            this.mockRepository.Setup(x => x.GetByCriteria<Bill>(It.IsAny<ICriterion>(), 1))
+            this._mockRepository.Setup(x => x.GetByCriteria<Bill>(It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Bill>());
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Bill>(It.IsAny<ICriterion>()))
-                .Returns(NumberOfElements);
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria<Bill>(It.IsAny<ICriterion>()))
+                .Returns(numberOfElements);
 
             // Act
             Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
-            this.billSearchViewModel.LoadNextPageCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this._billSearchViewModel.LoadNextPageCommand.RelayCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void CanLoadNexPage()
         {
             // Arrange
-            const int NumberOfElements = 55;
+            const int numberOfElements = 55;
 
-            this.mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Bill>());
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
-                .Returns(NumberOfElements);
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+                .Returns(numberOfElements);
 
             Conjunction billConjunction = Restrictions.Conjunction();
             billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
@@ -283,19 +339,19 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
-            this.billSearchViewModel.LoadNextPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
+            this._billSearchViewModel.LoadNextPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
         }
 
         [Test]
         public void LoadsNexPage()
         {
             // Arrange
-            const int NumberOfElements = 55;
+            const int numberOfElements = 55;
 
-            this.mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
-                .Returns(NumberOfElements);
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+                .Returns(numberOfElements);
 
             Conjunction billConjunction = Restrictions.Conjunction();
             billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
@@ -306,40 +362,91 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
-            this.billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
 
             // Assert
-            this.billSearchViewModel.CurrentPage.Should().Be(2);
+            this._billSearchViewModel.CurrentPage.Should().Be(2);
+        }
+
+        [Test]
+        public void CanLoadLastPage()
+        {
+            // Arrange
+            const int numberOfElements = 55;
+
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Bill>());
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+                .Returns(numberOfElements);
+
+            Conjunction billConjunction = Restrictions.Conjunction();
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
+            Conjunction clientConjunction = Restrictions.Conjunction();
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
+
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+
+            // Assert
+            this._billSearchViewModel.LoadLastPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
+        }
+
+        [Test]
+        public void LoadsLastPage()
+        {
+            // Arrange
+            const int numberOfElements = 55;
+
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Bill>());
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+                .Returns(numberOfElements);
+
+            Conjunction billConjunction = Restrictions.Conjunction();
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
+            Conjunction clientConjunction = Restrictions.Conjunction();
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
+
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            this._billSearchViewModel.LoadLastPageCommand.RelayCommand.Execute(null);
+
+            // Assert
+            this._billSearchViewModel.CurrentPage.Should().Be(Convert.ToInt32(Math.Ceiling((double) numberOfElements / Settings.Default.PageSize)));
         }
 
         [Test]
         public void CanNotLoadPreviousPageWhenOnPage1()
         {
             // Arrange
-            const int NumberOfElements = 55;
+            const int numberOfElements = 55;
 
-            this.mockRepository.Setup(x => x.GetByCriteria<Bill>(It.IsAny<ICriterion>(), 1))
+            this._mockRepository.Setup(x => x.GetByCriteria<Bill>(It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Bill>());
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Bill>(It.IsAny<ICriterion>()))
-                .Returns(NumberOfElements);
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria<Bill>(It.IsAny<ICriterion>()))
+                .Returns(numberOfElements);
 
             // Act
             Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
-            this.billSearchViewModel.LoadPreviousPageCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+            this._billSearchViewModel.LoadPreviousPageCommand.RelayCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void CanLoadPreviousPageWhenNotOnPage1()
         {
             // Arrange
-            const int NumberOfElements = 55;
+            const int numberOfElements = 55;
 
-            this.mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
-                .Returns(NumberOfElements);
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+                .Returns(numberOfElements);
 
             Conjunction billConjunction = Restrictions.Conjunction();
             billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
@@ -350,22 +457,22 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
-            this.billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
 
             // Assert
-            this.billSearchViewModel.LoadPreviousPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
+            this._billSearchViewModel.LoadPreviousPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
         }
 
         [Test]
         public void LoadsPreviousPage()
         {
             // Arrange
-            const int NumberOfElements = 55;
+            const int numberOfElements = 55;
 
-            this.mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
-                .Returns(NumberOfElements);
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+                .Returns(numberOfElements);
 
             Conjunction billConjunction = Restrictions.Conjunction();
             billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
@@ -376,23 +483,95 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
-            this.billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
-            this.billSearchViewModel.LoadPreviousPageCommand.RelayCommand.Execute(null);
+            this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this._billSearchViewModel.LoadPreviousPageCommand.RelayCommand.Execute(null);
 
             // Assert
-            this.billSearchViewModel.CurrentPage.Should().Be(1);
+            this._billSearchViewModel.CurrentPage.Should().Be(1);
+        }
+
+        [Test]
+        public void CanNotLoadFirstPageWhenOnPage1()
+        {
+            // Arrange
+            const int numberOfElements = 55;
+
+            this._mockRepository.Setup(x => x.GetByCriteria<Bill>(It.IsAny<ICriterion>(), 1))
+                .Returns(new List<Bill>());
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria<Bill>(It.IsAny<ICriterion>()))
+                .Returns(numberOfElements);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<ICriterion>(null, Resources.Message_BillSearchCriteriaForBillSearchVM));
+
+            // Assert
+            this._billSearchViewModel.LoadFirstPageCommand.RelayCommand.CanExecute(null).Should().BeFalse();
+        }
+
+        [Test]
+        public void CanLoadFirstPageWhenNotOnPage1()
+        {
+            // Arrange
+            const int numberOfElements = 55;
+
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+                .Returns(new List<Bill>());
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+                .Returns(numberOfElements);
+
+            Conjunction billConjunction = Restrictions.Conjunction();
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
+            Conjunction clientConjunction = Restrictions.Conjunction();
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
+
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+
+            // Assert
+            this._billSearchViewModel.LoadFirstPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
+        }
+
+        [Test]
+        public void LoadsFirstPage()
+        {
+            // Arrange
+            const int numberOfElements = 55;
+
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+                .Returns(new List<Bill>());
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+                .Returns(numberOfElements);
+
+            Conjunction billConjunction = Restrictions.Conjunction();
+            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
+            Conjunction clientConjunction = Restrictions.Conjunction();
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
+
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+
+            // Act
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this._billSearchViewModel.LoadFirstPageCommand.RelayCommand.Execute(null);
+
+            // Assert
+            this._billSearchViewModel.CurrentPage.Should().Be(1);
         }
 
         [Test]
         public void ChangesToPreviousPageWhenBillWasDeletedAndNoBillLeftOnPage()
         {
             // Arrange
-            const int NumberOfElements = 51;
+            const int numberOfElements = 51;
 
-            this.mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
-                .Returns(NumberOfElements);
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+                .Returns(numberOfElements);
 
             Conjunction billConjunction = Restrictions.Conjunction();
             billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
@@ -403,31 +582,31 @@ namespace EpAccounting.Test.UI.ViewModel
 
             // Act
             Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
-            this.billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
+            this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
 
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
-                .Returns(NumberOfElements - 1);
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+                .Returns(numberOfElements - 1);
             Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
-            this.billSearchViewModel.CurrentPage.Should().Be(1);
-            this.billSearchViewModel.NumberOfAllPages.Should().Be(1);
+            this._billSearchViewModel.CurrentPage.Should().Be(1);
+            this._billSearchViewModel.NumberOfAllPages.Should().Be(1);
         }
 
         [Test]
         public void LoadBillsFromSpecificClientWhenLoadBillsFromClientMessageReceived()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>() { ModelFactory.GetDefaultBill() });
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
                 .Returns(1);
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_LoadBillsFromClientForBillSearchVM));
 
             // Assert
-            this.billSearchViewModel.FoundBills.Count.Should().Be(1);
+            this._billSearchViewModel.FoundBills.Count.Should().Be(1);
         }
     }
 }

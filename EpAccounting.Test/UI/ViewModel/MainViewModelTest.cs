@@ -25,7 +25,7 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class MainViewModelTest
     {
-        private MainViewModel mainViewModel;
+        private MainViewModel _mainViewModel;
 
 
         [SetUp]
@@ -40,7 +40,7 @@ namespace EpAccounting.Test.UI.ViewModel
             DatabaseFactory.DeleteTestFolderAndFile();
             DatabaseFactory.ClearSavedFilePath();
 
-            this.mainViewModel = null;
+            this._mainViewModel = null;
             GC.Collect();
         }
 
@@ -56,12 +56,12 @@ namespace EpAccounting.Test.UI.ViewModel
         public void WorkspacesInitializedAfterCreation()
         {
             // Act
-            this.mainViewModel = this.GetMockedViewModel();
+            this._mainViewModel = this.GetMockedViewModel();
 
             // Assert
-            this.mainViewModel.WorkspaceViewModels.Should().HaveCount(4);
-            this.mainViewModel.CurrentWorkspace.Should().NotBeNull();
-            this.mainViewModel.CurrentWorkspace.Should().BeOfType<ClientViewModel>();
+            this._mainViewModel.WorkspaceViewModels.Should().HaveCount(4);
+            this._mainViewModel.CurrentWorkspace.Should().NotBeNull();
+            this._mainViewModel.CurrentWorkspace.Should().BeOfType<ClientViewModel>();
         }
 
         [Test]
@@ -72,20 +72,20 @@ namespace EpAccounting.Test.UI.ViewModel
             DatabaseFactory.SetSavedFilePath();
 
             // Act
-            this.mainViewModel = this.GetDefaultViewModel();
+            this._mainViewModel = this.GetDefaultViewModel();
 
             // Assert
-            this.mainViewModel.IsConnected.Should().BeTrue();
+            this._mainViewModel.IsConnected.Should().BeTrue();
         }
 
         [Test]
         public void DoNotConnectAtStartupWhenSavedDatabasePathIsInvalid()
         {
             // Arrange
-            this.mainViewModel = this.GetDefaultViewModel();
+            this._mainViewModel = this.GetDefaultViewModel();
 
             // Assert
-            this.mainViewModel.IsConnected.Should().BeFalse();
+            this._mainViewModel.IsConnected.Should().BeFalse();
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Settings.Default.DatabaseFilePath = "Desktop\\Test.db";
 
             // Act
-            this.mainViewModel = this.GetDefaultViewModel();
+            this._mainViewModel = this.GetDefaultViewModel();
 
             // Assert
             Settings.Default.DatabaseFilePath.Should().BeNullOrEmpty();
@@ -105,64 +105,64 @@ namespace EpAccounting.Test.UI.ViewModel
         public void UpdateConnectionState()
         {
             // Arrange
-            this.mainViewModel = this.GetMockedViewModel();
-            this.mainViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._mainViewModel = this.GetMockedViewModel();
+            this._mainViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
             Messenger.Default.Send(new NotificationMessage(Resources.Message_UpdateConnectionStateForMainVM));
 
             // Assert
-            this.mainViewModel.ShouldRaisePropertyChangeFor(x => x.IsConnected);
+            this._mainViewModel.ShouldRaisePropertyChangeFor(x => x.IsConnected);
         }
 
         [Test]
         public void ChangeToBillWorkspace()
         {
             // Arrange
-            this.mainViewModel = this.GetMockedViewModel();
+            this._mainViewModel = this.GetMockedViewModel();
 
             // Act
             Messenger.Default.Send(new NotificationMessage(Resources.Message_ChangeToBillWorkspaceForMainVM));
 
             // Assert
-            this.mainViewModel.CurrentWorkspace.Should().BeOfType<BillViewModel>();
+            this._mainViewModel.CurrentWorkspace.Should().BeOfType<BillViewModel>();
         }
 
         [Test]
         public void RaisePropertyChangedWhenCurrentViewModelChanges()
         {
             // Arrange
-            this.mainViewModel = this.GetMockedViewModel();
-            this.mainViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._mainViewModel = this.GetMockedViewModel();
+            this._mainViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
             Messenger.Default.Send(new NotificationMessage(Resources.Message_ChangeToBillWorkspaceForMainVM));
 
             // Assert
-            this.mainViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentWorkspace);
+            this._mainViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentWorkspace);
         }
 
         [Test]
         public void CanChangeWorkspaceAfterInitialization()
         {
             // Act
-            this.mainViewModel = this.GetMockedViewModel();
+            this._mainViewModel = this.GetMockedViewModel();
 
             // Assert
-            this.mainViewModel.CanChangeWorkspace.Should().BeTrue();
+            this._mainViewModel.CanChangeWorkspace.Should().BeTrue();
         }
 
         [Test]
         public void DisableWorkspaceChangingWithMessage()
         {
             // Arrange
-            this.mainViewModel = this.GetMockedViewModel();
+            this._mainViewModel = this.GetMockedViewModel();
 
             // Act
             Messenger.Default.Send(new NotificationMessage<bool>(false, Resources.Message_WorkspaceEnableStateForMainVM));
 
             // Assert
-            this.mainViewModel.CanChangeWorkspace.Should().BeFalse();
+            this._mainViewModel.CanChangeWorkspace.Should().BeFalse();
         }
 
 

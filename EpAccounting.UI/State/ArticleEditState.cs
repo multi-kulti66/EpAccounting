@@ -13,7 +13,7 @@ namespace EpAccounting.UI.State
     {
         #region Fields
 
-        private readonly ArticlesOptionViewModel articlesOptionViewModel;
+        private readonly ArticlesOptionViewModel _articlesOptionViewModel;
 
         #endregion
 
@@ -23,7 +23,7 @@ namespace EpAccounting.UI.State
 
         public ArticleEditState(ArticlesOptionViewModel articlesOptionViewModel)
         {
-            this.articlesOptionViewModel = articlesOptionViewModel;
+            this._articlesOptionViewModel = articlesOptionViewModel;
         }
 
         #endregion
@@ -49,9 +49,9 @@ namespace EpAccounting.UI.State
 
         public void Commit()
         {
-            if (this.articlesOptionViewModel.SaveChanges())
+            if (this._articlesOptionViewModel.SaveChanges())
             {
-                this.articlesOptionViewModel.ChangeToLoadedMode();
+                this._articlesOptionViewModel.ChangeToLoadedMode();
             }
         }
 
@@ -62,8 +62,8 @@ namespace EpAccounting.UI.State
 
         public void Cancel()
         {
-            this.articlesOptionViewModel.RestoreArticles();
-            this.articlesOptionViewModel.ChangeToLoadedMode();
+            this._articlesOptionViewModel.RestoreArticles();
+            this._articlesOptionViewModel.ChangeToLoadedMode();
         }
 
         #endregion

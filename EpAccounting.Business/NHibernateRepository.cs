@@ -137,8 +137,8 @@ namespace EpAccounting.Business
             }
         }
 
-        public int GetQuantityByCriteria<T, U>(ICriterion criterion1,
-                                               Expression<Func<T, U>> combinationCriterion,
+        public int GetQuantityByCriteria<T, TU>(ICriterion criterion1,
+                                               Expression<Func<T, TU>> combinationCriterion,
                                                ICriterion criterion2) where T : class
         {
             using (ISession session = this._sessionManager.OpenSession())
@@ -155,8 +155,8 @@ namespace EpAccounting.Business
             }
         }
 
-        public ICollection<T> GetByCriteria<T, U>(ICriterion criterion1,
-                                                  Expression<Func<T, U>> combinationCriterion,
+        public ICollection<T> GetByCriteria<T, TU>(ICriterion criterion1,
+                                                  Expression<Func<T, TU>> combinationCriterion,
                                                   ICriterion criterion2, int page) where T : class
         {
             using (ISession session = this._sessionManager.OpenSession())

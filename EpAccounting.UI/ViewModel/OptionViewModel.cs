@@ -20,8 +20,8 @@ namespace EpAccounting.UI.ViewModel
     {
         #region Fields
 
-        private readonly IRepository repository;
-        private readonly IDialogService dialogService;
+        private readonly IRepository _repository;
+        private readonly IDialogService _dialogService;
 
         private RelayCommand _createDatabaseCommand;
         private RelayCommand _loadDatabaseCommand;
@@ -35,8 +35,8 @@ namespace EpAccounting.UI.ViewModel
         public OptionViewModel(string title, Bitmap image,
                                IRepository repository, IDialogService dialogService) : base(title, image)
         {
-            this.repository = repository;
-            this.dialogService = dialogService;
+            this._repository = repository;
+            this._dialogService = dialogService;
         }
 
         #endregion
@@ -89,7 +89,7 @@ namespace EpAccounting.UI.ViewModel
 
         private async void CreateDatabase()
         {
-            string databaseFolderPath = this.dialogService.ShowFolderDialog();
+            string databaseFolderPath = this._dialogService.ShowFolderDialog();
 
             if (string.IsNullOrEmpty(databaseFolderPath))
             {
@@ -102,7 +102,7 @@ namespace EpAccounting.UI.ViewModel
 
                 if (File.Exists(databaseFilePath))
                 {
-                    bool shouldOverwrite = await this.dialogService.ShowDialogYesNo(Resources.Dialog_Title_DatabaseAlreadyExists,
+                    bool shouldOverwrite = await this._dialogService.ShowDialogYesNo(Resources.Dialog_Title_DatabaseAlreadyExists,
                                                                                     string.Format(Resources.Dialog_Question_ShouldOverwriteDatabase, databaseFilePath));
 
                     if (!shouldOverwrite)
@@ -111,18 +111,18 @@ namespace EpAccounting.UI.ViewModel
                     }
                 }
 
-                this.repository.CreateDatabase(databaseFilePath);
+                this._repository.CreateDatabase(databaseFilePath);
                 this.UpdatePathAndConnectionState(databaseFilePath);
             }
             catch (Exception e)
             {
-                await this.dialogService.ShowMessage(Resources.Exception_Message_CouldNotCreateDatabase, e.Message);
+                await this._dialogService.ShowMessage(Resources.Exception_Message_CouldNotCreateDatabase, e.Message);
             }
         }
 
         private void LoadDatabase()
         {
-            string databaseFilePath = this.dialogService.ShowDatabaseFileDialog();
+            string databaseFilePath = this._dialogService.ShowDatabaseFileDialog();
 
             if (string.IsNullOrEmpty(databaseFilePath))
             {
@@ -131,12 +131,12 @@ namespace EpAccounting.UI.ViewModel
 
             try
             {
-                this.repository.LoadDatabase(databaseFilePath);
+                this._repository.LoadDatabase(databaseFilePath);
                 this.UpdatePathAndConnectionState(databaseFilePath);
             }
             catch (Exception e)
             {
-                this.dialogService.ShowMessage(Resources.Exception_Message_CouldNotLoadDatabase, e.Message);
+                this._dialogService.ShowMessage(Resources.Exception_Message_CouldNotLoadDatabase, e.Message);
             }
         }
 

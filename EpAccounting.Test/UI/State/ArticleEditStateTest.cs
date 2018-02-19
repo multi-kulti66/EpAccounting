@@ -23,30 +23,30 @@ namespace EpAccounting.Test.UI.State
     [TestFixture]
     public class ArticleEditStateTest
     {
-        private Mock<IRepository> mockRepository;
-        private Mock<IDialogService> mockDialogService;
-        private Mock<ArticlesOptionViewModel> mockArticlesOptionViewModel;
-        private ArticleEditState articleEditState;
+        private Mock<IRepository> _mockRepository;
+        private Mock<IDialogService> _mockDialogService;
+        private Mock<ArticlesOptionViewModel> _mockArticlesOptionViewModel;
+        private ArticleEditState _articleEditState;
 
 
         [SetUp]
         public void Init()
         {
-            this.mockRepository = new Mock<IRepository>();
-            this.mockDialogService = new Mock<IDialogService>();
-            this.mockArticlesOptionViewModel = new Mock<ArticlesOptionViewModel>(Resources.Workspace_Title_Articles, Resources.img_articles,
-                                                                                 this.mockRepository.Object, this.mockDialogService.Object);
+            this._mockRepository = new Mock<IRepository>();
+            this._mockDialogService = new Mock<IDialogService>();
+            this._mockArticlesOptionViewModel = new Mock<ArticlesOptionViewModel>(Resources.Workspace_Title_Articles, Resources.img_articles,
+                                                                                 this._mockRepository.Object, this._mockDialogService.Object);
 
-            this.articleEditState = new ArticleEditState(this.mockArticlesOptionViewModel.Object);
+            this._articleEditState = new ArticleEditState(this._mockArticlesOptionViewModel.Object);
         }
 
         [TearDown]
         public void Cleanup()
         {
-            this.mockRepository = null;
-            this.mockDialogService = null;
-            this.mockArticlesOptionViewModel = null;
-            this.articleEditState = null;
+            this._mockRepository = null;
+            this._mockDialogService = null;
+            this._mockArticlesOptionViewModel = null;
+            this._articleEditState = null;
             GC.Collect();
         }
 
@@ -55,52 +55,52 @@ namespace EpAccounting.Test.UI.State
         public void CanNotSwitchToEditMode()
         {
             // Assert
-            this.articleEditState.CanSwitchToEditMode().Should().BeFalse();
+            this._articleEditState.CanSwitchToEditMode().Should().BeFalse();
         }
 
         [Test]
         public void CanCommitAndCancel()
         {
             // Assert
-            this.articleEditState.CanCommit();
-            this.articleEditState.CanCancel();
+            this._articleEditState.CanCommit();
+            this._articleEditState.CanCancel();
         }
 
         [Test]
         public void DoesNotCommitWhenSaveWasNotSuccessful()
         {
             // Arrange
-            this.mockArticlesOptionViewModel.Setup(x => x.SaveChanges()).Returns(false);
+            this._mockArticlesOptionViewModel.Setup(x => x.SaveChanges()).Returns(false);
 
             // Act
-            this.articleEditState.Commit();
+            this._articleEditState.Commit();
 
             // Assert
-            this.mockArticlesOptionViewModel.Verify(x => x.ChangeToLoadedMode(), Times.Never);
+            this._mockArticlesOptionViewModel.Verify(x => x.ChangeToLoadedMode(), Times.Never);
         }
 
         [Test]
         public void CommitsWhenSaveWasNotSuccessful()
         {
             // Arrange
-            this.mockArticlesOptionViewModel.Setup(x => x.SaveChanges()).Returns(true);
+            this._mockArticlesOptionViewModel.Setup(x => x.SaveChanges()).Returns(true);
 
             // Act
-            this.articleEditState.Commit();
+            this._articleEditState.Commit();
 
             // Assert
-            this.mockArticlesOptionViewModel.Verify(x => x.ChangeToLoadedMode(), Times.Once);
+            this._mockArticlesOptionViewModel.Verify(x => x.ChangeToLoadedMode(), Times.Once);
         }
 
         [Test]
         public void CancelsChanges()
         {
             // Act
-            this.articleEditState.Cancel();
+            this._articleEditState.Cancel();
 
             // Assert
-            this.mockArticlesOptionViewModel.Verify(x => x.RestoreArticles(), Times.Once);
-            this.mockArticlesOptionViewModel.Verify(x => x.ChangeToLoadedMode(), Times.Once);
+            this._mockArticlesOptionViewModel.Verify(x => x.RestoreArticles(), Times.Once);
+            this._mockArticlesOptionViewModel.Verify(x => x.ChangeToLoadedMode(), Times.Once);
         }
     }
 }

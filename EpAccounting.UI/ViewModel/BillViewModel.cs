@@ -1,11 +1,12 @@
 ﻿// ///////////////////////////////////
 // File: BillViewModel.cs
-// Last Change: 17.02.2018, 14:28
+// Last Change: 19.02.2018, 19:54
 // Author: Andre Multerer
 // ///////////////////////////////////
 
 namespace EpAccounting.UI.ViewModel
 {
+    using System;
     using System.Drawing;
     using Business;
     using GalaSoft.MvvmLight.Messaging;
@@ -14,13 +15,9 @@ namespace EpAccounting.UI.ViewModel
     using Service;
 
 
-    public class BillViewModel : WorkspaceViewModel
+    public class BillViewModel : WorkspaceViewModel, IDisposable
     {
         #region Fields
-
-        private readonly BillEditViewModel _billEditViewModel;
-        private readonly BillItemEditViewModel _billItemEditViewModel;
-        private readonly BillSearchViewModel _billSearchViewModel;
 
         private BillWorkspaceViewModel _billWorkspaceViewModel;
 
@@ -32,9 +29,9 @@ namespace EpAccounting.UI.ViewModel
 
         public BillViewModel(string title, Bitmap image, IRepository repository, IDialogService dialogService) : base(title, image)
         {
-            this._billEditViewModel = new BillEditViewModel(repository, dialogService);
-            this._billItemEditViewModel = new BillItemEditViewModel(repository, dialogService, new WordService());
-            this._billSearchViewModel = new BillSearchViewModel(repository);
+            this.BillEditViewModel = new BillEditViewModel(repository, dialogService);
+            this.BillItemEditViewModel = new BillItemEditViewModel(repository, dialogService, new WordService());
+            this.BillSearchViewModel = new BillSearchViewModel(repository, dialogService);
             this._billWorkspaceViewModel = this.BillSearchViewModel;
 
             Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
@@ -47,10 +44,7 @@ namespace EpAccounting.UI.ViewModel
 
         #region Properties, Indexers
 
-        public BillEditViewModel BillEditViewModel
-        {
-            get { return this._billEditViewModel; }
-        }
+        public BillEditViewModel BillEditViewModel { get; }
 
         public BillWorkspaceViewModel BillWorkspaceViewModel
         {
@@ -58,14 +52,22 @@ namespace EpAccounting.UI.ViewModel
             set { this.SetProperty(ref this._billWorkspaceViewModel, value); }
         }
 
-        private BillItemEditViewModel BillItemEditViewModel
-        {
-            get { return this._billItemEditViewModel; }
-        }
+        private BillItemEditViewModel BillItemEditViewModel { get; }
 
-        private BillSearchViewModel BillSearchViewModel
+        private BillSearchViewModel BillSearchViewModel { get; }
+
+        #endregion
+
+
+
+        #region IDisposable Members
+
+        public void Dispose()
         {
-            get { return this._billSearchViewModel; }
+            this.BillEditViewModel?.Dispose();
+            this.BillItemEditViewModel?.Dispose();
+            this.BillSearchViewModel?.Dispose();
+            Messenger.Default.Unregister(this);
         }
 
         #endregion

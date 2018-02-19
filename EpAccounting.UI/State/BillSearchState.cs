@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchState.cs
-// Last Change: 17.02.2018, 14:28
+// Last Change: 19.02.2018, 19:15
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -16,7 +16,7 @@ namespace EpAccounting.UI.State
     {
         #region Fields
 
-        private readonly BillEditViewModel billEditViewModel;
+        private readonly BillEditViewModel _billEditViewModel;
 
         #endregion
 
@@ -26,7 +26,7 @@ namespace EpAccounting.UI.State
 
         public BillSearchState(BillEditViewModel billEditViewModel)
         {
-            this.billEditViewModel = billEditViewModel;
+            this._billEditViewModel = billEditViewModel;
         }
 
         #endregion
@@ -62,7 +62,7 @@ namespace EpAccounting.UI.State
 
         public Task Commit()
         {
-            this.billEditViewModel.SendBillSearchCriterionMessage();
+            this._billEditViewModel.SendBillSearchCriterionMessage();
             return Task.FromResult<object>(null);
         }
 
@@ -73,7 +73,7 @@ namespace EpAccounting.UI.State
 
         public void Cancel()
         {
-            this.billEditViewModel.ChangeToEmptyMode();
+            this._billEditViewModel.ChangeToEmptyMode();
             Messenger.Default.Send(new NotificationMessage(Resources.Message_LoadBillSearchViewModelMessageForBillVM));
         }
 

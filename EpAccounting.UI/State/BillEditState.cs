@@ -14,7 +14,7 @@ namespace EpAccounting.UI.State
     {
         #region Fields
 
-        private readonly BillEditViewModel billEditViewModel;
+        private readonly BillEditViewModel _billEditViewModel;
 
         #endregion
 
@@ -24,7 +24,7 @@ namespace EpAccounting.UI.State
 
         public BillEditState(BillEditViewModel billEditViewModel)
         {
-            this.billEditViewModel = billEditViewModel;
+            this._billEditViewModel = billEditViewModel;
         }
 
         #endregion
@@ -60,10 +60,10 @@ namespace EpAccounting.UI.State
 
         public async Task Commit()
         {
-            if (await this.billEditViewModel.SaveOrUpdateBillAsync())
+            if (await this._billEditViewModel.SaveOrUpdateBillAsync())
             {
-                this.billEditViewModel.ChangeToLoadedMode();
-                this.billEditViewModel.SendUpdateBillValuesMessage();
+                this._billEditViewModel.ChangeToLoadedMode();
+                this._billEditViewModel.SendUpdateBillValuesMessage();
             }
         }
 
@@ -74,7 +74,7 @@ namespace EpAccounting.UI.State
 
         public void Cancel()
         {
-            this.billEditViewModel.Reload();
+            this._billEditViewModel.Reload();
         }
 
         public bool CanDelete()

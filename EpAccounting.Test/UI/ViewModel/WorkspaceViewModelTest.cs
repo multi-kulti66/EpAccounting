@@ -19,19 +19,19 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class WorkspaceViewModelTest
     {
-        private WorkspaceViewModel workspaceViewModel;
+        private WorkspaceViewModel _workspaceViewModel;
 
 
         [SetUp]
         public void Init()
         {
-            this.workspaceViewModel = new WorkspaceViewModel(Resources.Workspace_Title_Options, Resources.img_options);
+            this._workspaceViewModel = new WorkspaceViewModel(Resources.Workspace_Title_Options, Resources.img_options);
         }
 
         [TearDown]
         public void Cleanup()
         {
-            this.workspaceViewModel = null;
+            this._workspaceViewModel = null;
             GC.Collect();
         }
 
@@ -46,9 +46,9 @@ namespace EpAccounting.Test.UI.ViewModel
         public void CanInitializeInstance()
         {
             // Assert
-            this.workspaceViewModel.Should().NotBeNull();
-            this.workspaceViewModel.Title.Should().Be(Resources.Workspace_Title_Options);
-            this.workspaceViewModel.Image.FrameDimensionsList.ShouldBeEquivalentTo(Resources.img_options.FrameDimensionsList);
+            this._workspaceViewModel.Should().NotBeNull();
+            this._workspaceViewModel.Title.Should().Be(Resources.Workspace_Title_Options);
+            this._workspaceViewModel.Image.FrameDimensionsList.ShouldBeEquivalentTo(Resources.img_options.FrameDimensionsList);
         }
     }
 }

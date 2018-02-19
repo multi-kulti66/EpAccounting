@@ -40,14 +40,14 @@ namespace EpAccounting.Business
 
         int GetQuantityByCriteria<T>(ICriterion criterion) where T : class;
 
-        int GetQuantityByCriteria<T, U>(ICriterion criterion1,
-            Expression<Func<T, U>>combinationCriterion,
+        int GetQuantityByCriteria<T, TU>(ICriterion criterion1,
+            Expression<Func<T, TU>>combinationCriterion,
             ICriterion criterion2) where T : class;
 
         ICollection<T> GetByCriteria<T>(ICriterion criterion, int page) where T : class;
 
-        ICollection<T> GetByCriteria<T, U>(ICriterion criterion1,
-            Expression<Func<T, U>> combinationCriterion,
+        ICollection<T> GetByCriteria<T, TU>(ICriterion criterion1,
+            Expression<Func<T, TU>> combinationCriterion,
             ICriterion criterion2, int page) where T : class;
     }
 }

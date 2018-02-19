@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientLoadedState.cs
-// Last Change: 17.02.2018, 14:28
+// Last Change: 19.02.2018, 19:15
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -14,7 +14,7 @@ namespace EpAccounting.UI.State
     {
         #region Fields
 
-        private readonly ClientEditViewModel clientEditViewModel;
+        private readonly ClientEditViewModel _clientEditViewModel;
 
         #endregion
 
@@ -24,7 +24,7 @@ namespace EpAccounting.UI.State
 
         public ClientLoadedState(ClientEditViewModel clientEditViewModel)
         {
-            this.clientEditViewModel = clientEditViewModel;
+            this._clientEditViewModel = clientEditViewModel;
         }
 
         #endregion
@@ -40,7 +40,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToSearchMode()
         {
-            this.clientEditViewModel.ChangeToSearchMode();
+            this._clientEditViewModel.ChangeToSearchMode();
         }
 
         public bool CanSwitchToAddMode()
@@ -50,7 +50,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToAddMode()
         {
-            this.clientEditViewModel.ChangeToCreationMode();
+            this._clientEditViewModel.ChangeToCreationMode();
         }
 
         public bool CanSwitchToEditMode()
@@ -60,7 +60,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToEditMode()
         {
-            this.clientEditViewModel.ChangeToEditMode();
+            this._clientEditViewModel.ChangeToEditMode();
         }
 
         public bool CanCommit()
@@ -90,9 +90,9 @@ namespace EpAccounting.UI.State
 
         public async Task Delete()
         {
-            if (await this.clientEditViewModel.DeleteClientAsync())
+            if (await this._clientEditViewModel.DeleteClientAsync())
             {
-                this.clientEditViewModel.ChangeToEmptyMode();
+                this._clientEditViewModel.ChangeToEmptyMode();
             }
         }
 

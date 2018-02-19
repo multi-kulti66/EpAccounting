@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillDetailViewModel.cs
-// Last Change: 17.02.2018, 14:28
+// Last Change: 19.02.2018, 19:35
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -14,14 +14,16 @@ namespace EpAccounting.UI.ViewModel
     using Model;
     using Model.Enum;
     using Properties;
+    using Service;
 
 
-    public class BillDetailViewModel : BindableViewModelBase
+    public class BillDetailViewModel : BindableViewModelBase, IDisposable
     {
         #region Fields
 
-        private readonly IRepository repository;
-        private Bill bill;
+        private readonly IRepository _repository;
+        private readonly IDialogService _dialogService;
+        private Bill _bill;
 
         #endregion
 
@@ -29,10 +31,11 @@ namespace EpAccounting.UI.ViewModel
 
         #region Constructors
 
-        public BillDetailViewModel(Bill bill, IRepository repository)
+        public BillDetailViewModel(Bill bill, IRepository repository, IDialogService dialogService)
         {
-            this.repository = repository;
-            this.bill = bill;
+            this._dialogService = dialogService;
+            this._repository = repository;
+            this._bill = bill;
 
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
@@ -45,96 +48,107 @@ namespace EpAccounting.UI.ViewModel
 
         public int Id
         {
-            get { return this.bill.Id; }
-            set { this.SetProperty(() => this.bill.Id = value, () => this.bill.Id == value); }
+            get { return this._bill.Id; }
+            set { this.SetProperty(() => this._bill.Id = value, () => this._bill.Id == value); }
         }
 
         public bool? Printed
         {
-            get { return this.bill.Printed; }
-            set { this.SetProperty(() => this.bill.Printed = value, () => this.bill.Printed == value); }
+            get { return this._bill.Printed; }
+            set { this.SetProperty(() => this._bill.Printed = value, () => this._bill.Printed == value); }
         }
 
         public KindOfBill? KindOfBill
         {
-            get { return this.bill.KindOfBill; }
-            set { this.SetProperty(() => this.bill.KindOfBill = value, () => this.bill.KindOfBill == value); }
+            get { return this._bill.KindOfBill; }
+            set { this.SetProperty(() => this._bill.KindOfBill = value, () => this._bill.KindOfBill == value); }
         }
 
         public KindOfVat? KindOfVat
         {
-            get { return this.bill.KindOfVat; }
+            get { return this._bill.KindOfVat; }
             set
             {
-                this.SetProperty(() => this.bill.KindOfVat = value, () => this.bill.KindOfVat == value);
+                this.SetProperty(() => this._bill.KindOfVat = value, () => this._bill.KindOfVat == value);
                 Messenger.Default.Send(new NotificationMessage(Resources.Message_OnVatChangeRecalculatePricesForBillItemEditVM));
             }
         }
 
         public double VatPercentage
         {
-            get { return this.bill.VatPercentage; }
-            set { this.SetProperty(() => this.bill.VatPercentage = value, () => Math.Abs(this.bill.VatPercentage - value) < 0.01); }
+            get { return this._bill.VatPercentage; }
+            set { this.SetProperty(() => this._bill.VatPercentage = value, () => Math.Abs(this._bill.VatPercentage - value) < 0.01); }
         }
 
         public string Date
         {
-            get { return this.bill.Date; }
-            set { this.SetProperty(() => this.bill.Date = value, () => this.bill.Date == value); }
+            get { return this._bill.Date; }
+            set { this.SetProperty(() => this._bill.Date = value, () => this._bill.Date == value); }
         }
 
         public int ClientId
         {
-            get { return this.bill.Client.Id; }
-            set { this.SetProperty(() => this.bill.Client.Id = value, () => this.bill.Client.Id == value); }
+            get { return this._bill.Client.Id; }
+            set { this.SetProperty(() => this._bill.Client.Id = value, () => this._bill.Client.Id == value); }
         }
 
         public ClientTitle? Title
         {
-            get { return this.bill.Client.Title; }
-            set { this.SetProperty(() => this.bill.Client.Title = value, () => this.bill.Client.Title == value); }
+            get { return this._bill.Client.Title; }
+            set { this.SetProperty(() => this._bill.Client.Title = value, () => this._bill.Client.Title == value); }
         }
 
         public string CompanyName
         {
-            get { return this.bill.Client.CompanyName; }
-            set { this.SetProperty(() => this.bill.Client.CompanyName = value, () => this.bill.Client.CompanyName == value); }
+            get { return this._bill.Client.CompanyName; }
+            set { this.SetProperty(() => this._bill.Client.CompanyName = value, () => this._bill.Client.CompanyName == value); }
         }
 
         public string FirstName
         {
-            get { return this.bill.Client.FirstName; }
-            set { this.SetProperty(() => this.bill.Client.FirstName = value, () => this.bill.Client.FirstName == value); }
+            get { return this._bill.Client.FirstName; }
+            set { this.SetProperty(() => this._bill.Client.FirstName = value, () => this._bill.Client.FirstName == value); }
         }
 
         public string LastName
         {
-            get { return this.bill.Client.LastName; }
-            set { this.SetProperty(() => this.bill.Client.LastName = value, () => this.bill.Client.LastName == value); }
+            get { return this._bill.Client.LastName; }
+            set { this.SetProperty(() => this._bill.Client.LastName = value, () => this._bill.Client.LastName == value); }
         }
 
         public string Street
         {
-            get { return this.bill.Client.Street; }
-            set { this.SetProperty(() => this.bill.Client.Street = value, () => this.bill.Client.Street == value); }
+            get { return this._bill.Client.Street; }
+            set { this.SetProperty(() => this._bill.Client.Street = value, () => this._bill.Client.Street == value); }
         }
 
         public string HouseNumber
         {
-            get { return this.bill.Client.HouseNumber; }
-            set { this.SetProperty(() => this.bill.Client.HouseNumber = value, () => this.bill.Client.HouseNumber == value); }
+            get { return this._bill.Client.HouseNumber; }
+            set { this.SetProperty(() => this._bill.Client.HouseNumber = value, () => this._bill.Client.HouseNumber == value); }
         }
 
         public string PostalCode
         {
-            get { return this.bill.Client.CityToPostalCode.PostalCode; }
-            set { this.SetProperty(() => this.bill.Client.CityToPostalCode.PostalCode = value, () => this.bill.Client.CityToPostalCode.PostalCode == value); }
+            get { return this._bill.Client.CityToPostalCode.PostalCode; }
+            set { this.SetProperty(() => this._bill.Client.CityToPostalCode.PostalCode = value, () => this._bill.Client.CityToPostalCode.PostalCode == value); }
         }
 
         public string City
         {
-            get { return this.bill.Client.CityToPostalCode.City; }
-            set { this.SetProperty(() => this.bill.Client.CityToPostalCode.City = value, () => this.bill.Client.CityToPostalCode.City == value); }
+            get { return this._bill.Client.CityToPostalCode.City; }
+            set { this.SetProperty(() => this._bill.Client.CityToPostalCode.City = value, () => this._bill.Client.CityToPostalCode.City == value); }
+        }
+
+        #endregion
+
+
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            Messenger.Default.Unregister(this);
         }
 
         #endregion
@@ -147,7 +161,15 @@ namespace EpAccounting.UI.ViewModel
             {
                 if (this.Id == message.Content)
                 {
-                    this.bill = this.repository.GetById<Bill>(message.Content);
+                    try
+                    {
+                        this._bill = this._repository.GetById<Bill>(message.Content);
+                    }
+                    catch (Exception e)
+                    {
+                        this._dialogService.ShowExceptionMessage(e, string.Format("Could not load bill with id '{0}'", message.Content));
+                    }
+
                     this.UpdateProperties();
                 }
             }

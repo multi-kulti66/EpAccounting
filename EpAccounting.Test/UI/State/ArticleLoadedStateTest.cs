@@ -23,30 +23,30 @@ namespace EpAccounting.Test.UI.State
     [TestFixture]
     public class ArticleLoadedStateTest
     {
-        private Mock<IRepository> mockRepository;
-        private Mock<IDialogService> mockDialogService;
-        private Mock<ArticlesOptionViewModel> mockArticlesOptionViewModel;
-        private ArticleLoadedState articleLoadedState;
+        private Mock<IRepository> _mockRepository;
+        private Mock<IDialogService> _mockDialogService;
+        private Mock<ArticlesOptionViewModel> _mockArticlesOptionViewModel;
+        private ArticleLoadedState _articleLoadedState;
 
 
         [SetUp]
         public void Init()
         {
-            this.mockRepository = new Mock<IRepository>();
-            this.mockDialogService = new Mock<IDialogService>();
-            this.mockArticlesOptionViewModel = new Mock<ArticlesOptionViewModel>(Resources.Workspace_Title_Articles, Resources.img_articles,
-                                                                                 this.mockRepository.Object, this.mockDialogService.Object);
+            this._mockRepository = new Mock<IRepository>();
+            this._mockDialogService = new Mock<IDialogService>();
+            this._mockArticlesOptionViewModel = new Mock<ArticlesOptionViewModel>(Resources.Workspace_Title_Articles, Resources.img_articles,
+                                                                                 this._mockRepository.Object, this._mockDialogService.Object);
 
-            this.articleLoadedState = new ArticleLoadedState(this.mockArticlesOptionViewModel.Object);
+            this._articleLoadedState = new ArticleLoadedState(this._mockArticlesOptionViewModel.Object);
         }
 
         [TearDown]
         public void Cleanup()
         {
-            this.mockRepository = null;
-            this.mockDialogService = null;
-            this.mockArticlesOptionViewModel = null;
-            this.articleLoadedState = null;
+            this._mockRepository = null;
+            this._mockDialogService = null;
+            this._mockArticlesOptionViewModel = null;
+            this._articleLoadedState = null;
             GC.Collect();
         }
 
@@ -55,25 +55,25 @@ namespace EpAccounting.Test.UI.State
         public void CanSwitchToEditMode()
         {
             // Assert
-            this.articleLoadedState.CanSwitchToEditMode().Should().BeTrue();
+            this._articleLoadedState.CanSwitchToEditMode().Should().BeTrue();
         }
 
         [Test]
         public void CanNotCommitOrCancel()
         {
             // Assert
-            this.articleLoadedState.CanCommit().Should().BeFalse();
-            this.articleLoadedState.CanCancel().Should().BeFalse();
+            this._articleLoadedState.CanCommit().Should().BeFalse();
+            this._articleLoadedState.CanCancel().Should().BeFalse();
         }
 
         [Test]
         public void ChangesToEditMode()
         {
             // Act
-            this.articleLoadedState.SwitchToEditMode();
+            this._articleLoadedState.SwitchToEditMode();
 
             // Assert
-            this.mockArticlesOptionViewModel.Verify(x => x.ChangeToEditMode(), Times.Once);
+            this._mockArticlesOptionViewModel.Verify(x => x.ChangeToEditMode(), Times.Once);
         }
     }
 }

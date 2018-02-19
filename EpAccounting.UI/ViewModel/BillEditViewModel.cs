@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEditViewModel.cs
-// Last Change: 17.02.2018, 21:47
+// Last Change: 19.02.2018, 19:40
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -58,7 +58,7 @@ namespace EpAccounting.UI.ViewModel
             this.InitBillCommands();
 
             this._currentBillState = this.GetBillEmptyState();
-            
+
             Messenger.Default.Register<NotificationMessage<Client>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
@@ -222,14 +222,24 @@ namespace EpAccounting.UI.ViewModel
 
         private void ChangeToCreationMode(int clientId)
         {
-            Bill bill = new Bill
-                        {
-                            Client = this._repository.GetById<Client>(clientId),
-                            KindOfBill = KindOfBill.Rechnung,
-                            KindOfVat = KindOfVat.inkl_MwSt,
-                            VatPercentage = Settings.Default.VatPercentage,
-                            Date = DateTime.Now.Date.ToShortDateString()
-                        };
+            Bill bill;
+
+            try
+            {
+                bill = new Bill
+                       {
+                           Client = this._repository.GetById<Client>(clientId),
+                           KindOfBill = KindOfBill.Rechnung,
+                           KindOfVat = KindOfVat.InklMwSt,
+                           VatPercentage = Settings.Default.VatPercentage,
+                           Date = DateTime.Now.Date.ToShortDateString()
+                       };
+            }
+            catch (Exception e)
+            {
+                this._dialogService.ShowExceptionMessage(e, string.Format("Could not create bill for client with id = '{0}'", clientId));
+                return;
+            }
 
             this.LoadBill(bill);
             this.LoadBillState(this.GetBillCreationState());
@@ -250,7 +260,7 @@ namespace EpAccounting.UI.ViewModel
         private void SetCurrentBill(Bill bill)
         {
             this._currentBill = bill;
-            this.CurrentBillDetailViewModel = new BillDetailViewModel(this._currentBill, this._repository);
+            this.CurrentBillDetailViewModel = new BillDetailViewModel(this._currentBill, this._repository, this._dialogService);
         }
 
         private void LoadBillState(IBillState billState)

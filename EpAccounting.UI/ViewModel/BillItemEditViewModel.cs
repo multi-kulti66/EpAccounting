@@ -1,11 +1,12 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditViewModel.cs
-// Last Change: 17.02.2018, 14:28
+// Last Change: 19.02.2018, 19:41
 // Author: Andre Multerer
 // ///////////////////////////////////
 
 namespace EpAccounting.UI.ViewModel
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
@@ -21,15 +22,15 @@ namespace EpAccounting.UI.ViewModel
     using Service;
 
 
-    public class BillItemEditViewModel : BillWorkspaceViewModel
+    public class BillItemEditViewModel : BillWorkspaceViewModel, IDisposable
     {
         #region Fields
 
-        private readonly IRepository repository;
-        private readonly IDialogService dialogService;
-        private readonly IWordService wordSerivce;
+        private readonly IRepository _repository;
+        private readonly IDialogService _dialogService;
+        private readonly IWordService _wordSerivce;
 
-        private Bill currentBill;
+        private Bill _currentBill;
         private ObservableCollection<BillItemDetailViewModel> _billItemDetailViewModels;
         private BillItemDetailViewModel _selectedBillItemDetailViewModel;
 
@@ -44,9 +45,9 @@ namespace EpAccounting.UI.ViewModel
         private ImageCommandViewModel _createDocumentCommand;
         private ImageCommandViewModel _printDocumentCommand;
 
-        private RelayCommand _changeVATCommand;
+        private RelayCommand _changeVatCommand;
 
-        private BackgroundWorker createBillBackgroundWorker;
+        private BackgroundWorker _createBillBackgroundWorker;
 
         #endregion
 
@@ -56,9 +57,9 @@ namespace EpAccounting.UI.ViewModel
 
         public BillItemEditViewModel(IRepository repository, IDialogService dialogSerivce, IWordService wordSerivce)
         {
-            this.repository = repository;
-            this.dialogService = dialogSerivce;
-            this.wordSerivce = wordSerivce;
+            this._repository = repository;
+            this._dialogService = dialogSerivce;
+            this._wordSerivce = wordSerivce;
 
             this.InitCommands();
             this.InitBackgroundWorker();
@@ -107,7 +108,7 @@ namespace EpAccounting.UI.ViewModel
             private set { this.SetProperty(ref this._isCreatingBill, value); }
         }
 
-        public bool CanChangeVAT { get; private set; }
+        public bool CanChangeVat { get; private set; }
 
         public bool IsEditingEnabled
         {
@@ -125,16 +126,16 @@ namespace EpAccounting.UI.ViewModel
 
         public decimal BruttoSum { get; private set; }
 
-        public RelayCommand ChangeVATCommand
+        public RelayCommand ChangeVatCommand
         {
             get
             {
-                if (this._changeVATCommand == null)
+                if (this._changeVatCommand == null)
                 {
-                    this._changeVATCommand = new RelayCommand(this.ChangeVAT);
+                    this._changeVatCommand = new RelayCommand(this.ChangeVat);
                 }
 
-                return this._changeVATCommand;
+                return this._changeVatCommand;
             }
         }
 
@@ -236,28 +237,41 @@ namespace EpAccounting.UI.ViewModel
 
 
 
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            this._createBillBackgroundWorker?.Dispose();
+            this.CurrentBillDetailViewModel?.Dispose();
+            Messenger.Default.Unregister(this);
+        }
+
+        #endregion
+
+
+
         public void Clear()
         {
             this.CurrentBillDetailViewModel = null;
-            this.currentBill = null;
+            this._currentBill = null;
             this.BillItemDetailViewModels.Clear();
         }
 
         public void LoadBill(Bill bill)
         {
-            this.CurrentBillDetailViewModel = new BillDetailViewModel(bill, this.repository);
+            this.CurrentBillDetailViewModel = new BillDetailViewModel(bill, this._repository, this._dialogService);
             this.LoadBillItems(bill);
         }
 
         private void LoadBillItems(Bill bill)
         {
-            this.currentBill = bill;
+            this._currentBill = bill;
 
             this.BillItemDetailViewModels.Clear();
 
-            foreach (BillItem billItem in this.currentBill.BillItems)
+            foreach (BillItem billItem in this._currentBill.BillItems)
             {
-                this.BillItemDetailViewModels.InsertOrderedBy(new BillItemDetailViewModel(billItem, this.repository), x => x.Position);
+                this.BillItemDetailViewModels.InsertOrderedBy(new BillItemDetailViewModel(billItem, this._repository), x => x.Position);
             }
 
             this.CalculateSums();
@@ -265,15 +279,15 @@ namespace EpAccounting.UI.ViewModel
 
         private void AdjustSinglePricesToKindOfVat()
         {
-            if (this.currentBill != null)
+            if (this._currentBill != null)
             {
                 foreach (BillItemDetailViewModel billItemDetailViewModel in this.BillItemDetailViewModels)
                 {
-                    if (this.CurrentBillDetailViewModel.KindOfVat == KindOfVat.inkl_MwSt)
+                    if (this.CurrentBillDetailViewModel.KindOfVat == KindOfVat.InklMwSt)
                     {
                         billItemDetailViewModel.Price *= (100 + (decimal) this.CurrentBillDetailViewModel.VatPercentage) / 100;
                     }
-                    else if (this.CurrentBillDetailViewModel.KindOfVat == KindOfVat.zzgl_MwSt)
+                    else if (this.CurrentBillDetailViewModel.KindOfVat == KindOfVat.ZzglMwSt)
                     {
                         billItemDetailViewModel.Price *= 100 / (100 + (decimal) this.CurrentBillDetailViewModel.VatPercentage);
                     }
@@ -292,13 +306,13 @@ namespace EpAccounting.UI.ViewModel
                 sum += billItemDetailViewModel.Sum;
             }
 
-            if (this.currentBill.KindOfVat == KindOfVat.inkl_MwSt)
+            if (this._currentBill.KindOfVat == KindOfVat.InklMwSt)
             {
                 this.BruttoSum = sum;
                 this.VatSum = this.BruttoSum / (decimal) (100 + this.CurrentBillDetailViewModel.VatPercentage) * (decimal) this.CurrentBillDetailViewModel.VatPercentage;
                 this.NettoSum = this.BruttoSum - this.VatSum;
             }
-            else if (this.currentBill.KindOfVat == KindOfVat.zzgl_MwSt)
+            else if (this._currentBill.KindOfVat == KindOfVat.ZzglMwSt)
             {
                 this.NettoSum = sum;
                 this.BruttoSum = sum * (100 + (decimal) this.CurrentBillDetailViewModel.VatPercentage) / 100;
@@ -316,12 +330,12 @@ namespace EpAccounting.UI.ViewModel
             this.RaisePropertyChanged(() => this.BruttoSum);
         }
 
-        private void ChangeVAT()
+        private void ChangeVat()
         {
-            this.CanChangeVAT = !this.CanChangeVAT;
-            this.RaisePropertyChanged(() => this.CanChangeVAT);
+            this.CanChangeVat = !this.CanChangeVat;
+            this.RaisePropertyChanged(() => this.CanChangeVat);
 
-            if (this.CanChangeVAT == false)
+            if (this.CanChangeVat == false)
             {
                 this.CalculateSums();
             }
@@ -353,41 +367,49 @@ namespace EpAccounting.UI.ViewModel
 
         private void InitBackgroundWorker()
         {
-            this.createBillBackgroundWorker = new BackgroundWorker();
-            this.createBillBackgroundWorker.DoWork += this.createBillBackgroundWorker_DoWork;
-            this.createBillBackgroundWorker.RunWorkerCompleted += this.createBillBackgroundWorker_RunWorkerCompleted;
+            this._createBillBackgroundWorker = new BackgroundWorker();
+            this._createBillBackgroundWorker.DoWork += this.createBillBackgroundWorker_DoWork;
+            this._createBillBackgroundWorker.RunWorkerCompleted += this.CreateBillBackgroundWorker_RunWorkerCompleted;
         }
 
         private void createBillBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            this.wordSerivce.CreateWordBill(this, (bool) e.Argument);
+            this._wordSerivce.CreateWordBill(this, (bool) e.Argument);
             e.Result = (bool) e.Argument;
         }
 
-        private void createBillBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void CreateBillBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Error != null)
             {
-                this.dialogService.ShowMessage(Resources.Dialog_Title_Attention, e.Error.Message);
-                this.wordSerivce.CloseDocument();
+                this._dialogService.ShowMessage(Resources.Dialog_Title_Attention, e.Error.Message);
+                this._wordSerivce.CloseDocument();
             }
             else
             {
                 if ((bool) e.Result)
                 {
-                    this.dialogService.ShowMessage(Resources.Dialog_Title_Bill_Created, Resources.Dialog_Message_Bill_Created);
+                    this._dialogService.ShowMessage(Resources.Dialog_Title_Bill_Created, Resources.Dialog_Message_Bill_Created);
                 }
 
                 if ((bool) e.Result == false)
                 {
-                    if (this.wordSerivce.PrintDocument())
+                    if (this._wordSerivce.PrintDocument())
                     {
                         this.CurrentBillDetailViewModel.Printed = true;
-                        this.repository.SaveOrUpdate(this.currentBill);
-                        Messenger.Default.Send(new NotificationMessage<int>(this.currentBill.Id, Resources.Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM));
+                        try
+                        {
+                            this._repository.SaveOrUpdate(this._currentBill);
+                        }
+                        catch (Exception ex)
+                        {
+                            this._dialogService.ShowExceptionMessage(ex, "Could not save changes in this bill!");
+                        }
+
+                        Messenger.Default.Send(new NotificationMessage<int>(this._currentBill.Id, Resources.Message_ReloadBillBecauseOfPrintedStateChangeForBillDetailVM));
                     }
 
-                    this.wordSerivce.CloseDocument();
+                    this._wordSerivce.CloseDocument();
                 }
             }
 
@@ -414,7 +436,7 @@ namespace EpAccounting.UI.ViewModel
         {
             if (message.Notification == Resources.Message_RemoveClientForBillItemEditVM)
             {
-                if (message.Content == this.currentBill?.Client.Id)
+                if (message.Content == this._currentBill?.Client.Id)
                 {
                     this.Clear();
                 }
@@ -495,10 +517,10 @@ namespace EpAccounting.UI.ViewModel
 
         private void AddItem()
         {
-            BillItem billItem = new BillItem {Position = this.BillItemDetailViewModels.Count + 1};
-            BillItemDetailViewModel billItemDetailViewModel = new BillItemDetailViewModel(billItem, this.repository);
+            BillItem billItem = new BillItem { Position = this.BillItemDetailViewModels.Count + 1 };
+            BillItemDetailViewModel billItemDetailViewModel = new BillItemDetailViewModel(billItem, this._repository);
 
-            this.currentBill.AddBillItem(billItem);
+            this._currentBill.AddBillItem(billItem);
             this.BillItemDetailViewModels.Add(billItemDetailViewModel);
             Messenger.Default.Send(new NotificationMessage(Resources.Message_FocusBillItemsMessageForBillItemEditView));
         }
@@ -515,7 +537,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void DeleteItem()
         {
-            this.currentBill.BillItems.Remove(this.currentBill.BillItems.First(x => x.Position == this.SelectedBillItemDetailViewModel.Position));
+            this._currentBill.BillItems.Remove(this._currentBill.BillItems.First(x => x.Position == this.SelectedBillItemDetailViewModel.Position));
             this.BillItemDetailViewModels.Remove(this.SelectedBillItemDetailViewModel);
             this.UpdatePositions();
         }
@@ -532,24 +554,24 @@ namespace EpAccounting.UI.ViewModel
 
         private void CreateDocument()
         {
-            if (this.createBillBackgroundWorker.IsBusy)
+            if (this._createBillBackgroundWorker.IsBusy)
             {
                 return;
             }
 
             this.IsCreatingBill = true;
-            this.createBillBackgroundWorker.RunWorkerAsync(true);
+            this._createBillBackgroundWorker.RunWorkerAsync(true);
         }
 
         private void PrintDocument()
         {
-            if (this.createBillBackgroundWorker.IsBusy)
+            if (this._createBillBackgroundWorker.IsBusy)
             {
                 return;
             }
 
             this.IsCreatingBill = true;
-            this.createBillBackgroundWorker.RunWorkerAsync(false);
+            this._createBillBackgroundWorker.RunWorkerAsync(false);
         }
 
         private void UpdatePositions()

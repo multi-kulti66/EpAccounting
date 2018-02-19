@@ -179,12 +179,12 @@ namespace EpAccounting.Test.Model
         public void GetClientString()
         {
             // Arrange
-            const int ExpectedId = 10;
+            const int expectedId = 10;
             Client client = ModelFactory.GetDefaultClient();
-            client.Id = ExpectedId;
+            client.Id = expectedId;
 
             // Assert
-            client.ToString().Should().Be(string.Format(Resources.Client_ToString, ExpectedId,
+            client.ToString().Should().Be(string.Format(Resources.Client_ToString, expectedId,
                                                         ModelFactory.DefaultClientFirstName, ModelFactory.DefaultClientLastName,
                                                         ModelFactory.DefaultClientStreet, ModelFactory.DefaultClientHouseNumber,
                                                         ModelFactory.DefaultCityToPostalCodePostalCode, ModelFactory.DefaultCityToPostalCodeCity));

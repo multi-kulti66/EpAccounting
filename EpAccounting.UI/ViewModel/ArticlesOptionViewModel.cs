@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ArticlesOptionViewModel.cs
-// Last Change: 17.02.2018, 14:28
+// Last Change: 19.02.2018, 19:40
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -25,17 +25,17 @@ namespace EpAccounting.UI.ViewModel
     {
         #region Fields
 
-        private readonly IRepository repository;
-        private readonly IDialogService dialogService;
+        private readonly IRepository _repository;
+        private readonly IDialogService _dialogService;
 
         private IArticleState _currentState;
         private ArticleLoadedState _articleLoadedState;
         private ArticleEditState _articleEditState;
 
         private ArticleViewModel _selectedArticleViewModel;
+
         private ImageCommandViewModel _addItemCommand;
         private ImageCommandViewModel _deleteItemCommand;
-
         private ImageCommandViewModel _switchToEditModeCommand;
         private ImageCommandViewModel _saveOrUpdateCommand;
         private ImageCommandViewModel _cancelCommand;
@@ -49,8 +49,8 @@ namespace EpAccounting.UI.ViewModel
         public ArticlesOptionViewModel(string title, Bitmap image, IRepository repository, IDialogService dialogService)
             : base(title, image)
         {
-            this.repository = repository;
-            this.dialogService = dialogService;
+            this._repository = repository;
+            this._dialogService = dialogService;
             this.ArticleViewModels = new ObservableCollection<ArticleViewModel>();
 
             this.InitCommands();
@@ -67,15 +67,7 @@ namespace EpAccounting.UI.ViewModel
 
         public bool IsEditable
         {
-            get
-            {
-                if (this.CurrentState == this._articleEditState)
-                {
-                    return true;
-                }
-
-                return false;
-            }
+            get { return this.CurrentState == this._articleEditState; }
         }
 
         public IArticleState CurrentState
@@ -198,7 +190,7 @@ namespace EpAccounting.UI.ViewModel
         {
             if (this.AreArticleNumbersUnique() == false)
             {
-                this.dialogService.ShowMessage(Resources.Dialog_Title_Attention, Resources.Dialog_Message_MultipleEqualArticleNumbers);
+                this._dialogService.ShowMessage(Resources.Dialog_Title_Attention, Resources.Dialog_Message_MultipleEqualArticleNumbers);
                 return false;
             }
 
@@ -231,15 +223,24 @@ namespace EpAccounting.UI.ViewModel
 
         private void RemoveDeletedArticlesFromDatabase()
         {
-            Action<Article> action = delegate(Article article)
-                                     {
-                                         if (this.ArticleViewModels.Count(x => x.Id == article.Id) == 0)
-                                         {
-                                             this.repository.Delete(article);
-                                         }
-                                     };
+            void Delete(Article article)
+            {
+                if (this.ArticleViewModels.Count(x => x.Id == article.Id) != 0)
+                {
+                    return;
+                }
 
-            this.IterateArticlesAndDoAction(action);
+                try
+                {
+                    this._repository.Delete(article);
+                }
+                catch (Exception e)
+                {
+                    this._dialogService.ShowExceptionMessage(e, string.Format("Could not delete article '{0}' from database!", article.Description));
+                }
+            }
+
+            this.IterateArticlesAndDoAction(Delete);
         }
 
         private void TryLoadingArticlesOnStartup()
@@ -257,13 +258,13 @@ namespace EpAccounting.UI.ViewModel
         private void LoadArticles()
         {
             this.IterateArticlesAndDoAction(article => this.ArticleViewModels
-                                                           .InsertOrderedBy(new ArticleViewModel(article, this.repository),
+                                                           .InsertOrderedBy(new ArticleViewModel(article, this._repository, this._dialogService),
                                                                             x => x.ArticleNumber));
         }
 
         private void IterateArticlesAndDoAction(Action<Article> action)
         {
-            int numberOfArticles = this.repository.GetQuantity<Article>();
+            int numberOfArticles = this._repository.GetQuantity<Article>();
             int articlePages;
 
             if (numberOfArticles % Settings.Default.PageSize == 0)
@@ -277,7 +278,7 @@ namespace EpAccounting.UI.ViewModel
 
             for (int i = 1; i <= articlePages; i++)
             {
-                foreach (Article article in this.repository.GetAll<Article>(i))
+                foreach (Article article in this._repository.GetAll<Article>(i))
                 {
                     action(article);
                 }
@@ -286,17 +287,12 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanAddItem()
         {
-            if (this.CurrentState == this.GetEditState())
-            {
-                return true;
-            }
-
-            return false;
+            return this.CurrentState == this.GetEditState();
         }
 
         private void AddItem()
         {
-            ArticleViewModel articleViewModel = new ArticleViewModel(new Article(), this.repository);
+            ArticleViewModel articleViewModel = new ArticleViewModel(new Article(), this._repository, this._dialogService);
 
             this.ArticleViewModels.Add(articleViewModel);
             Messenger.Default.Send(new NotificationMessage(Resources.Message_FocusArticleForArticlesOptionView));
@@ -304,12 +300,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanDeleteItem()
         {
-            if (this.CurrentState == this.GetEditState() && this.SelectedArticleViewModel != null)
-            {
-                return true;
-            }
-
-            return false;
+            return this.CurrentState == this.GetEditState() && this.SelectedArticleViewModel != null;
         }
 
         private void DeleteItem()
@@ -391,7 +382,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanSwitchToEditMode()
         {
-            return this.repository.IsConnected && this.CurrentState.CanSwitchToEditMode();
+            return this._repository.IsConnected && this.CurrentState.CanSwitchToEditMode();
         }
 
         private void SwitchToEditMode()
@@ -401,7 +392,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanCommit()
         {
-            return this.repository.IsConnected && this._currentState.CanCommit();
+            return this._repository.IsConnected && this._currentState.CanCommit();
         }
 
         private void Commit()
@@ -411,7 +402,7 @@ namespace EpAccounting.UI.ViewModel
 
         private bool CanCancel()
         {
-            return this.repository.IsConnected && this.CurrentState.CanCancel();
+            return this._repository.IsConnected && this.CurrentState.CanCancel();
         }
 
         private void Cancel()

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ArticleViewModel.cs
-// Last Change: 17.02.2018, 14:28
+// Last Change: 19.02.2018, 19:26
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,14 +9,16 @@ namespace EpAccounting.UI.ViewModel
     using System;
     using Business;
     using Model;
+    using Service;
 
 
     public class ArticleViewModel : BindableViewModelBase
     {
         #region Fields
 
-        private readonly Article article;
-        private readonly IRepository repository;
+        private readonly Article _article;
+        private readonly IRepository _repository;
+        private readonly IDialogService _dialogService;
 
         #endregion
 
@@ -24,10 +26,11 @@ namespace EpAccounting.UI.ViewModel
 
         #region Constructors
 
-        public ArticleViewModel(Article article, IRepository repository)
+        public ArticleViewModel(Article article, IRepository repository, IDialogService dialogService)
         {
-            this.article = article;
-            this.repository = repository;
+            this._article = article;
+            this._repository = repository;
+            this._dialogService = dialogService;
         }
 
         #endregion
@@ -38,31 +41,31 @@ namespace EpAccounting.UI.ViewModel
 
         public int Id
         {
-            get { return this.article.Id; }
+            get { return this._article.Id; }
         }
 
         public int ArticleNumber
         {
-            get { return this.article.ArticleNumber; }
-            set { this.SetProperty(() => this.article.ArticleNumber = value, () => this.article.ArticleNumber == value); }
+            get { return this._article.ArticleNumber; }
+            set { this.SetProperty(() => this._article.ArticleNumber = value, () => this._article.ArticleNumber == value); }
         }
 
         public string Description
         {
-            get { return this.article.Description; }
-            set { this.SetProperty(() => this.article.Description = value, () => this.article.Description == value); }
+            get { return this._article.Description; }
+            set { this.SetProperty(() => this._article.Description = value, () => this._article.Description == value); }
         }
 
         public double Amount
         {
-            get { return this.article.Amount; }
-            set { this.SetProperty(() => this.article.Amount = value, () => Math.Abs(this.article.Amount - value) < 0.01); }
+            get { return this._article.Amount; }
+            set { this.SetProperty(() => this._article.Amount = value, () => Math.Abs(this._article.Amount - value) < 0.01); }
         }
 
         public decimal Price
         {
-            get { return this.article.Price; }
-            set { this.SetProperty(() => this.article.Price = value, () => this.article.Price == value); }
+            get { return this._article.Price; }
+            set { this.SetProperty(() => this._article.Price = value, () => this._article.Price == value); }
         }
 
         #endregion
@@ -71,7 +74,14 @@ namespace EpAccounting.UI.ViewModel
 
         public void Save()
         {
-            this.repository.SaveOrUpdate(this.article);
+            try
+            {
+                this._repository.SaveOrUpdate(this._article);
+            }
+            catch (Exception e)
+            {
+                this._dialogService.ShowExceptionMessage(e, string.Format("Could not save article '{0}'", this._article.Description));
+            }
         }
     }
 }

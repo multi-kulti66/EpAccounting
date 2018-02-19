@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: CommandViewModel.cs
-// Last Change: 17.02.2018, 14:29
+// Last Change: 19.02.2018, 20:05
 // Author: Andre Multerer
 // ///////////////////////////////////
 

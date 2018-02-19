@@ -15,7 +15,7 @@ namespace EpAccounting.UI.Markup
     {
         public static void InsertOrderedBy<TSource, TKey>(this IList<TSource> source, TSource item, Func<TSource, TKey> keySelector) where TKey : IComparable<TKey>
         {
-            var i = source.Select((Value, Index) => new {Value, Index}).FirstOrDefault(x => keySelector(x.Value).CompareTo(keySelector(item)) > 0);
+            var i = source.Select((value, index) => new {Value = value, Index = index}).FirstOrDefault(x => keySelector(x.Value).CompareTo(keySelector(item)) > 0);
 
             if (i == null)
             {

@@ -27,25 +27,25 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class BillViewModelTest
     {
-        private Mock<IRepository> mockRepository;
-        private Mock<IDialogService> mockDialogService;
-        private BillViewModel billViewModel;
+        private Mock<IRepository> _mockRepository;
+        private Mock<IDialogService> _mockDialogService;
+        private BillViewModel _billViewModel;
 
 
         [SetUp]
         public void Init()
         {
-            this.mockRepository = new Mock<IRepository>();
-            this.mockDialogService = new Mock<IDialogService>();
-            this.billViewModel = new BillViewModel(Resources.Workspace_Title_Bills, Resources.img_bills, this.mockRepository.Object, this.mockDialogService.Object);
+            this._mockRepository = new Mock<IRepository>();
+            this._mockDialogService = new Mock<IDialogService>();
+            this._billViewModel = new BillViewModel(Resources.Workspace_Title_Bills, Resources.img_bills, this._mockRepository.Object, this._mockDialogService.Object);
         }
 
         [TearDown]
         public void Cleanup()
         {
-            this.mockRepository = null;
-            this.mockDialogService = null;
-            this.billViewModel = null;
+            this._mockRepository = null;
+            this._mockDialogService = null;
+            this._billViewModel = null;
         }
 
 
@@ -53,14 +53,14 @@ namespace EpAccounting.Test.UI.ViewModel
         public void BillEditViewModelInitializedAfterCreation()
         {
             // Assert
-            this.billViewModel.BillEditViewModel.Should().NotBeNull();
+            this._billViewModel.BillEditViewModel.Should().NotBeNull();
         }
 
         [Test]
         public void BillWorkspaceViewModelInitializedAfterCreation()
         {
             // Assert
-            this.billViewModel.BillWorkspaceViewModel.Should().NotBeNull();
+            this._billViewModel.BillWorkspaceViewModel.Should().NotBeNull();
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Send(new NotificationMessage(Resources.Message_LoadBillSearchViewModelMessageForBillVM));
 
             // Assert
-            this.billViewModel.BillWorkspaceViewModel.Should().BeOfType<BillSearchViewModel>();
+            this._billViewModel.BillWorkspaceViewModel.Should().BeOfType<BillSearchViewModel>();
         }
 
         [Test]
@@ -80,21 +80,21 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Send(new NotificationMessage<Bill>(ModelFactory.GetDefaultBill(), Resources.Message_LoadBillItemEditViewModelForBillVM));
 
             // Assert
-            this.billViewModel.BillWorkspaceViewModel.Should().BeOfType<BillItemEditViewModel>();
+            this._billViewModel.BillWorkspaceViewModel.Should().BeOfType<BillItemEditViewModel>();
         }
 
         [Test]
         public void ChangeWorkspaceToBillSearchViewModelOnNotificationMessageThatBillWasDeleted()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Bill>());
 
             // Act
             Messenger.Default.Send(new NotificationMessage(Resources.Message_ResetBillItemEditVMAndChangeToSearchWorkspaceForBillVM));
 
             // Assert
-            this.billViewModel.BillWorkspaceViewModel.Should().BeOfType<BillSearchViewModel>();
+            this._billViewModel.BillWorkspaceViewModel.Should().BeOfType<BillSearchViewModel>();
         }
     }
 }

@@ -16,12 +16,12 @@ namespace EpAccounting.Model.Enum
     public enum KindOfVat
     {
         [Description("inkl.")]
-        inkl_MwSt,
+        InklMwSt,
 
         [Description("zzgl.")]
-        zzgl_MwSt,
+        ZzglMwSt,
 
         [Description("ohne")]
-        without_MwSt
+        WithoutMwSt
     }
 }

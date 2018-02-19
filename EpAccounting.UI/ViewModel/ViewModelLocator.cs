@@ -1,6 +1,6 @@
 // ///////////////////////////////////
 // File: ViewModelLocator.cs
-// Last Change: 17.02.2018, 14:29
+// Last Change: 19.02.2018, 20:07
 // Author: Andre Multerer
 // ///////////////////////////////////
 

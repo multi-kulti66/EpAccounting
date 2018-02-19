@@ -16,7 +16,7 @@ namespace EpAccounting.Test.Model.Mapping
 
     public class ObjectEqualityComparer : IEqualityComparer
     {
-        private const double MAX_VARIATION = 0.01;
+        private const double MaxVariation = 0.01;
 
 
         public new bool Equals(object firstObject, object secondObject)
@@ -92,7 +92,7 @@ namespace EpAccounting.Test.Model.Mapping
             if (bill1.Id == bill2.Id &&
                 bill1.KindOfBill == bill2.KindOfBill &&
                 bill1.KindOfVat == bill2.KindOfVat &&
-                Math.Abs(bill1.VatPercentage - bill2.VatPercentage) < MAX_VARIATION &&
+                Math.Abs(bill1.VatPercentage - bill2.VatPercentage) < MaxVariation &&
                 bill1.Date == bill2.Date)
             {
                 return true;
@@ -107,8 +107,8 @@ namespace EpAccounting.Test.Model.Mapping
                 billDetail1.Position == billDetail2.Position &&
                 billDetail1.ArticleNumber == billDetail2.ArticleNumber &&
                 billDetail1.Description == billDetail2.Description &&
-                Math.Abs(billDetail1.Amount - billDetail2.Amount) < MAX_VARIATION &&
-                Math.Abs(billDetail1.Discount - billDetail2.Discount) < MAX_VARIATION &&
+                Math.Abs(billDetail1.Amount - billDetail2.Amount) < MaxVariation &&
+                Math.Abs(billDetail1.Discount - billDetail2.Discount) < MaxVariation &&
                 billDetail1.Price == billDetail2.Price)
             {
                 return true;

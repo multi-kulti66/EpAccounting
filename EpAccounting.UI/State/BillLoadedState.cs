@@ -16,7 +16,7 @@ namespace EpAccounting.UI.State
     {
         #region Fields
 
-        private readonly BillEditViewModel billEditViewModel;
+        private readonly BillEditViewModel _billEditViewModel;
 
         #endregion
 
@@ -26,7 +26,7 @@ namespace EpAccounting.UI.State
 
         public BillLoadedState(BillEditViewModel billEditViewModel)
         {
-            this.billEditViewModel = billEditViewModel;
+            this._billEditViewModel = billEditViewModel;
         }
 
         #endregion
@@ -42,7 +42,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToSearchMode()
         {
-            this.billEditViewModel.ChangeToSearchMode();
+            this._billEditViewModel.ChangeToSearchMode();
             Messenger.Default.Send(new NotificationMessage(Resources.Message_LoadBillSearchViewModelMessageForBillVM));
         }
 
@@ -53,7 +53,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToEditMode()
         {
-            this.billEditViewModel.ChangeToEditMode();
+            this._billEditViewModel.ChangeToEditMode();
         }
 
         public bool CanCommit()
@@ -83,9 +83,9 @@ namespace EpAccounting.UI.State
 
         public async Task Delete()
         {
-            if (await this.billEditViewModel.DeleteBillAsync())
+            if (await this._billEditViewModel.DeleteBillAsync())
             {
-                this.billEditViewModel.ChangeToEmptyMode();
+                this._billEditViewModel.ChangeToEmptyMode();
                 Messenger.Default.Send(new NotificationMessage(Resources.Message_LoadBillItemEditViewModelForBillVM));
             }
         }

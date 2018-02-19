@@ -21,10 +21,10 @@ namespace EpAccounting.UI.Service
     {
         #region Fields
 
-        private Application wordApp;
-        private Document wordDoc;
+        private Application _wordApp;
+        private Document _wordDoc;
 
-        private object oMissing = Missing.Value;
+        private object _oMissing = Missing.Value;
 
         #endregion
 
@@ -44,8 +44,8 @@ namespace EpAccounting.UI.Service
                 throw new Exception(Resources.Exception_Message_NoPathToBillFolder);
             }
 
-            this.wordApp = new Application();
-            this.wordApp.DisplayAlerts = WdAlertLevel.wdAlertsNone;
+            this._wordApp = new Application();
+            this._wordApp.DisplayAlerts = WdAlertLevel.wdAlertsNone;
 
             // Represents the path to the word template.
             object pathWordTemplate = Settings.Default.WordTemplateFilePath;
@@ -61,7 +61,7 @@ namespace EpAccounting.UI.Service
                 isVisible = true;
 
                 // Set Word to be visble.
-                this.wordApp.Visible = true;
+                this._wordApp.Visible = true;
             }
             else
             {
@@ -69,25 +69,25 @@ namespace EpAccounting.UI.Service
                 isVisible = false;
 
                 // Set Word to be not visble.
-                this.wordApp.Visible = false;
+                this._wordApp.Visible = false;
             }
 
             // Open the word document.
-            this.wordDoc = this.wordApp.Documents.Open(ref pathWordTemplate, ref this.oMissing, ref readOnly, ref this.oMissing, ref this.oMissing,
-                                                       ref this.oMissing, ref this.oMissing, ref this.oMissing, ref this.oMissing, ref this.oMissing, ref this.oMissing, ref isVisible, ref this.oMissing, ref this.oMissing, ref this.oMissing, ref this.oMissing);
+            this._wordDoc = this._wordApp.Documents.Open(ref pathWordTemplate, ref this._oMissing, ref readOnly, ref this._oMissing, ref this._oMissing,
+                                                       ref this._oMissing, ref this._oMissing, ref this._oMissing, ref this._oMissing, ref this._oMissing, ref this._oMissing, ref isVisible, ref this._oMissing, ref this._oMissing, ref this._oMissing, ref this._oMissing);
 
             // Activate the document.
-            this.wordDoc.Activate();
+            this._wordDoc.Activate();
 
             // check if saveable, before filling in datas
-            this.wordDoc.SaveAs(Path.Combine(Settings.Default.BillFolderPath, Resources.BillFileName));
+            this._wordDoc.SaveAs(Path.Combine(Settings.Default.BillFolderPath, Resources.BillFileName));
 
             // Find Place Holders and Replace them with values.
-            this.FindAndReplace(this.wordApp, "<Anrede>", billItemEditViewModel.CurrentBillDetailViewModel.Title.ToString());
+            this.FindAndReplace(this._wordApp, "<Anrede>", billItemEditViewModel.CurrentBillDetailViewModel.Title.ToString());
 
             if (string.IsNullOrEmpty(billItemEditViewModel.CurrentBillDetailViewModel.CompanyName))
             {
-                var range = this.wordDoc.Content;
+                var range = this._wordDoc.Content;
 
                 if (range.Find.Execute("<Firmenname>"))
                 {
@@ -97,33 +97,33 @@ namespace EpAccounting.UI.Service
             }
             else
             {
-                this.FindAndReplace(this.wordApp, "<Firmenname>", billItemEditViewModel.CurrentBillDetailViewModel.CompanyName);
+                this.FindAndReplace(this._wordApp, "<Firmenname>", billItemEditViewModel.CurrentBillDetailViewModel.CompanyName);
             }
 
-            this.FindAndReplace(this.wordApp, "<Vorname>", billItemEditViewModel.CurrentBillDetailViewModel.FirstName);
-            this.FindAndReplace(this.wordApp, "<Nachname>", billItemEditViewModel.CurrentBillDetailViewModel.LastName);
-            this.FindAndReplace(this.wordApp, "<Strasse>", billItemEditViewModel.CurrentBillDetailViewModel.Street);
-            this.FindAndReplace(this.wordApp, "<Hausnummer>", billItemEditViewModel.CurrentBillDetailViewModel.HouseNumber);
-            this.FindAndReplace(this.wordApp, "<PLZ>", billItemEditViewModel.CurrentBillDetailViewModel.PostalCode);
-            this.FindAndReplace(this.wordApp, "<Ort>", billItemEditViewModel.CurrentBillDetailViewModel.City);
-            this.FindAndReplace(this.wordApp, "<Rechnungsart>", billItemEditViewModel.CurrentBillDetailViewModel.KindOfBill.ToString());
-            this.FindAndReplace(this.wordApp, "<Datum>", billItemEditViewModel.CurrentBillDetailViewModel.Date);
-            this.FindAndReplace(this.wordApp, "<Rechnungsnummer>", billItemEditViewModel.CurrentBillDetailViewModel.Id);
-            this.FindAndReplace(this.wordApp, "<Kundennummer>", billItemEditViewModel.CurrentBillDetailViewModel.ClientId);
-            this.FindAndReplace(this.wordApp, "<Netto>", string.Format("{0:N2} €", billItemEditViewModel.NettoSum));
-            this.FindAndReplace(this.wordApp, "<MwSt%> ", billItemEditViewModel.CurrentBillDetailViewModel.VatPercentage);
-            this.FindAndReplace(this.wordApp, "<MwSt>", string.Format("{0:N2} €", billItemEditViewModel.VatSum));
-            this.FindAndReplace(this.wordApp, "<Brutto>", string.Format("{0:N2} €", billItemEditViewModel.BruttoSum));
-            this.FindAndReplace(this.wordApp, "<Angebot>", Settings.Default.Offer);
+            this.FindAndReplace(this._wordApp, "<Vorname>", billItemEditViewModel.CurrentBillDetailViewModel.FirstName);
+            this.FindAndReplace(this._wordApp, "<Nachname>", billItemEditViewModel.CurrentBillDetailViewModel.LastName);
+            this.FindAndReplace(this._wordApp, "<Strasse>", billItemEditViewModel.CurrentBillDetailViewModel.Street);
+            this.FindAndReplace(this._wordApp, "<Hausnummer>", billItemEditViewModel.CurrentBillDetailViewModel.HouseNumber);
+            this.FindAndReplace(this._wordApp, "<PLZ>", billItemEditViewModel.CurrentBillDetailViewModel.PostalCode);
+            this.FindAndReplace(this._wordApp, "<Ort>", billItemEditViewModel.CurrentBillDetailViewModel.City);
+            this.FindAndReplace(this._wordApp, "<Rechnungsart>", billItemEditViewModel.CurrentBillDetailViewModel.KindOfBill.ToString());
+            this.FindAndReplace(this._wordApp, "<Datum>", billItemEditViewModel.CurrentBillDetailViewModel.Date);
+            this.FindAndReplace(this._wordApp, "<Rechnungsnummer>", billItemEditViewModel.CurrentBillDetailViewModel.Id);
+            this.FindAndReplace(this._wordApp, "<Kundennummer>", billItemEditViewModel.CurrentBillDetailViewModel.ClientId);
+            this.FindAndReplace(this._wordApp, "<Netto>", string.Format("{0:N2} €", billItemEditViewModel.NettoSum));
+            this.FindAndReplace(this._wordApp, "<MwSt%> ", billItemEditViewModel.CurrentBillDetailViewModel.VatPercentage);
+            this.FindAndReplace(this._wordApp, "<MwSt>", string.Format("{0:N2} €", billItemEditViewModel.VatSum));
+            this.FindAndReplace(this._wordApp, "<Brutto>", string.Format("{0:N2} €", billItemEditViewModel.BruttoSum));
+            this.FindAndReplace(this._wordApp, "<Angebot>", Settings.Default.Offer);
 
             // The bookmark where the table will be inserted.
             object bookmarkTableStart = "tableStart";
 
             // Creates a new instance of a table.
-            Range wrdRng = this.wordDoc.Bookmarks.get_Item(ref bookmarkTableStart).Range;
+            Range wrdRng = this._wordDoc.Bookmarks.get_Item(ref bookmarkTableStart).Range;
 
             // Adds the table to the word document.
-            Table objTable = this.wordDoc.Tables.Add(wrdRng, billItemEditViewModel.BillItemDetailViewModels.Count + 1, 7, ref this.oMissing, ref this.oMissing);
+            Table objTable = this._wordDoc.Tables.Add(wrdRng, billItemEditViewModel.BillItemDetailViewModels.Count + 1, 7, ref this._oMissing, ref this._oMissing);
 
             // Sets the preferred width for the columns
             objTable.Columns.PreferredWidthType = WdPreferredWidthType.wdPreferredWidthPercent;
@@ -198,7 +198,7 @@ namespace EpAccounting.UI.Service
             }
 
             // save again when all datas were filled in
-            this.wordDoc.SaveAs(Path.Combine(Settings.Default.BillFolderPath, Resources.BillFileName));
+            this._wordDoc.SaveAs(Path.Combine(Settings.Default.BillFolderPath, Resources.BillFileName));
         }
 
         public bool PrintDocument()
@@ -209,8 +209,8 @@ namespace EpAccounting.UI.Service
             {
                 if (printDialog.ShowDialog() == DialogResult.OK)
                 {
-                    this.wordApp.ActivePrinter = printDialog.PrinterSettings.PrinterName;
-                    this.wordApp.ActiveDocument.PrintOut();
+                    this._wordApp.ActivePrinter = printDialog.PrinterSettings.PrinterName;
+                    this._wordApp.ActiveDocument.PrintOut();
                     printed = true;
                 }
             }
@@ -222,8 +222,8 @@ namespace EpAccounting.UI.Service
         {
             try
             {
-                this.wordDoc.Close(WdSaveOptions.wdDoNotSaveChanges);
-                this.wordApp.Quit();
+                this._wordDoc.Close(WdSaveOptions.wdDoNotSaveChanges);
+                this._wordApp.Quit();
             }
             catch
             {
@@ -238,7 +238,7 @@ namespace EpAccounting.UI.Service
         /// <summary>
         ///     Finds the textmarks and replaces them with the desired value.
         /// </summary>
-        /// <param name="WordApp">
+        /// <param name="wordApp">
         ///     The word application.
         /// </param>
         /// <param name="findText">
@@ -247,7 +247,7 @@ namespace EpAccounting.UI.Service
         /// <param name="replaceWithText">
         ///     The text that should be inserted.
         /// </param>
-        private void FindAndReplace(_Application WordApp, object findText, object replaceWithText)
+        private void FindAndReplace(_Application wordApp, object findText, object replaceWithText)
         {
             // options
             object matchCase = true;
@@ -265,7 +265,7 @@ namespace EpAccounting.UI.Service
             object wrap = 1;
 
             // execute find and replace
-            WordApp.Selection.Find.Execute(ref findText, ref matchCase, ref matchWholeWord, ref matchWildCards, ref matchSoundsLike,
+            wordApp.Selection.Find.Execute(ref findText, ref matchCase, ref matchWholeWord, ref matchWildCards, ref matchSoundsLike,
                                            ref matchAllWordForms, ref forward, ref wrap, ref format, ref replaceWithText, ref replace,
                                            ref matchKashida, ref matchDiacritics, ref matchAlefHamza, ref matchControl);
         }

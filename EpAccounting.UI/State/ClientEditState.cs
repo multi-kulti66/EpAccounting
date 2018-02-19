@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditState.cs
-// Last Change: 17.02.2018, 14:28
+// Last Change: 19.02.2018, 19:15
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -14,7 +14,7 @@ namespace EpAccounting.UI.State
     {
         #region Fields
 
-        private readonly ClientEditViewModel clientEditViewModel;
+        private readonly ClientEditViewModel _clientEditViewModel;
 
         #endregion
 
@@ -24,7 +24,7 @@ namespace EpAccounting.UI.State
 
         public ClientEditState(ClientEditViewModel clientEditViewModel)
         {
-            this.clientEditViewModel = clientEditViewModel;
+            this._clientEditViewModel = clientEditViewModel;
         }
 
         #endregion
@@ -70,10 +70,10 @@ namespace EpAccounting.UI.State
 
         public async Task Commit()
         {
-            if (await this.clientEditViewModel.SaveOrUpdateClientAsync())
+            if (await this._clientEditViewModel.SaveOrUpdateClientAsync())
             {
-                this.clientEditViewModel.ChangeToLoadedMode(null);
-                this.clientEditViewModel.SendUpdateClientValuesMessage();
+                this._clientEditViewModel.ChangeToLoadedMode();
+                this._clientEditViewModel.SendUpdateClientValuesMessage();
             }
         }
 
@@ -84,7 +84,7 @@ namespace EpAccounting.UI.State
 
         public void Cancel()
         {
-            this.clientEditViewModel.Load();
+            this._clientEditViewModel.Load();
         }
 
         public bool CanDelete()

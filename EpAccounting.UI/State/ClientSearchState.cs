@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientSearchState.cs
-// Last Change: 17.02.2018, 14:28
+// Last Change: 19.02.2018, 19:15
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -14,7 +14,7 @@ namespace EpAccounting.UI.State
     {
         #region Fields
 
-        private readonly ClientEditViewModel clientEditViewModel;
+        private readonly ClientEditViewModel _clientEditViewModel;
 
         #endregion
 
@@ -24,7 +24,7 @@ namespace EpAccounting.UI.State
 
         public ClientSearchState(ClientEditViewModel clientEditViewModel)
         {
-            this.clientEditViewModel = clientEditViewModel;
+            this._clientEditViewModel = clientEditViewModel;
         }
 
         #endregion
@@ -70,7 +70,7 @@ namespace EpAccounting.UI.State
 
         public Task Commit()
         {
-            this.clientEditViewModel.SendClientSearchCriterionMessage();
+            this._clientEditViewModel.SendClientSearchCriterionMessage();
             return Task.FromResult<object>(null);
         }
 
@@ -81,7 +81,7 @@ namespace EpAccounting.UI.State
 
         public void Cancel()
         {
-            this.clientEditViewModel.ChangeToEmptyMode();
+            this._clientEditViewModel.ChangeToEmptyMode();
         }
 
         public bool CanDelete()

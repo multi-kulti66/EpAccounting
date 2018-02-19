@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEmptyState.cs
-// Last Change: 17.02.2018, 14:28
+// Last Change: 19.02.2018, 19:15
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -14,7 +14,7 @@ namespace EpAccounting.UI.State
     {
         #region Fields
 
-        private readonly ClientEditViewModel clientEditViewModel;
+        private readonly ClientEditViewModel _clientEditViewModel;
 
         #endregion
 
@@ -24,7 +24,7 @@ namespace EpAccounting.UI.State
 
         public ClientEmptyState(ClientEditViewModel clientEditViewModel)
         {
-            this.clientEditViewModel = clientEditViewModel;
+            this._clientEditViewModel = clientEditViewModel;
         }
 
         #endregion
@@ -40,7 +40,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToSearchMode()
         {
-            this.clientEditViewModel.ChangeToSearchMode();
+            this._clientEditViewModel.ChangeToSearchMode();
         }
 
         public bool CanSwitchToAddMode()
@@ -50,7 +50,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToAddMode()
         {
-            this.clientEditViewModel.ChangeToCreationMode();
+            this._clientEditViewModel.ChangeToCreationMode();
         }
 
         public bool CanSwitchToEditMode()

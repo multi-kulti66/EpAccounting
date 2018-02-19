@@ -33,22 +33,22 @@ namespace EpAccounting.Test.UI.ViewModel
         public void ChangesPropertyValue()
         {
             // Arrange
-            const string ExpectedTitle = "new Title";
-            const int ExpectedNumber = 32;
-            const string ExpectedName = "Andre";
+            const string expectedTitle = "new Title";
+            const int expectedNumber = 32;
+            const string expectedName = "Andre";
 
             // Act
             BindableTestClass testClass = new BindableTestClass
                                           {
-                                              Title = ExpectedTitle,
-                                              Number = ExpectedNumber,
-                                              Name = ExpectedName
+                                              Title = expectedTitle,
+                                              Number = expectedNumber,
+                                              Name = expectedName
                                           };
 
             // Assert
-            testClass.Title.Should().Be(ExpectedTitle);
-            testClass.Number.Should().Be(ExpectedNumber);
-            testClass.Name.Should().Be(ExpectedName);
+            testClass.Title.Should().Be(expectedTitle);
+            testClass.Number.Should().Be(expectedNumber);
+            testClass.Name.Should().Be(expectedName);
         }
 
         [Test]
@@ -73,17 +73,17 @@ namespace EpAccounting.Test.UI.ViewModel
         public void DoNotRaisePropertyChangedWhenPropertyValuesGetSameValue()
         {
             // Arrange
-            const string ExpectedTitle = "new Title";
-            const int ExpectedNumber = 32;
-            const string ExpectedName = "Andre";
+            const string expectedTitle = "new Title";
+            const int expectedNumber = 32;
+            const string expectedName = "Andre";
 
-            BindableTestClass testClass = new BindableTestClass(ExpectedTitle, ExpectedNumber, ExpectedName);
+            BindableTestClass testClass = new BindableTestClass(expectedTitle, expectedNumber, expectedName);
             testClass.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            testClass.Title = ExpectedTitle;
-            testClass.Number = ExpectedNumber;
-            testClass.Name = ExpectedName;
+            testClass.Title = expectedTitle;
+            testClass.Number = expectedNumber;
+            testClass.Name = expectedName;
 
             // Assert
             testClass.ShouldNotRaisePropertyChangeFor(x => x.Title);
@@ -94,7 +94,7 @@ namespace EpAccounting.Test.UI.ViewModel
 
         private class BindableTestClass : BindableViewModelBase
         {
-            private readonly SubTestClass subTestClass = new SubTestClass();
+            private readonly SubTestClass _subTestClass = new SubTestClass();
 
             private string _title;
             private int _number;
@@ -104,7 +104,7 @@ namespace EpAccounting.Test.UI.ViewModel
             {
                 this._title = title;
                 this._number = number;
-                this.subTestClass.Name = name;
+                this._subTestClass.Name = name;
             }
 
 
@@ -122,8 +122,8 @@ namespace EpAccounting.Test.UI.ViewModel
 
             public string Name
             {
-                get { return this.subTestClass.Name; }
-                set { this.SetProperty(() => this.subTestClass.Name = value, () => this.subTestClass.Name == value); }
+                get { return this._subTestClass.Name; }
+                set { this.SetProperty(() => this._subTestClass.Name = value, () => this._subTestClass.Name == value); }
             }
 
 

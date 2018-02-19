@@ -16,7 +16,7 @@ namespace EpAccounting.UI.State
     {
         #region Fields
 
-        private readonly BillEditViewModel billEditViewModel;
+        private readonly BillEditViewModel _billEditViewModel;
 
         #endregion
 
@@ -26,7 +26,7 @@ namespace EpAccounting.UI.State
 
         public BillEmptyState(BillEditViewModel billEditViewModel)
         {
-            this.billEditViewModel = billEditViewModel;
+            this._billEditViewModel = billEditViewModel;
         }
 
         #endregion
@@ -42,7 +42,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToSearchMode()
         {
-            this.billEditViewModel.ChangeToSearchMode();
+            this._billEditViewModel.ChangeToSearchMode();
             Messenger.Default.Send(new NotificationMessage(Resources.Message_LoadBillSearchViewModelMessageForBillVM));
         }
 

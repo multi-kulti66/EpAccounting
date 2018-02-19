@@ -1,11 +1,12 @@
 ﻿// ///////////////////////////////////
 // File: ClientSearchViewModel.cs
-// Last Change: 17.02.2018, 20:28
+// Last Change: 19.02.2018, 20:04
 // Author: Andre Multerer
 // ///////////////////////////////////
 
 namespace EpAccounting.UI.ViewModel
 {
+    using System;
     using System.Collections.ObjectModel;
     using System.Linq;
     using Business;
@@ -14,13 +15,15 @@ namespace EpAccounting.UI.ViewModel
     using Model;
     using NHibernate.Criterion;
     using Properties;
+    using Service;
 
 
-    public class ClientSearchViewModel : BindableViewModelBase
+    public class ClientSearchViewModel : BindableViewModelBase, IDisposable
     {
         #region Fields
 
-        private readonly IRepository repository;
+        private readonly IRepository _repository;
+        private readonly IDialogService _dialogService;
 
         private int _numberOfAllPages;
         private int _currentPage;
@@ -41,9 +44,10 @@ namespace EpAccounting.UI.ViewModel
 
         #region Constructors
 
-        public ClientSearchViewModel(IRepository repository)
+        public ClientSearchViewModel(IRepository repository, IDialogService dialogService)
         {
-            this.repository = repository;
+            this._repository = repository;
+            this._dialogService = dialogService;
 
             Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<ICriterion>>(this, this.ExecuteNotificationMessage);
@@ -114,8 +118,8 @@ namespace EpAccounting.UI.ViewModel
                 if (this._loadFirstPageCommand == null)
                 {
                     this._loadFirstPageCommand = new ImageCommandViewModel(Resources.img_arrow_first,
-                                                                          Resources.Command_DisplayName_First_Page,
-                                                                          new RelayCommand(this.LoadFirstPage, this.CanLoadFirstPage));
+                                                                           Resources.Command_DisplayName_First_Page,
+                                                                           new RelayCommand(this.LoadFirstPage, this.CanLoadFirstPage));
                 }
 
                 return this._loadFirstPageCommand;
@@ -173,6 +177,17 @@ namespace EpAccounting.UI.ViewModel
 
 
 
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            Messenger.Default.Unregister(this);
+        }
+
+        #endregion
+
+
+
         private void ExecuteNotificationMessage(NotificationMessage message)
         {
             if (message.Notification == Resources.Message_ReloadClientsForClientSearchVM)
@@ -183,35 +198,48 @@ namespace EpAccounting.UI.ViewModel
 
         private void LoadSearchedClients(ICriterion criterion, int page = 1)
         {
-            // ReSharper disable once PossibleLossOfFraction
-            int numberOfClients = this.repository.GetQuantityByCriteria<Client>(criterion);
-            this.NumberOfAllPages = (numberOfClients - 1) / Settings.Default.PageSize + 1;
-            this.CurrentPage = this.CurrentPage > this.NumberOfAllPages ? this.NumberOfAllPages : page;
-            this.ReloadCommands();
-
-            this.FoundClients.Clear();
-
-            foreach (Client client in this.repository.GetByCriteria<Client>(criterion, this.CurrentPage).ToList())
+            try
             {
-                this.FoundClients.Add(new ClientDetailViewModel(client, this.repository));
+                int numberOfClients = this._repository.GetQuantityByCriteria<Client>(criterion);
+                this.NumberOfAllPages = (numberOfClients - 1) / Settings.Default.PageSize + 1;
+                this.CurrentPage = this.CurrentPage > this.NumberOfAllPages ? this.NumberOfAllPages : page;
+                this.ReloadCommands();
+
+                this.FoundClients.Clear();
+
+                foreach (Client client in this._repository.GetByCriteria<Client>(criterion, this.CurrentPage).ToList())
+                {
+                    this.FoundClients.Add(new ClientDetailViewModel(client, this._repository));
+                }
+            }
+            catch (Exception e)
+            {
+                this._dialogService.ShowExceptionMessage(e, "Could not load required clients!");
             }
         }
 
         private void UpdateClient(int id)
         {
-            Client client = this.repository.GetById<Client>(id);
-
-            for (int i = 0; i < this.FoundClients.Count; i++)
+            try
             {
-                if (this.FoundClients[i].Id == id)
+                Client client = this._repository.GetById<Client>(id);
+
+                for (int i = 0; i < this.FoundClients.Count; i++)
                 {
-                    this.FoundClients[i] = new ClientDetailViewModel(client, this.repository);
+                    if (this.FoundClients[i].Id == id)
+                    {
+                        this.FoundClients[i] = new ClientDetailViewModel(client, this._repository);
+                    }
+                    else if (this.FoundClients[i].PostalCode == client.CityToPostalCode.PostalCode &&
+                             this.FoundClients[i].City != client.CityToPostalCode.City)
+                    {
+                        this.FoundClients[i] = new ClientDetailViewModel(this._repository.GetById<Client>(this.FoundClients[i].Id), this._repository);
+                    }
                 }
-                else if (this.FoundClients[i].PostalCode == client.CityToPostalCode.PostalCode &&
-                         this.FoundClients[i].City != client.CityToPostalCode.City)
-                {
-                    this.FoundClients[i] = new ClientDetailViewModel(this.repository.GetById<Client>(this.FoundClients[i].Id), this.repository);
-                }
+            }
+            catch (Exception e)
+            {
+                this._dialogService.ShowExceptionMessage(e, string.Format("Could not update client with id = '{0}'", id));
             }
         }
 

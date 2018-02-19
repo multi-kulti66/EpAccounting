@@ -26,22 +26,22 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class BillItemDetailViewModelTest
     {
-        private Mock<IRepository> mockRepository;
-        private BillItemDetailViewModel billItemDetailViewModel;
+        private Mock<IRepository> _mockRepository;
+        private BillItemDetailViewModel _billItemDetailViewModel;
 
 
         [SetUp]
         public void Init()
         {
-            this.mockRepository = new Mock<IRepository>();
-            this.billItemDetailViewModel = new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem(), this.mockRepository.Object);
+            this._mockRepository = new Mock<IRepository>();
+            this._billItemDetailViewModel = new BillItemDetailViewModel(ModelFactory.GetDefaultBillItem(), this._mockRepository.Object);
         }
 
         [TearDown]
         public void Cleanup()
         {
-            this.mockRepository = null;
-            this.billItemDetailViewModel = null;
+            this._mockRepository = null;
+            this._billItemDetailViewModel = null;
             GC.Collect();
         }
 
@@ -50,150 +50,150 @@ namespace EpAccounting.Test.UI.ViewModel
         public void CanReadVariableValues()
         {
             // Assert
-            this.billItemDetailViewModel.Id.Should().Be(0);
-            this.billItemDetailViewModel.Position.Should().Be(ModelFactory.DefaultBillItemPosition);
-            this.billItemDetailViewModel.ArticleNumber.Should().Be(ModelFactory.DefaultBillItemArticleNumber);
-            this.billItemDetailViewModel.Description.Should().Be(ModelFactory.DefaultBillItemDescription);
-            this.billItemDetailViewModel.Amount.Should().Be(ModelFactory.DefaultBillItemAmount);
-            this.billItemDetailViewModel.Price.Should().Be(ModelFactory.DefaultBillItemPrice);
-            this.billItemDetailViewModel.Discount.Should().Be(ModelFactory.DefaultBillItemDiscount);
+            this._billItemDetailViewModel.Id.Should().Be(0);
+            this._billItemDetailViewModel.Position.Should().Be(ModelFactory.DefaultBillItemPosition);
+            this._billItemDetailViewModel.ArticleNumber.Should().Be(ModelFactory.DefaultBillItemArticleNumber);
+            this._billItemDetailViewModel.Description.Should().Be(ModelFactory.DefaultBillItemDescription);
+            this._billItemDetailViewModel.Amount.Should().Be(ModelFactory.DefaultBillItemAmount);
+            this._billItemDetailViewModel.Price.Should().Be(ModelFactory.DefaultBillItemPrice);
+            this._billItemDetailViewModel.Discount.Should().Be(ModelFactory.DefaultBillItemDiscount);
         }
 
         [Test]
         public void CorrectlyCalculatesSumWithoutDiscount()
         {
             // Arrange
-            const int Amount = 2;
-            const decimal Price = 4.99m;
-            const decimal Sum = 9.98m;
+            const int amount = 2;
+            const decimal price = 4.99m;
+            const decimal sum = 9.98m;
 
             BillItem billItem = new BillItem();
-            billItem.Amount = Amount;
-            billItem.Price = Price;
+            billItem.Amount = amount;
+            billItem.Price = price;
 
             // Act
-            this.billItemDetailViewModel = new BillItemDetailViewModel(billItem, this.mockRepository.Object);
+            this._billItemDetailViewModel = new BillItemDetailViewModel(billItem, this._mockRepository.Object);
 
             // Assert
-            this.billItemDetailViewModel.Sum.Should().Be(Sum);
+            this._billItemDetailViewModel.Sum.Should().Be(sum);
         }
 
         [Test]
         public void CorrectoyCalculatesSumWithDiscount()
         {
             // Arrange
-            const double Amount = 2;
-            const decimal Price = 10m;
-            const double Discount = 10;
-            const decimal Sum = 18m;
+            const double amount = 2;
+            const decimal price = 10m;
+            const double discount = 10;
+            const decimal sum = 18m;
 
             // Act
             BillItem billItem = new BillItem();
-            billItem.Amount = Amount;
-            billItem.Price = Price;
-            billItem.Discount = Discount;
+            billItem.Amount = amount;
+            billItem.Price = price;
+            billItem.Discount = discount;
 
-            this.billItemDetailViewModel = new BillItemDetailViewModel(billItem, this.mockRepository.Object);
+            this._billItemDetailViewModel = new BillItemDetailViewModel(billItem, this._mockRepository.Object);
 
             // Assert
-            this.billItemDetailViewModel.Sum.Should().Be(Sum);
+            this._billItemDetailViewModel.Sum.Should().Be(sum);
         }
 
         [Test]
         public void CanModifyVariables()
         {
             // Arrange
-            const int Position = 23;
-            const int ArticleNumber = 44;
-            const string Description = "Testdescription";
-            const double Amount = 4;
-            const decimal Price = 55m;
-            const double Discount = 50;
+            const int position = 23;
+            const int articleNumber = 44;
+            const string description = "Testdescription";
+            const double amount = 4;
+            const decimal price = 55m;
+            const double discount = 50;
 
             // Act
-            this.billItemDetailViewModel.Position = Position;
-            this.billItemDetailViewModel.ArticleNumber = ArticleNumber;
-            this.billItemDetailViewModel.Description = Description;
-            this.billItemDetailViewModel.Amount = Amount;
-            this.billItemDetailViewModel.Price = Price;
-            this.billItemDetailViewModel.Discount = Discount;
+            this._billItemDetailViewModel.Position = position;
+            this._billItemDetailViewModel.ArticleNumber = articleNumber;
+            this._billItemDetailViewModel.Description = description;
+            this._billItemDetailViewModel.Amount = amount;
+            this._billItemDetailViewModel.Price = price;
+            this._billItemDetailViewModel.Discount = discount;
 
             // Assert
-            this.billItemDetailViewModel.Position.Should().Be(Position);
-            this.billItemDetailViewModel.ArticleNumber.Should().Be(ArticleNumber);
-            this.billItemDetailViewModel.Description.Should().Be(Description);
-            this.billItemDetailViewModel.Amount.Should().Be(Amount);
-            this.billItemDetailViewModel.Price.Should().Be(Price);
-            this.billItemDetailViewModel.Discount.Should().Be(Discount);
+            this._billItemDetailViewModel.Position.Should().Be(position);
+            this._billItemDetailViewModel.ArticleNumber.Should().Be(articleNumber);
+            this._billItemDetailViewModel.Description.Should().Be(description);
+            this._billItemDetailViewModel.Amount.Should().Be(amount);
+            this._billItemDetailViewModel.Price.Should().Be(price);
+            this._billItemDetailViewModel.Discount.Should().Be(discount);
         }
 
         [Test]
         public void RaisesProertyChangedWhenVariablesChanges()
         {
             // Arrange
-            const int Position = 23;
-            const int ArticleNumber = 44;
-            const string Description = "Testdescription";
-            const double Amount = 4;
-            const decimal Price = 55;
-            const double Discount = 50;
+            const int position = 23;
+            const int articleNumber = 44;
+            const string description = "Testdescription";
+            const double amount = 4;
+            const decimal price = 55;
+            const double discount = 50;
 
-            this.billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.billItemDetailViewModel.Position = Position;
-            this.billItemDetailViewModel.ArticleNumber = ArticleNumber;
-            this.billItemDetailViewModel.Description = Description;
-            this.billItemDetailViewModel.Amount = Amount;
-            this.billItemDetailViewModel.Price = Price;
-            this.billItemDetailViewModel.Discount = Discount;
+            this._billItemDetailViewModel.Position = position;
+            this._billItemDetailViewModel.ArticleNumber = articleNumber;
+            this._billItemDetailViewModel.Description = description;
+            this._billItemDetailViewModel.Amount = amount;
+            this._billItemDetailViewModel.Price = price;
+            this._billItemDetailViewModel.Discount = discount;
 
             // Assert
-            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Position);
-            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.ArticleNumber);
-            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Description);
-            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Amount);
-            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Price);
-            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Discount);
+            this._billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Position);
+            this._billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.ArticleNumber);
+            this._billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Description);
+            this._billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Amount);
+            this._billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Price);
+            this._billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Discount);
         }
 
         [Test]
         public void RaisePropertyChangedForSumWhenAmountChanges()
         {
             // Arrange
-            this.billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.billItemDetailViewModel.Amount = 10;
+            this._billItemDetailViewModel.Amount = 10;
 
             // Assert
-            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
+            this._billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
         }
 
         [Test]
         public void RaisePropertyChangedForSumWhenPriceChanges()
         {
             // Arrange
-            this.billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.billItemDetailViewModel.Price = 10;
+            this._billItemDetailViewModel.Price = 10;
 
             // Assert
-            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
+            this._billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
         }
 
         [Test]
         public void RaisePropertyChangedForSumWhenDiscountChanges()
         {
             // Arrange
-            this.billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._billItemDetailViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.billItemDetailViewModel.Discount = 50;
+            this._billItemDetailViewModel.Discount = 50;
 
             // Assert
-            this.billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
+            this._billItemDetailViewModel.ShouldRaisePropertyChangeFor(x => x.Sum);
         }
 
         [Test]
@@ -203,17 +203,17 @@ namespace EpAccounting.Test.UI.ViewModel
             BillItem billItem = ModelFactory.GetDefaultBillItem();
             billItem.Bill = ModelFactory.GetDefaultBill();
 
-            this.billItemDetailViewModel = new BillItemDetailViewModel(billItem, this.mockRepository.Object);
-            this.mockRepository.Setup(x => x.GetByCriteria<Article>(It.IsAny<ICriterion>(), 1))
+            this._billItemDetailViewModel = new BillItemDetailViewModel(billItem, this._mockRepository.Object);
+            this._mockRepository.Setup(x => x.GetByCriteria<Article>(It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Article> { ModelFactory.GetDefaultArticle() });
 
             // Act
-            this.billItemDetailViewModel.ArticleNumber = 3;
+            this._billItemDetailViewModel.ArticleNumber = 3;
 
             // Assert
-            this.billItemDetailViewModel.Description.Should().Be(ModelFactory.DefaultArticleDescription);
-            this.billItemDetailViewModel.Amount.Should().Be(ModelFactory.DefaultArticleAmount);
-            this.billItemDetailViewModel.Price.Should().Be(ModelFactory.DefaultArticlePrice * (100 + (decimal)Settings.Default.VatPercentage) / 100);
+            this._billItemDetailViewModel.Description.Should().Be(ModelFactory.DefaultArticleDescription);
+            this._billItemDetailViewModel.Amount.Should().Be(ModelFactory.DefaultArticleAmount);
+            this._billItemDetailViewModel.Price.Should().Be(ModelFactory.DefaultArticlePrice * (100 + (decimal)Settings.Default.VatPercentage) / 100);
         }
 
         [Test]
@@ -222,19 +222,19 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             BillItem billItem = ModelFactory.GetDefaultBillItem();
             billItem.Bill = ModelFactory.GetDefaultBill();
-            billItem.Bill.KindOfVat = KindOfVat.zzgl_MwSt;
+            billItem.Bill.KindOfVat = KindOfVat.ZzglMwSt;
 
-            this.billItemDetailViewModel = new BillItemDetailViewModel(billItem, this.mockRepository.Object);
-            this.mockRepository.Setup(x => x.GetByCriteria<Article>(It.IsAny<ICriterion>(), 1))
+            this._billItemDetailViewModel = new BillItemDetailViewModel(billItem, this._mockRepository.Object);
+            this._mockRepository.Setup(x => x.GetByCriteria<Article>(It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Article> { ModelFactory.GetDefaultArticle() });
 
             // Act
-            this.billItemDetailViewModel.ArticleNumber = 3;
+            this._billItemDetailViewModel.ArticleNumber = 3;
 
             // Assert
-            this.billItemDetailViewModel.Description.Should().Be(ModelFactory.DefaultArticleDescription);
-            this.billItemDetailViewModel.Amount.Should().Be(ModelFactory.DefaultArticleAmount);
-            this.billItemDetailViewModel.Price.Should().Be(ModelFactory.DefaultArticlePrice);
+            this._billItemDetailViewModel.Description.Should().Be(ModelFactory.DefaultArticleDescription);
+            this._billItemDetailViewModel.Amount.Should().Be(ModelFactory.DefaultArticleAmount);
+            this._billItemDetailViewModel.Price.Should().Be(ModelFactory.DefaultArticlePrice);
         }
     }
 }

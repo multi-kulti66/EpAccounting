@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientViewModel.cs
-// Last Change: 17.02.2018, 14:29
+// Last Change: 19.02.2018, 20:05
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -15,11 +15,8 @@ namespace EpAccounting.UI.ViewModel
     {
         #region Fields
 
-        private readonly IRepository repository;
-        private readonly IDialogService dialogService;
-
-        private ClientEditViewModel _clientEditViewModel;
-        private ClientSearchViewModel _clientSearchViewModel;
+        private readonly IRepository _repository;
+        private readonly IDialogService _dialogService;
 
         #endregion
 
@@ -29,8 +26,8 @@ namespace EpAccounting.UI.ViewModel
 
         public ClientViewModel(string title, Bitmap image, IRepository repository, IDialogService dialogService) : base(title, image)
         {
-            this.repository = repository;
-            this.dialogService = dialogService;
+            this._repository = repository;
+            this._dialogService = dialogService;
 
             this.InitClientViewModels();
         }
@@ -41,15 +38,9 @@ namespace EpAccounting.UI.ViewModel
 
         #region Properties, Indexers
 
-        public ClientEditViewModel ClientEditViewModel
-        {
-            get { return this._clientEditViewModel; }
-        }
+        public ClientEditViewModel ClientEditViewModel { get; private set; }
 
-        public ClientSearchViewModel ClientSearchViewModel
-        {
-            get { return this._clientSearchViewModel; }
-        }
+        public ClientSearchViewModel ClientSearchViewModel { get; private set; }
 
         #endregion
 
@@ -57,8 +48,8 @@ namespace EpAccounting.UI.ViewModel
 
         private void InitClientViewModels()
         {
-            this._clientEditViewModel = new ClientEditViewModel(this.repository, this.dialogService);
-            this._clientSearchViewModel = new ClientSearchViewModel(this.repository);
+            this.ClientEditViewModel = new ClientEditViewModel(this._repository, this._dialogService);
+            this.ClientSearchViewModel = new ClientSearchViewModel(this._repository, this._dialogService);
         }
     }
 }

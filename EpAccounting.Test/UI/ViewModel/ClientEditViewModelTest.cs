@@ -27,32 +27,26 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class ClientEditViewModelTest
     {
-        #region Setup/Teardown
-
         [SetUp]
         public void Init()
         {
-            this.mockRepository = new Mock<IRepository>();
-            this.mockDialogService = new Mock<IDialogService>();
-            this.clientEditViewModel = new ClientEditViewModel(this.mockRepository.Object, this.mockDialogService.Object);
+            this._mockRepository = new Mock<IRepository>();
+            this._mockDialogService = new Mock<IDialogService>();
+            this._clientEditViewModel = new ClientEditViewModel(this._mockRepository.Object, this._mockDialogService.Object);
         }
 
         [TearDown]
         public void Cleanup()
         {
-            this.mockRepository = null;
-            this.mockDialogService = null;
-            this.clientEditViewModel = null;
+            this._mockRepository = null;
+            this._mockDialogService = null;
+            this._clientEditViewModel = null;
             GC.Collect();
         }
 
-        #endregion
-
-
-
-        private Mock<IRepository> mockRepository;
-        private Mock<IDialogService> mockDialogService;
-        private ClientEditViewModel clientEditViewModel;
+        private Mock<IRepository> _mockRepository;
+        private Mock<IDialogService> _mockDialogService;
+        private ClientEditViewModel _clientEditViewModel;
 
         [Test]
         public void DerivesFromBindableViewModelBase()
@@ -64,367 +58,367 @@ namespace EpAccounting.Test.UI.ViewModel
         public void CanCreateClientEditViewModelObject()
         {
             // Assert
-            this.clientEditViewModel.Should().NotBeNull();
+            this._clientEditViewModel.Should().NotBeNull();
         }
 
         [Test]
         public void GetExistingCurrentClientDetailViewModelAfterCreation()
         {
             // Assert
-            this.clientEditViewModel.CurrentClientDetailViewModel.Should().NotBeNull();
+            this._clientEditViewModel.CurrentClientDetailViewModel.Should().NotBeNull();
         }
 
         [Test]
         public void GetExistingClientStateAfterCreation()
         {
             // Assert
-            this.clientEditViewModel.CurrentState.Should().NotBeNull().And.BeOfType<ClientEmptyState>();
+            this._clientEditViewModel.CurrentState.Should().NotBeNull().And.BeOfType<ClientEmptyState>();
         }
 
         [Test]
         public void CanInsertClientIdShouldReturnTrue()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this._mockRepository.Setup(x => x.IsConnected).Returns(true);
 
             // Act
-            this.clientEditViewModel.ChangeToSearchMode();
+            this._clientEditViewModel.ChangeToSearchMode();
 
             // Assert
-            this.clientEditViewModel.CanInsertClientId.Should().BeTrue();
+            this._clientEditViewModel.CanInsertClientId.Should().BeTrue();
         }
 
         [Test]
         public void CanInsertClientIdShouldReturnFalseWhenClientStateNotSearchState()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this._mockRepository.Setup(x => x.IsConnected).Returns(true);
 
             // Assert
-            this.clientEditViewModel.CanInsertClientId.Should().BeFalse();
+            this._clientEditViewModel.CanInsertClientId.Should().BeFalse();
         }
 
         [Test]
         public void CanInsertClientIdShouldReturnFalseWhenNotConnectedToDatabase()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(false);
+            this._mockRepository.Setup(x => x.IsConnected).Returns(false);
 
             // Act
-            this.clientEditViewModel.ChangeToSearchMode();
+            this._clientEditViewModel.ChangeToSearchMode();
 
             // Assert
-            this.clientEditViewModel.CanInsertClientId.Should().BeFalse();
+            this._clientEditViewModel.CanInsertClientId.Should().BeFalse();
         }
 
         [Test]
         public void CanEditClientDataShouldReturnTrue()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this._mockRepository.Setup(x => x.IsConnected).Returns(true);
 
             // Act
-            this.clientEditViewModel.ChangeToSearchMode();
+            this._clientEditViewModel.ChangeToSearchMode();
 
             // Assert
-            this.clientEditViewModel.CanEditClientData.Should().BeTrue();
+            this._clientEditViewModel.CanEditClientData.Should().BeTrue();
         }
 
         [Test]
         public void CanEditClientDataShouldReturnFalseWhenClientStateCanNotCommit()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this._mockRepository.Setup(x => x.IsConnected).Returns(true);
 
             // Assert
-            this.clientEditViewModel.CanEditClientData.Should().BeFalse();
+            this._clientEditViewModel.CanEditClientData.Should().BeFalse();
         }
 
         [Test]
         public void CanEditClientDataShouldReturnFalseWhenNotConnectedToDatabase()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(false);
+            this._mockRepository.Setup(x => x.IsConnected).Returns(false);
 
             // Act
-            this.clientEditViewModel.ChangeToSearchMode();
+            this._clientEditViewModel.ChangeToSearchMode();
 
             // Assert
-            this.clientEditViewModel.CanEditClientData.Should().BeFalse();
+            this._clientEditViewModel.CanEditClientData.Should().BeFalse();
         }
 
         [Test]
         public void CanEditCompanyNameShouldReturnTrue()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            this.clientEditViewModel.ChangeToEditMode();
-            this.clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Firma;
+            this._clientEditViewModel.ChangeToEditMode();
+            this._clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Firma;
 
             // Assert
-            this.clientEditViewModel.CanEditCompanyName.Should().BeTrue();
+            this._clientEditViewModel.CanEditCompanyName.Should().BeTrue();
         }
 
         [Test]
         public void CanEditCompanyNameShouldReturnTrueInSearchMode()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this._mockRepository.Setup(x => x.IsConnected).Returns(true);
 
             // Act
-            this.clientEditViewModel.ChangeToSearchMode();
+            this._clientEditViewModel.ChangeToSearchMode();
 
             // Assert
-            this.clientEditViewModel.CanEditCompanyName.Should().BeTrue();
+            this._clientEditViewModel.CanEditCompanyName.Should().BeTrue();
         }
 
         [Test]
         public void CanEditCompanyNameShouldReturnFalseWhenNotConnectedToDatabase()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(false);
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
-            this.clientEditViewModel.ChangeToEditMode();
+            this._mockRepository.Setup(x => x.IsConnected).Returns(false);
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToEditMode();
 
             // Act
-            this.clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Firma;
+            this._clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Firma;
 
             // Assert
-            this.clientEditViewModel.CanEditCompanyName.Should().BeFalse();
+            this._clientEditViewModel.CanEditCompanyName.Should().BeFalse();
         }
 
         [Test]
         public void CanEditCompanyNameShouldReturnFalseWhenNotInEditMode()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            this.clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Firma;
+            this._clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Firma;
 
             // Assert
-            this.clientEditViewModel.CanEditCompanyName.Should().BeFalse();
+            this._clientEditViewModel.CanEditCompanyName.Should().BeFalse();
         }
 
         [Test]
         public void CanEditCompanyNameShouldReturnFalseWhenTitleNotCompany()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            this.clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Familie;
+            this._clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Familie;
 
             // Assert
-            this.clientEditViewModel.CanEditCompanyName.Should().BeFalse();
+            this._clientEditViewModel.CanEditCompanyName.Should().BeFalse();
         }
 
         [Test]
         public void CanLoadBillsShouldReturnTrue()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this._mockRepository.Setup(x => x.IsConnected).Returns(true);
 
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Assert
-            this.clientEditViewModel.CanLoadBills.Should().BeTrue();
+            this._clientEditViewModel.CanLoadBills.Should().BeTrue();
         }
 
         [Test]
         public void CanLoadBillsShouldReturnFalseWhenClientStateNotLoadedState()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this._mockRepository.Setup(x => x.IsConnected).Returns(true);
 
             // Assert
-            this.clientEditViewModel.CanLoadBills.Should().BeFalse();
+            this._clientEditViewModel.CanLoadBills.Should().BeFalse();
         }
 
         [Test]
         public void CanLoadBillsShouldReturnFalseWhenNotConnectedToDatabase()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.IsConnected).Returns(false);
+            this._mockRepository.Setup(x => x.IsConnected).Returns(false);
 
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Assert
-            this.clientEditViewModel.CanLoadBills.Should().BeFalse();
+            this._clientEditViewModel.CanLoadBills.Should().BeFalse();
         }
 
         [Test]
         public void CanChangeCurrentClientDetailViewModel()
         {
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Assert
-            this.clientEditViewModel.CurrentClientDetailViewModel.FirstName.Should().Be("Andre");
+            this._clientEditViewModel.CurrentClientDetailViewModel.FirstName.Should().Be("Andre");
         }
 
         [Test]
         public void RaisesPropertyChangedWhenCurrentClientDetailViewModelChanges()
         {
             // Arrange
-            this.clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Assert
-            this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentClientDetailViewModel);
+            this._clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentClientDetailViewModel);
         }
 
         [Test]
         public void RaisePropertyChangedEventWhenEqualClientDetailViewModelWillBeSet()
         {
             // Arrange
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
-            this.clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Assert
-            this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentClientDetailViewModel);
+            this._clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentClientDetailViewModel);
         }
 
         [Test]
         public void RaisesPropertyChangedWhenClientWillBeReloaded()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient);
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
-            this.clientEditViewModel.CurrentClientDetailViewModel.FirstName = "Alfred";
-            this.clientEditViewModel.CurrentClientDetailViewModel.LastName = "Hugendubel";
-            this.clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient);
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.CurrentClientDetailViewModel.FirstName = "Alfred";
+            this._clientEditViewModel.CurrentClientDetailViewModel.LastName = "Hugendubel";
+            this._clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.clientEditViewModel.Load();
+            this._clientEditViewModel.Load();
 
             // Assert
-            this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentClientDetailViewModel);
-            this.clientEditViewModel.CurrentClientDetailViewModel.FirstName.Should().Be(ModelFactory.DefaultClientFirstName);
-            this.clientEditViewModel.CurrentClientDetailViewModel.LastName.Should().Be(ModelFactory.DefaultClientLastName);
+            this._clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentClientDetailViewModel);
+            this._clientEditViewModel.CurrentClientDetailViewModel.FirstName.Should().Be(ModelFactory.DefaultClientFirstName);
+            this._clientEditViewModel.CurrentClientDetailViewModel.LastName.Should().Be(ModelFactory.DefaultClientLastName);
         }
 
         [Test]
         public void ShowsExceptionMessageWhenClientCouldNotBeReloaded()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Throws<Exception>();
+            this._mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Throws<Exception>();
 
             // Act
-            this.clientEditViewModel.Load();
+            this._clientEditViewModel.Load();
 
             // Assert
-            this.mockDialogService.Verify(x => x.ShowExceptionMessage(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
+            this._mockDialogService.Verify(x => x.ShowExceptionMessage(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public void CanChangeToCreationMode()
         {
             // Act
-            this.clientEditViewModel.ChangeToCreationMode();
+            this._clientEditViewModel.ChangeToCreationMode();
 
             // Assert
-            this.clientEditViewModel.CurrentState.Should().BeOfType<ClientCreationState>();
+            this._clientEditViewModel.CurrentState.Should().BeOfType<ClientCreationState>();
         }
 
         [Test]
         public void CanChangeToLoadedModeWhenClientIsNull()
         {
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode();
+            this._clientEditViewModel.ChangeToLoadedMode();
 
             // Assert
-            this.clientEditViewModel.CurrentState.Should().BeOfType<ClientLoadedState>();
+            this._clientEditViewModel.CurrentState.Should().BeOfType<ClientLoadedState>();
         }
 
         [Test]
         public void CanChangeToEditMode()
         {
             // Arrange
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            this.clientEditViewModel.ChangeToEditMode();
+            this._clientEditViewModel.ChangeToEditMode();
 
             // Assert
-            this.clientEditViewModel.CurrentState.Should().BeOfType<ClientEditState>();
+            this._clientEditViewModel.CurrentState.Should().BeOfType<ClientEditState>();
         }
 
         [Test]
         public void CanNotChangeToEditMode()
         {
             // Act
-            this.clientEditViewModel.ChangeToEditMode();
+            this._clientEditViewModel.ChangeToEditMode();
 
             // Assert
-            this.clientEditViewModel.CurrentState.Should().BeOfType<ClientEmptyState>();
+            this._clientEditViewModel.CurrentState.Should().BeOfType<ClientEmptyState>();
         }
 
         [Test]
         public void RaisesPropertyChangedWhenCurrentClientStateChanges()
         {
             // Arrange
-            this.clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.clientEditViewModel.ChangeToCreationMode();
+            this._clientEditViewModel.ChangeToCreationMode();
 
             // Assert
-            this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentState);
+            this._clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentState);
         }
 
         [Test]
         public void RaisePropertyChangedEvenWhenEqualClientStateWillBeSet()
         {
             // Arrange
-            this.clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            this.clientEditViewModel.ChangeToEmptyMode();
+            this._clientEditViewModel.ChangeToEmptyMode();
 
             // Assert
-            this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentState);
+            this._clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CurrentState);
         }
 
         [Test]
         public void GetInstancesOfClientStates()
         {
             // Assert
-            this.clientEditViewModel.GetClientEmptyState().Should().NotBeNull().And.BeOfType<ClientEmptyState>();
-            this.clientEditViewModel.GetClientCreationState().Should().NotBeNull().And.BeOfType<ClientCreationState>();
-            this.clientEditViewModel.GetClientSearchState().Should().NotBeNull().And.BeOfType<ClientSearchState>();
-            this.clientEditViewModel.GetClientLoadedState().Should().NotBeNull().And.BeOfType<ClientLoadedState>();
-            this.clientEditViewModel.GetClientEditState().Should().NotBeNull().And.BeOfType<ClientEditState>();
+            this._clientEditViewModel.GetClientEmptyState().Should().NotBeNull().And.BeOfType<ClientEmptyState>();
+            this._clientEditViewModel.GetClientCreationState().Should().NotBeNull().And.BeOfType<ClientCreationState>();
+            this._clientEditViewModel.GetClientSearchState().Should().NotBeNull().And.BeOfType<ClientSearchState>();
+            this._clientEditViewModel.GetClientLoadedState().Should().NotBeNull().And.BeOfType<ClientLoadedState>();
+            this._clientEditViewModel.GetClientEditState().Should().NotBeNull().And.BeOfType<ClientEditState>();
         }
 
         [Test]
         public void ClientCommandsAreInitialized()
         {
             // Assert
-            this.clientEditViewModel.StateCommands.Should().HaveCount(6);
+            this._clientEditViewModel.StateCommands.Should().HaveCount(6);
         }
 
         [Test]
         public async Task DoNotAddNewClientWhenClientHasMissingNamePart()
         {
             // Act
-            bool result = await this.clientEditViewModel.SaveOrUpdateClientAsync();
+            bool result = await this._clientEditViewModel.SaveOrUpdateClientAsync();
 
             // Assert
             result.Should().BeFalse();
-            this.mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient,
+            this._mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient,
                                                              It.IsAny<string>()), Times.Once);
         }
 
@@ -432,15 +426,15 @@ namespace EpAccounting.Test.UI.ViewModel
         public async Task DoNotAddNewClientWhenClientHasMissingPostalCode()
         {
             // Arrange
-            this.clientEditViewModel.CurrentClientDetailViewModel.FirstName = "Andre";
-            this.clientEditViewModel.CurrentClientDetailViewModel.LastName = "Multerer";
+            this._clientEditViewModel.CurrentClientDetailViewModel.FirstName = "Andre";
+            this._clientEditViewModel.CurrentClientDetailViewModel.LastName = "Multerer";
 
             // Act
-            bool result = await this.clientEditViewModel.SaveOrUpdateClientAsync();
+            bool result = await this._clientEditViewModel.SaveOrUpdateClientAsync();
 
             // Assert
             result.Should().BeFalse();
-            this.mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient,
+            this._mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient,
                                                              It.IsAny<string>()), Times.Once);
         }
 
@@ -448,81 +442,81 @@ namespace EpAccounting.Test.UI.ViewModel
         public async Task AddClientToDatabaseIfNoEqualClientExists()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client>());
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client>());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            bool result = await this.clientEditViewModel.SaveOrUpdateClientAsync();
+            bool result = await this._clientEditViewModel.SaveOrUpdateClientAsync();
 
             // Assert
             result.Should().BeTrue();
-            this.mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Client>()), Times.Once);
+            this._mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Client>()), Times.Once);
         }
 
         [Test]
         public async Task AddClientToDatabaseIfEqualClientExistsAndDialogResultIsYes()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client> { new Client { CityToPostalCode = new CityToPostalCode() } });
-            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(true));
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client> { new Client { CityToPostalCode = new CityToPostalCode() } });
+            this._mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(true));
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            bool result = await this.clientEditViewModel.SaveOrUpdateClientAsync();
+            bool result = await this._clientEditViewModel.SaveOrUpdateClientAsync();
 
             // Assert
             result.Should().BeTrue();
-            this.mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Client>()), Times.Once);
-            this.mockDialogService.Verify(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            this._mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Client>()), Times.Once);
+            this._mockDialogService.Verify(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public async Task DoNotAddClientToDatabaseIfEqualClientExistsAndDialogResultIsNo()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client> { new Client { CityToPostalCode = new CityToPostalCode() } });
-            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(false));
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client> { new Client { CityToPostalCode = new CityToPostalCode() } });
+            this._mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(false));
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            bool result = await this.clientEditViewModel.SaveOrUpdateClientAsync();
+            bool result = await this._clientEditViewModel.SaveOrUpdateClientAsync();
 
             // Assert
             result.Should().BeFalse();
-            this.mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Client>()), Times.Never);
-            this.mockDialogService.Verify(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            this._mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Client>()), Times.Never);
+            this._mockDialogService.Verify(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public async Task DoNotRaisePropertyChangedWhenNewClientWasAdded()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client>());
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
-            this.clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client>());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
 
             // Act
-            await this.clientEditViewModel.SaveOrUpdateClientAsync();
+            await this._clientEditViewModel.SaveOrUpdateClientAsync();
 
             // Assert
-            this.clientEditViewModel.ShouldNotRaisePropertyChangeFor(x => x.CurrentClientDetailViewModel);
+            this._clientEditViewModel.ShouldNotRaisePropertyChangeFor(x => x.CurrentClientDetailViewModel);
         }
 
         [Test]
         public async Task ShowMessageWhenClientCouldNotBeAddedToDatabaseBecauseOfAnException()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client>());
-            this.mockRepository.Setup(x => x.SaveOrUpdate(It.IsAny<Client>())).Throws(new Exception());
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), 1)).Returns(() => new List<Client>());
+            this._mockRepository.Setup(x => x.SaveOrUpdate(It.IsAny<Client>())).Throws(new Exception());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            bool result = await this.clientEditViewModel.SaveOrUpdateClientAsync();
+            bool result = await this._clientEditViewModel.SaveOrUpdateClientAsync();
 
             // Assert
             result.Should().BeFalse();
-            this.mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Client>()), Times.Once);
-            this.mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient,
+            this._mockRepository.Verify(x => x.SaveOrUpdate(It.IsAny<Client>()), Times.Once);
+            this._mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotSaveOrUpdateClient,
                                                              It.IsAny<string>()), Times.Once);
         }
 
@@ -530,44 +524,44 @@ namespace EpAccounting.Test.UI.ViewModel
         public async Task DoNotDeleteClientWhenDialogResultIsNo()
         {
             // Arrange
-            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(false));
+            this._mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(false));
 
             // Act
-            bool result = await this.clientEditViewModel.DeleteClientAsync();
+            bool result = await this._clientEditViewModel.DeleteClientAsync();
 
             // Assert
             result.Should().BeFalse();
-            this.mockDialogService.Verify(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            this._mockDialogService.Verify(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public async Task DeleteClientWhenDialogResultIsYes()
         {
             // Arrange
-            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            bool result = await this.clientEditViewModel.DeleteClientAsync();
+            bool result = await this._clientEditViewModel.DeleteClientAsync();
 
             // Assert
             result.Should().BeTrue();
-            this.mockDialogService.Verify(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-            this.mockRepository.Verify(x => x.Delete(It.IsAny<Client>()), Times.Once);
+            this._mockDialogService.Verify(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            this._mockRepository.Verify(x => x.Delete(It.IsAny<Client>()), Times.Once);
         }
 
         [Test]
         public async Task SendRemoveMessagesWhenClientWasDeleted()
         {
             // Arrange
-            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+            this._mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
 
             List<string> notificationMessages = new List<string>();
             Messenger.Default.Register<NotificationMessage>(this, x => notificationMessages.Add(x.Notification));
             Messenger.Default.Register<NotificationMessage<int>>(this, x => notificationMessages.Add(x.Notification));
 
             // Act
-            await this.clientEditViewModel.DeleteClientAsync();
+            await this._clientEditViewModel.DeleteClientAsync();
 
             // Assert
             notificationMessages.Count.Should().Be(4);
@@ -581,35 +575,35 @@ namespace EpAccounting.Test.UI.ViewModel
         public async Task ShowMessageWhenClientCouldNotBeDeletedBecauseOfAnException()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.Delete(It.IsAny<Client>())).Throws(new Exception());
-            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._mockRepository.Setup(x => x.Delete(It.IsAny<Client>())).Throws(new Exception());
+            this._mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            bool result = await this.clientEditViewModel.DeleteClientAsync();
+            bool result = await this._clientEditViewModel.DeleteClientAsync();
 
             // Assert
             result.Should().BeFalse();
-            this.mockRepository.Verify(x => x.Delete(It.IsAny<Client>()), Times.Once);
-            this.mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotDeleteClient, It.IsAny<string>()), Times.Once);
+            this._mockRepository.Verify(x => x.Delete(It.IsAny<Client>()), Times.Once);
+            this._mockDialogService.Verify(x => x.ShowMessage(Resources.Dialog_Title_CanNotDeleteClient, It.IsAny<string>()), Times.Once);
         }
 
         [Test]
         public void SendClientSearchCriterionThatSearchesJustForASpecificClientId()
         {
             // Arrange
-            const int ExpectedId = 2;
-            Client client = new Client { Id = ExpectedId, FirstName = "Andre", LastName = "Multerer" };
-            this.clientEditViewModel.ChangeToLoadedMode(client);
+            const int expectedId = 2;
+            Client client = new Client { Id = expectedId, FirstName = "Andre", LastName = "Multerer" };
+            this._clientEditViewModel.ChangeToLoadedMode(client);
 
             ICriterion criterion = null;
             Messenger.Default.Register<NotificationMessage<ICriterion>>(this, x => criterion = x.Content);
 
             Conjunction expectedCriterion = Restrictions.Conjunction();
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.Id == ExpectedId));
+            expectedCriterion.Add(Restrictions.Where<Client>(c => c.Id == expectedId));
 
             // Act
-            this.clientEditViewModel.SendClientSearchCriterionMessage();
+            this._clientEditViewModel.SendClientSearchCriterionMessage();
 
             // Assert
             criterion.Should().NotBeNull();
@@ -620,7 +614,7 @@ namespace EpAccounting.Test.UI.ViewModel
         public void SendClientSearchCriterionThatSearchesWithAllEnteredClientValues()
         {
             // Arrange
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             ICriterion criterion = null;
             Messenger.Default.Register<NotificationMessage<ICriterion>>(this, x => criterion = x.Content);
@@ -642,7 +636,7 @@ namespace EpAccounting.Test.UI.ViewModel
             expectedCriterion.Add(Restrictions.Where<Client>(c => c.Email.IsLike(ModelFactory.DefaultClientEmail, MatchMode.Anywhere)));
 
             // Act
-            this.clientEditViewModel.SendClientSearchCriterionMessage();
+            this._clientEditViewModel.SendClientSearchCriterionMessage();
 
             // Assert
             criterion.Should().NotBeNull();
@@ -653,15 +647,15 @@ namespace EpAccounting.Test.UI.ViewModel
         public void LoadClientViaMessengerMessage()
         {
             // Arrange
-            const int ExpectedId = 2;
-            this.mockRepository.Setup(x => x.GetById<Client>(ExpectedId)).Returns(new Client { CityToPostalCode = new CityToPostalCode() });
+            const int expectedId = 2;
+            this._mockRepository.Setup(x => x.GetById<Client>(expectedId)).Returns(new Client { CityToPostalCode = new CityToPostalCode() });
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<int>(ExpectedId, Resources.Message_LoadClientForClientEditVM));
+            Messenger.Default.Send(new NotificationMessage<int>(expectedId, Resources.Message_LoadClientForClientEditVM));
 
             // Assert
-            this.mockRepository.Verify(x => x.GetById<Client>(ExpectedId), Times.Once);
-            this.clientEditViewModel.CurrentState.Should().BeOfType<ClientLoadedState>();
+            this._mockRepository.Verify(x => x.GetById<Client>(expectedId), Times.Once);
+            this._clientEditViewModel.CurrentState.Should().BeOfType<ClientLoadedState>();
         }
 
         [Test]
@@ -672,7 +666,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage<bool>>(this, x => areEnabled.Add(x.Content));
 
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(new Client { CityToPostalCode = new CityToPostalCode() });
+            this._clientEditViewModel.ChangeToLoadedMode(new Client { CityToPostalCode = new CityToPostalCode() });
 
             // Assert
             areEnabled.Should().HaveCount(2);
@@ -687,7 +681,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage<bool>>(this, x => areEnabled.Add(x.Content));
 
             // Act
-            this.clientEditViewModel.ChangeToCreationMode();
+            this._clientEditViewModel.ChangeToCreationMode();
 
             // Assert
             areEnabled.Should().HaveCount(2);
@@ -702,7 +696,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage<bool>>(this, x => areEnabled.Add(x.Content));
 
             // Act
-            this.clientEditViewModel.ChangeToEmptyMode();
+            this._clientEditViewModel.ChangeToEmptyMode();
 
             // Assert
             areEnabled.Should().HaveCount(2);
@@ -717,7 +711,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage<bool>>(this, x => areEnabled.Add(x.Content));
 
             // Act
-            this.clientEditViewModel.ChangeToEmptyMode();
+            this._clientEditViewModel.ChangeToEmptyMode();
 
             // Assert
             areEnabled.Should().HaveCount(2);
@@ -728,12 +722,12 @@ namespace EpAccounting.Test.UI.ViewModel
         public void SendNotEnabledStateForWorkspaceChange()
         {
             // Arrange
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
             List<bool> areEnabled = new List<bool>();
             Messenger.Default.Register<NotificationMessage<bool>>(this, x => areEnabled.Add(x.Content));
 
             // Act
-            this.clientEditViewModel.ChangeToEditMode();
+            this._clientEditViewModel.ChangeToEditMode();
 
             // Assert
             areEnabled.Should().HaveCount(2);
@@ -748,7 +742,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage<bool>>(this, x => areEnabled.Add(x.Content));
 
             // Act
-            this.clientEditViewModel.ChangeToSearchMode();
+            this._clientEditViewModel.ChangeToSearchMode();
 
             // Assert
             areEnabled.Should().HaveCount(2);
@@ -759,17 +753,17 @@ namespace EpAccounting.Test.UI.ViewModel
         public void CanNotSendCreateNewBillMessageWhenNotInLoadedClientState()
         {
             // Assert
-            this.clientEditViewModel.CreateNewBillCommand.CanExecute(null).Should().BeFalse();
+            this._clientEditViewModel.CreateNewBillCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void CanSendCreateNewBillMessageWhenInLoadedClientState()
         {
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(new Client { CityToPostalCode = new CityToPostalCode() });
+            this._clientEditViewModel.ChangeToLoadedMode(new Client { CityToPostalCode = new CityToPostalCode() });
 
             // Assert
-            this.clientEditViewModel.CreateNewBillCommand.CanExecute(null).Should().BeTrue();
+            this._clientEditViewModel.CreateNewBillCommand.CanExecute(null).Should().BeTrue();
         }
 
         [Test]
@@ -780,8 +774,8 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage>(this, x => notificationMessage = x.Notification);
 
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
-            this.clientEditViewModel.CreateNewBillCommand.Execute(null);
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.CreateNewBillCommand.Execute(null);
 
             // Assert
             notificationMessage.Should().Be(Resources.Message_ChangeToBillWorkspaceForMainVM);
@@ -795,8 +789,8 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage<int>>(this, x => notificationMessage = x.Notification);
 
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
-            this.clientEditViewModel.CreateNewBillCommand.Execute(null);
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.CreateNewBillCommand.Execute(null);
 
             // Assert
             notificationMessage.Should().Be(Resources.Message_CreateNewBillForBillEditVM);
@@ -806,17 +800,17 @@ namespace EpAccounting.Test.UI.ViewModel
         public void CanNotSendLoadBillsFromClientMessageWhenNotInLoadedClientState()
         {
             // Assert
-            this.clientEditViewModel.LoadBillsFromClientCommand.CanExecute(null).Should().BeFalse();
+            this._clientEditViewModel.LoadBillsFromClientCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void CanSendLoadBillsFromClientMessageWhenInLoadedClientState()
         {
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Assert
-            this.clientEditViewModel.LoadBillsFromClientCommand.CanExecute(null).Should().BeTrue();
+            this._clientEditViewModel.LoadBillsFromClientCommand.CanExecute(null).Should().BeTrue();
         }
 
         [Test]
@@ -827,8 +821,8 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage>(this, x => notificationMessage = x.Notification);
 
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
-            this.clientEditViewModel.LoadBillsFromClientCommand.Execute(null);
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.LoadBillsFromClientCommand.Execute(null);
 
             // Assert
             notificationMessage.Should().Be(Resources.Message_ChangeToBillWorkspaceForMainVM);
@@ -842,8 +836,8 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage<int>>(this, x => notificationMessage = x.Notification);
 
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
-            this.clientEditViewModel.LoadBillsFromClientCommand.Execute(null);
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.LoadBillsFromClientCommand.Execute(null);
 
             // Assert
             notificationMessage.Should().Be(Resources.Message_LoadBillsFromClientForBillSearchVM);
@@ -857,8 +851,8 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage<Client>>(this, x => notificationMessage = x.Notification);
 
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
-            this.clientEditViewModel.LoadBillsFromClientCommand.Execute(null);
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.LoadBillsFromClientCommand.Execute(null);
 
             // Assert
             notificationMessage.Should().Be(Resources.Message_SwitchToSearchModeAndLoadClientDataForBillEditVM);
@@ -872,7 +866,7 @@ namespace EpAccounting.Test.UI.ViewModel
             Messenger.Default.Register<NotificationMessage<int>>(this, x => notificationMessages.Add(x.Notification));
 
             // Act
-            this.clientEditViewModel.SendUpdateClientValuesMessage();
+            this._clientEditViewModel.SendUpdateClientValuesMessage();
 
             // Assert
             notificationMessages.Count.Should().Be(3);
@@ -885,133 +879,133 @@ namespace EpAccounting.Test.UI.ViewModel
         public void ReloadClientWhenUpdateClientMessageWasReceived()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetById<Client>(1)).Returns(ModelFactory.GetDefaultClient);
-            this.clientEditViewModel.ChangeToLoadedMode(new Client { Id = 1, FirstName = "Michael" });
+            this._mockRepository.Setup(x => x.GetById<Client>(1)).Returns(ModelFactory.GetDefaultClient);
+            this._clientEditViewModel.ChangeToLoadedMode(new Client { Id = 1, FirstName = "Michael" });
 
             // Act
             Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_UpdateClientForClientEditVM));
 
             // Assert
-            this.clientEditViewModel.CurrentClientDetailViewModel.FirstName.Should().Be(ModelFactory.DefaultClientFirstName);
+            this._clientEditViewModel.CurrentClientDetailViewModel.FirstName.Should().Be(ModelFactory.DefaultClientFirstName);
         }
 
         [Test]
         public void CanNotClearFieldsWhenNotInLoadedState()
         {
             // Assert
-            this.clientEditViewModel.ClearFieldsCommand.CanExecute(null).Should().BeFalse();
+            this._clientEditViewModel.ClearFieldsCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
         public void CanClearFieldsWhenInLoadedState()
         {
             // Act
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Assert
-            this.clientEditViewModel.ClearFieldsCommand.CanExecute(null).Should().BeTrue();
+            this._clientEditViewModel.ClearFieldsCommand.CanExecute(null).Should().BeTrue();
         }
 
         [Test]
         public void ClearsFields()
         {
             // Arrange
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            this.clientEditViewModel.ClearFieldsCommand.Execute(null);
+            this._clientEditViewModel.ClearFieldsCommand.Execute(null);
 
             // Assert
-            this.clientEditViewModel.CurrentClientDetailViewModel.FirstName.Should().BeNullOrEmpty();
-            this.clientEditViewModel.CurrentClientDetailViewModel.LastName.Should().BeNullOrEmpty();
+            this._clientEditViewModel.CurrentClientDetailViewModel.FirstName.Should().BeNullOrEmpty();
+            this._clientEditViewModel.CurrentClientDetailViewModel.LastName.Should().BeNullOrEmpty();
         }
 
         [Test]
         public async Task DeletesPostalCodeWhenDeletedClientWasTheOnlyReference()
         {
             // Arrange
-            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(0);
+            this._mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(0);
 
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            bool result = await this.clientEditViewModel.DeleteClientAsync();
+            bool result = await this._clientEditViewModel.DeleteClientAsync();
 
             // Assert
             result.Should().BeTrue();
-            this.mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Once());
+            this._mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Once());
         }
 
         [Test]
         public async Task DoesNotDeletePostalCodeWhenDeletedClientWasNotTheOnlyReference()
         {
             // Arrange
-            this.mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(1);
+            this._mockDialogService.Setup(x => x.ShowDialogYesNo(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(true));
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(1);
 
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            bool result = await this.clientEditViewModel.DeleteClientAsync();
+            bool result = await this._clientEditViewModel.DeleteClientAsync();
 
             // Assert
             result.Should().BeTrue();
-            this.mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Never);
+            this._mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Never);
         }
 
         [Test]
         public async Task DeletesPreviousPostalCodeWhenChangedClientWasTheOnlyReference()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient());
-            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>())).Returns(new List<Client>());
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(0);
+            this._mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient());
+            this._mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>())).Returns(new List<Client>());
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(0);
 
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
-            this.clientEditViewModel.ChangeToEditMode();
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToEditMode();
 
             // Act
-            bool result = await this.clientEditViewModel.SaveOrUpdateClientAsync();
+            bool result = await this._clientEditViewModel.SaveOrUpdateClientAsync();
 
             // Assert
             result.Should().BeTrue();
-            this.mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Once());
+            this._mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Once());
         }
 
         [Test]
         public async Task DoesNotDeletePreviousPostalCodeWhenChangedClientWasNotTheOnlyReference()
         {
             // Arrange
-            this.mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient());
-            this.mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>())).Returns(new List<Client>());
-            this.mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(1);
+            this._mockRepository.Setup(x => x.GetById<Client>(It.IsAny<int>())).Returns(ModelFactory.GetDefaultClient());
+            this._mockRepository.Setup(x => x.GetByCriteria<Client>(It.IsAny<ICriterion>(), It.IsAny<int>())).Returns(new List<Client>());
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria<Client>(It.IsAny<ICriterion>())).Returns(1);
 
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
-            this.clientEditViewModel.ChangeToEditMode();
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.ChangeToEditMode();
 
             // Act
-            bool result = await this.clientEditViewModel.SaveOrUpdateClientAsync();
+            bool result = await this._clientEditViewModel.SaveOrUpdateClientAsync();
 
             // Assert
             result.Should().BeTrue();
-            this.mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Never);
+            this._mockRepository.Verify(x => x.Delete(It.IsAny<CityToPostalCode>()), Times.Never);
         }
 
         [Test]
         public void UpdatesCompanyNameEnableStateWhenTitleChanges()
         {
             // Arrange
-            this.clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
-            this.mockRepository.Setup(x => x.IsConnected).Returns(true);
-            this.clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
+            this._clientEditViewModel.MonitorEvents<INotifyPropertyChanged>();
+            this._mockRepository.Setup(x => x.IsConnected).Returns(true);
+            this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
             // Act
-            this.clientEditViewModel.ChangeToEditMode();
-            this.clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Firma;
+            this._clientEditViewModel.ChangeToEditMode();
+            this._clientEditViewModel.CurrentClientDetailViewModel.Title = ClientTitle.Firma;
 
             // Assert
-            this.clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CanEditCompanyName);
+            this._clientEditViewModel.ShouldRaisePropertyChangeFor(x => x.CanEditCompanyName);
         }
     }
 }

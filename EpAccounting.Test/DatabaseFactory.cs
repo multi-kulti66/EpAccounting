@@ -15,21 +15,21 @@ namespace EpAccounting.Test
 
     public static class DatabaseFactory
     {
-        private const string DIRECTORY_DESKTOP = @"D:\Downloads";
-        private const string DIRECTORY_SURFACE = @"C:\Users\Andre\Desktop";
-        private const string DIRECTORY_FOLDERNAME = "TestFolder";
+        private const string DirectoryDesktop = @"D:\Downloads";
+        private const string DirectorySurface = @"C:\Users\Andre\Desktop";
+        private const string DirectoryFoldername = "TestFolder";
 
 
         public static string TestFolderPath
         {
             get
             {
-                if (Directory.Exists(DIRECTORY_DESKTOP))
+                if (Directory.Exists(DirectoryDesktop))
                 {
-                    return Path.Combine(DIRECTORY_DESKTOP, DIRECTORY_FOLDERNAME);
+                    return Path.Combine(DirectoryDesktop, DirectoryFoldername);
                 }
 
-                return Path.Combine(DIRECTORY_SURFACE, DIRECTORY_FOLDERNAME);
+                return Path.Combine(DirectorySurface, DirectoryFoldername);
             }
         }
 

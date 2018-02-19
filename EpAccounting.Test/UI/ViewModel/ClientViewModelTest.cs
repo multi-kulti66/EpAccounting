@@ -22,26 +22,26 @@ namespace EpAccounting.Test.UI.ViewModel
     [TestFixture]
     public class ClientViewModelTest
     {
-        private Mock<IRepository> mockRepository;
-        private Mock<IDialogService> mockDialogService;
-        private ClientViewModel clientViewModel;
+        private Mock<IRepository> _mockRepository;
+        private Mock<IDialogService> _mockDialogService;
+        private ClientViewModel _clientViewModel;
 
 
         [SetUp]
         public void Init()
         {
-            this.mockRepository = new Mock<IRepository>();
-            this.mockDialogService = new Mock<IDialogService>();
-            this.clientViewModel = new ClientViewModel(Resources.Workspace_Title_Clients, Resources.img_clients,
-                                                       this.mockRepository.Object, this.mockDialogService.Object);
+            this._mockRepository = new Mock<IRepository>();
+            this._mockDialogService = new Mock<IDialogService>();
+            this._clientViewModel = new ClientViewModel(Resources.Workspace_Title_Clients, Resources.img_clients,
+                                                       this._mockRepository.Object, this._mockDialogService.Object);
         }
 
         [TearDown]
         public void Cleanup()
         {
-            this.mockRepository = null;
-            this.mockDialogService = null;
-            this.clientViewModel = null;
+            this._mockRepository = null;
+            this._mockDialogService = null;
+            this._clientViewModel = null;
             GC.Collect();
         }
 
@@ -57,14 +57,14 @@ namespace EpAccounting.Test.UI.ViewModel
         public void GetInitializedClientEditViewModelAfterCreation()
         {
             // Assert
-            this.clientViewModel.ClientEditViewModel.Should().NotBeNull();
+            this._clientViewModel.ClientEditViewModel.Should().NotBeNull();
         }
 
         [Test]
         public void GetInitializedClientSearchViewModelAfterCreation()
         {
             // Assert
-            this.clientViewModel.ClientSearchViewModel.Should().NotBeNull();
+            this._clientViewModel.ClientSearchViewModel.Should().NotBeNull();
         }
     }
 }

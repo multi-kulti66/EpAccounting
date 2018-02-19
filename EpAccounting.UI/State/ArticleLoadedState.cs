@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ArticleLoadedState.cs
-// Last Change: 17.02.2018, 14:28
+// Last Change: 19.02.2018, 19:14
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -13,7 +13,7 @@ namespace EpAccounting.UI.State
     {
         #region Fields
 
-        private readonly ArticlesOptionViewModel articlesOptionViewModel;
+        private readonly ArticlesOptionViewModel _articlesOptionViewModel;
 
         #endregion
 
@@ -23,7 +23,7 @@ namespace EpAccounting.UI.State
 
         public ArticleLoadedState(ArticlesOptionViewModel articlesOptionViewModel)
         {
-            this.articlesOptionViewModel = articlesOptionViewModel;
+            this._articlesOptionViewModel = articlesOptionViewModel;
         }
 
         #endregion
@@ -39,7 +39,7 @@ namespace EpAccounting.UI.State
 
         public void SwitchToEditMode()
         {
-            this.articlesOptionViewModel.ChangeToEditMode();
+            this._articlesOptionViewModel.ChangeToEditMode();
         }
 
         public bool CanCommit()

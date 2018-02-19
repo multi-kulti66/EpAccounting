@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModel.cs
-// Last Change: 17.02.2018, 21:48
+// Last Change: 19.02.2018, 19:53
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -16,13 +16,15 @@ namespace EpAccounting.UI.ViewModel
     using Model;
     using NHibernate.Criterion;
     using Properties;
+    using Service;
 
 
-    public class BillSearchViewModel : BillWorkspaceViewModel
+    public class BillSearchViewModel : BillWorkspaceViewModel, IDisposable
     {
         #region Fields
 
-        private readonly IRepository repository;
+        private readonly IRepository _repository;
+        private readonly IDialogService _dialogService;
 
         private int _numberOfAllPages;
         private int _currentPage;
@@ -41,9 +43,10 @@ namespace EpAccounting.UI.ViewModel
 
         #region Constructors
 
-        public BillSearchViewModel(IRepository repository)
+        public BillSearchViewModel(IRepository repository, IDialogService dialogService)
         {
-            this.repository = repository;
+            this._repository = repository;
+            this._dialogService = dialogService;
 
             Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>>(this, this.ExecuteNotificationMessage);
@@ -166,6 +169,18 @@ namespace EpAccounting.UI.ViewModel
 
 
 
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            this._selectedBillDetailViewModel?.Dispose();
+            Messenger.Default.Unregister(this);
+        }
+
+        #endregion
+
+
+
         private void LoadBillsFromClient(int clientId)
         {
             Conjunction billConjunction = Restrictions.Conjunction();
@@ -182,37 +197,43 @@ namespace EpAccounting.UI.ViewModel
                                            Expression<Func<Bill, Client>>,
                                            ICriterion> tupleCriterion, int page = 1)
         {
-            // ReSharper disable once PossibleLossOfFraction
-            int numberOfBills;
-
-            if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
+            try
             {
-                numberOfBills = this.repository.GetQuantityByCriteria<Bill>(tupleCriterion.Item1);
-            }
-            else
-            {
-                numberOfBills = this.repository.GetQuantityByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3);
-            }
+                int numberOfBills;
 
-            this.NumberOfAllPages = (numberOfBills - 1) / Settings.Default.PageSize + 1;
-            this.CurrentPage = this.CurrentPage > this.NumberOfAllPages ? this.NumberOfAllPages : page;
-            this.ReloadCommands();
-
-            this.FoundBills.Clear();
-
-            if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
-            {
-                foreach (Bill bill in this.repository.GetByCriteria<Bill>(tupleCriterion.Item1, this.CurrentPage).ToList())
+                if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
                 {
-                    this.FoundBills.Add(new BillDetailViewModel(bill, this.repository));
+                    numberOfBills = this._repository.GetQuantityByCriteria<Bill>(tupleCriterion.Item1);
+                }
+                else
+                {
+                    numberOfBills = this._repository.GetQuantityByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3);
+                }
+
+                this.NumberOfAllPages = (numberOfBills - 1) / Settings.Default.PageSize + 1;
+                this.CurrentPage = this.CurrentPage > this.NumberOfAllPages ? this.NumberOfAllPages : page;
+                this.ReloadCommands();
+
+                this.FoundBills.Clear();
+
+                if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
+                {
+                    foreach (Bill bill in this._repository.GetByCriteria<Bill>(tupleCriterion.Item1, this.CurrentPage).ToList())
+                    {
+                        this.FoundBills.Add(new BillDetailViewModel(bill, this._repository, this._dialogService));
+                    }
+                }
+                else
+                {
+                    foreach (Bill bill in this._repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, this.CurrentPage).ToList())
+                    {
+                        this.FoundBills.Add(new BillDetailViewModel(bill, this._repository, this._dialogService));
+                    }
                 }
             }
-            else
+            catch (Exception e)
             {
-                foreach (Bill bill in this.repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, this.CurrentPage).ToList())
-                {
-                    this.FoundBills.Add(new BillDetailViewModel(bill, this.repository));
-                }
+                this._dialogService.ShowExceptionMessage(e, "Could not load the required bills!");
             }
         }
 
@@ -220,10 +241,19 @@ namespace EpAccounting.UI.ViewModel
         {
             for (int i = 0; i < this.FoundBills.Count; i++)
             {
-                if (this.FoundBills[i].Id == id)
+                if (this.FoundBills[i].Id != id)
                 {
-                    Bill bill = this.repository.GetById<Bill>(id);
-                    this.FoundBills[i] = new BillDetailViewModel(bill, this.repository);
+                    continue;
+                }
+
+                try
+                {
+                    Bill bill = this._repository.GetById<Bill>(id);
+                    this.FoundBills[i] = new BillDetailViewModel(bill, this._repository, this._dialogService);
+                }
+                catch (Exception e)
+                {
+                    this._dialogService.ShowExceptionMessage(e, string.Format("Could not update bill with id = '{0}'", id));
                 }
             }
         }
@@ -232,10 +262,19 @@ namespace EpAccounting.UI.ViewModel
         {
             for (int i = 0; i < this.FoundBills.Count; i++)
             {
-                if (this.FoundBills[i].ClientId == id)
+                if (this.FoundBills[i].ClientId != id)
                 {
-                    Bill bill = this.repository.GetById<Bill>(this.FoundBills[i].Id);
-                    this.FoundBills[i] = new BillDetailViewModel(bill, this.repository);
+                    continue;
+                }
+
+                try
+                {
+                    Bill bill = this._repository.GetById<Bill>(this.FoundBills[i].Id);
+                    this.FoundBills[i] = new BillDetailViewModel(bill, this._repository, this._dialogService);
+                }
+                catch (Exception e)
+                {
+                    this._dialogService.ShowExceptionMessage(e, string.Format("Could not update bill with id = '{0}'", i));
                 }
             }
         }

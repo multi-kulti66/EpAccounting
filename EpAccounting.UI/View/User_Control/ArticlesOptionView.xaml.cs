@@ -18,7 +18,7 @@ namespace EpAccounting.UI.View.User_Control
     {
         #region Fields
 
-        private bool unloadedRow;
+        private bool _unloadedRow;
 
         #endregion
 
@@ -58,9 +58,9 @@ namespace EpAccounting.UI.View.User_Control
 
         private void ArticleDataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (this.unloadedRow && this.ArticleDataGrid.SelectedIndex >= 0)
+            if (this._unloadedRow && this.ArticleDataGrid.SelectedIndex >= 0)
             {
-                this.unloadedRow = false;
+                this._unloadedRow = false;
                 DataGridRow selectedRow = (DataGridRow) this.ArticleDataGrid.ItemContainerGenerator.ContainerFromIndex(this.ArticleDataGrid.SelectedIndex);
                 selectedRow?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
             }
@@ -68,7 +68,7 @@ namespace EpAccounting.UI.View.User_Control
 
         private void ArticleDataGrid_OnUnloadingRow(object sender, DataGridRowEventArgs e)
         {
-            this.unloadedRow = true;
+            this._unloadedRow = true;
         }
     }
 }

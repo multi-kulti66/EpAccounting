@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditViewModel.cs
-// Last Change: 17.02.2018, 21:16
+// Last Change: 19.02.2018, 19:59
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -162,7 +162,9 @@ namespace EpAccounting.UI.ViewModel
         }
 
         #endregion
-        
+
+
+
         public virtual void Load(int clientId = -1)
         {
             try
