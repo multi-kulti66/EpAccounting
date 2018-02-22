@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModel.cs
-// Last Change: 19.02.2018, 19:53
+// Last Change: 22.02.2018, 20:53
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -49,7 +49,7 @@ namespace EpAccounting.UI.ViewModel
             this._dialogService = dialogService;
 
             Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
-            Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>>(this, this.ExecuteNotificationMessage);
+            Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
         }
 
@@ -163,7 +163,7 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> LastCriterion { get; set; }
+        private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> LastCriterion { get; set; }
 
         #endregion
 
@@ -190,24 +190,28 @@ namespace EpAccounting.UI.ViewModel
 
             this.LoadSearchedBills(new Tuple<ICriterion,
                                        Expression<Func<Bill, Client>>,
-                                       ICriterion>(billConjunction, expression, clientConjunction));
+                                       ICriterion,
+                                       Expression<Func<Client, CityToPostalCode>>,
+                                       ICriterion>(billConjunction, expression, clientConjunction, null, null));
         }
 
-        private void LoadSearchedBills(Tuple<ICriterion,
-                                           Expression<Func<Bill, Client>>,
-                                           ICriterion> tupleCriterion, int page = 1)
+        private void LoadSearchedBills(Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> tupleCriterion, int page = 1)
         {
             try
             {
                 int numberOfBills;
 
-                if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
+                if ((tupleCriterion.Item4 == null || tupleCriterion.Item5 == null) && (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null))
                 {
                     numberOfBills = this._repository.GetQuantityByCriteria<Bill>(tupleCriterion.Item1);
                 }
-                else
+                else if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
                 {
                     numberOfBills = this._repository.GetQuantityByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3);
+                }
+                else
+                {
+                    numberOfBills = this._repository.GetQuantityByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, tupleCriterion.Item4, tupleCriterion.Item5);
                 }
 
                 this.NumberOfAllPages = (numberOfBills - 1) / Settings.Default.PageSize + 1;
@@ -216,16 +220,23 @@ namespace EpAccounting.UI.ViewModel
 
                 this.FoundBills.Clear();
 
-                if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
+                if ((tupleCriterion.Item4 == null || tupleCriterion.Item5 == null) && (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null))
                 {
                     foreach (Bill bill in this._repository.GetByCriteria<Bill>(tupleCriterion.Item1, this.CurrentPage).ToList())
                     {
                         this.FoundBills.Add(new BillDetailViewModel(bill, this._repository, this._dialogService));
                     }
                 }
-                else
+                else if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
                 {
                     foreach (Bill bill in this._repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, this.CurrentPage).ToList())
+                    {
+                        this.FoundBills.Add(new BillDetailViewModel(bill, this._repository, this._dialogService));
+                    }
+                }
+                else
+                {
+                    foreach (Bill bill in this._repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, tupleCriterion.Item4, tupleCriterion.Item5, this.CurrentPage).ToList())
                     {
                         this.FoundBills.Add(new BillDetailViewModel(bill, this._repository, this._dialogService));
                     }
@@ -253,7 +264,7 @@ namespace EpAccounting.UI.ViewModel
                 }
                 catch (Exception e)
                 {
-                    this._dialogService.ShowExceptionMessage(e, string.Format("Could not update bill with id = '{0}'", id));
+                    this._dialogService.ShowExceptionMessage(e, $"Could not update bill with id = '{id}'");
                 }
             }
         }
@@ -274,7 +285,7 @@ namespace EpAccounting.UI.ViewModel
                 }
                 catch (Exception e)
                 {
-                    this._dialogService.ShowExceptionMessage(e, string.Format("Could not update bill with id = '{0}'", i));
+                    this._dialogService.ShowExceptionMessage(e, $"Could not update bill with id = '{i}'");
                 }
             }
         }
@@ -301,9 +312,7 @@ namespace EpAccounting.UI.ViewModel
             this.LoadNextPageCommand.RelayCommand.RaiseCanExecuteChanged();
         }
 
-        private void ExecuteNotificationMessage(NotificationMessage<Tuple<ICriterion,
-                                                    Expression<Func<Bill, Client>>,
-                                                    ICriterion>> message)
+        private void ExecuteNotificationMessage(NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>> message)
         {
             if (message.Notification == Resources.Message_BillSearchCriteriaForBillSearchVM)
             {

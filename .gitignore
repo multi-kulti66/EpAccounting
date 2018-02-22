@@ -1,3 +1,4 @@
+.vs
 EpAccounting.Business/bin
 EpAccounting.Business/obj
 EpAccounting.Data/bin
@@ -8,3 +9,5 @@ EpAccounting.Test/bin
 EpAccounting.Test/obj
 EpAccounting.UI/bin
 EpAccounting.UI/obj
+EpAccounting.sln.DotSettings
+EpAccounting.sln.DotSettings.user

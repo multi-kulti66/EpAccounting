@@ -9,6 +9,7 @@ namespace EpAccounting.Test.UI.ViewModel
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Linq.Expressions;
     using System.Threading.Tasks;
     using EpAccounting.Business;
     using EpAccounting.Model;
@@ -596,18 +597,20 @@ namespace EpAccounting.Test.UI.ViewModel
             Client client = new Client { Id = expectedId, FirstName = "Andre", LastName = "Multerer" };
             this._clientEditViewModel.ChangeToLoadedMode(client);
 
-            ICriterion criterion = null;
-            Messenger.Default.Register<NotificationMessage<ICriterion>>(this, x => criterion = x.Content);
+            Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> criterion = null;
+            Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>>(this, x => criterion = x.Content);
 
-            Conjunction expectedCriterion = Restrictions.Conjunction();
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.Id == expectedId));
+            Conjunction clientConjunction = Restrictions.Conjunction();
+            clientConjunction.Add(Restrictions.Where<Client>(c => c.Id == expectedId));
+            Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(clientConjunction, null, null);
+
 
             // Act
             this._clientEditViewModel.SendClientSearchCriterionMessage();
 
             // Assert
             criterion.Should().NotBeNull();
-            criterion.ToString().Should().Be(expectedCriterion.ToString());
+            criterion.ToString().Should().Be(expectedTuple.ToString());
         }
 
         [Test]
@@ -616,31 +619,34 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             this._clientEditViewModel.ChangeToLoadedMode(ModelFactory.GetDefaultClient());
 
-            ICriterion criterion = null;
-            Messenger.Default.Register<NotificationMessage<ICriterion>>(this, x => criterion = x.Content);
+            Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> criterion = null;
+            Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>>(this, x => criterion = x.Content);
 
-            Conjunction expectedCriterion = Restrictions.Conjunction();
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.CompanyName.IsLike(ModelFactory.DefaultClientCompanyName, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.FirstName.IsLike(ModelFactory.DefaultClientFirstName, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.LastName.IsLike(ModelFactory.DefaultClientLastName, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.Street.IsLike(ModelFactory.DefaultClientStreet, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.HouseNumber.IsLike(ModelFactory.DefaultClientHouseNumber, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode.IsLike(ModelFactory.DefaultCityToPostalCodePostalCode, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.City.IsLike(ModelFactory.DefaultCityToPostalCodeCity, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.DateOfBirth.IsLike(ModelFactory.DefaultClientDateOfBirth, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.PhoneNumber1.IsLike(ModelFactory.DefaultClientPhoneNumber1, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.PhoneNumber2.IsLike(ModelFactory.DefaultClientPhoneNumber2, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.MobileNumber.IsLike(ModelFactory.DefaultClientMobileNumber, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.Telefax.IsLike(ModelFactory.DefaultClientTelefax, MatchMode.Anywhere)));
-            expectedCriterion.Add(Restrictions.Where<Client>(c => c.Email.IsLike(ModelFactory.DefaultClientEmail, MatchMode.Anywhere)));
+            Conjunction clientConjuction = Restrictions.Conjunction();
+            Conjunction cityToPostalConjunction = Restrictions.Conjunction();
+            clientConjuction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
+            clientConjuction.Add(Restrictions.Where<Client>(c => c.CompanyName.IsLike(ModelFactory.DefaultClientCompanyName, MatchMode.Anywhere)));
+            clientConjuction.Add(Restrictions.Where<Client>(c => c.FirstName.IsLike(ModelFactory.DefaultClientFirstName, MatchMode.Anywhere)));
+            clientConjuction.Add(Restrictions.Where<Client>(c => c.LastName.IsLike(ModelFactory.DefaultClientLastName, MatchMode.Anywhere)));
+            clientConjuction.Add(Restrictions.Where<Client>(c => c.Street.IsLike(ModelFactory.DefaultClientStreet, MatchMode.Anywhere)));
+            clientConjuction.Add(Restrictions.Where<Client>(c => c.HouseNumber.IsLike(ModelFactory.DefaultClientHouseNumber, MatchMode.Anywhere)));
+            cityToPostalConjunction.Add(Restrictions.Where<CityToPostalCode>(c => c.PostalCode.IsLike(ModelFactory.DefaultCityToPostalCodePostalCode, MatchMode.Anywhere)));
+            cityToPostalConjunction.Add(Restrictions.Where<CityToPostalCode>(c => c.City.IsLike(ModelFactory.DefaultCityToPostalCodeCity, MatchMode.Anywhere)));
+            clientConjuction.Add(Restrictions.Where<Client>(c => c.DateOfBirth.IsLike(ModelFactory.DefaultClientDateOfBirth, MatchMode.Anywhere)));
+            clientConjuction.Add(Restrictions.Where<Client>(c => c.PhoneNumber1.IsLike(ModelFactory.DefaultClientPhoneNumber1, MatchMode.Anywhere)));
+            clientConjuction.Add(Restrictions.Where<Client>(c => c.PhoneNumber2.IsLike(ModelFactory.DefaultClientPhoneNumber2, MatchMode.Anywhere)));
+            clientConjuction.Add(Restrictions.Where<Client>(c => c.MobileNumber.IsLike(ModelFactory.DefaultClientMobileNumber, MatchMode.Anywhere)));
+            clientConjuction.Add(Restrictions.Where<Client>(c => c.Telefax.IsLike(ModelFactory.DefaultClientTelefax, MatchMode.Anywhere)));
+            clientConjuction.Add(Restrictions.Where<Client>(c => c.Email.IsLike(ModelFactory.DefaultClientEmail, MatchMode.Anywhere)));
+
+            Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(clientConjuction, c => c.CityToPostalCode, cityToPostalConjunction);
 
             // Act
             this._clientEditViewModel.SendClientSearchCriterionMessage();
 
             // Assert
             criterion.Should().NotBeNull();
-            criterion.ToString().Should().Be(expectedCriterion.ToString());
+            criterion.ToString().Should().Be(expectedTuple.ToString());
         }
 
         [Test]

@@ -80,7 +80,7 @@ namespace EpAccounting.UI.ViewModel
             }
             catch (Exception e)
             {
-                this._dialogService.ShowExceptionMessage(e, string.Format("Could not save article '{0}'", this._article.Description));
+                this._dialogService.ShowExceptionMessage(e, $"Could not save article '{this._article.Description}'");
             }
         }
     }

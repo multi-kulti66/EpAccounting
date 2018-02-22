@@ -167,7 +167,7 @@ namespace EpAccounting.UI.ViewModel
                     }
                     catch (Exception e)
                     {
-                        this._dialogService.ShowExceptionMessage(e, string.Format("Could not load bill with id '{0}'", message.Content));
+                        this._dialogService.ShowExceptionMessage(e, $"Could not load bill with id '{message.Content}'");
                     }
 
                     this.UpdateProperties();

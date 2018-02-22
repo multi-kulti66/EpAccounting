@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: NHibernateRepository.cs
-// Last Change: 17.02.2018, 19:16
+// Last Change: 22.02.2018, 20:44
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -137,13 +137,25 @@ namespace EpAccounting.Business
             }
         }
 
-        public int GetQuantityByCriteria<T, TU>(ICriterion criterion1,
-                                               Expression<Func<T, TU>> combinationCriterion,
+        public int GetQuantityByCriteria<T, U>(ICriterion criterion1,
+                                               Expression<Func<T, U>> combinationCriterion,
                                                ICriterion criterion2) where T : class
         {
             using (ISession session = this._sessionManager.OpenSession())
             {
                 return session.QueryOver<T>().Where(criterion1).JoinQueryOver(combinationCriterion).Where(criterion2).RowCount();
+            }
+        }
+
+        public int GetQuantityByCriteria<T, U, V>(ICriterion criterion1,
+                                                  Expression<Func<T, U>> combinationCriterion1,
+                                                  ICriterion criterion2,
+                                                  Expression<Func<U, V>> combinationCriterion2,
+                                                  ICriterion criterion3) where T : class
+        {
+            using (ISession session = this._sessionManager.OpenSession())
+            {
+                return session.QueryOver<T>().Where(criterion1).JoinQueryOver(combinationCriterion1).Where(criterion2).JoinQueryOver(combinationCriterion2).Where(criterion3).RowCount();
             }
         }
 
@@ -156,12 +168,24 @@ namespace EpAccounting.Business
         }
 
         public ICollection<T> GetByCriteria<T, TU>(ICriterion criterion1,
-                                                  Expression<Func<T, TU>> combinationCriterion,
-                                                  ICriterion criterion2, int page) where T : class
+                                                   Expression<Func<T, TU>> combinationCriterion,
+                                                   ICriterion criterion2, int page) where T : class
         {
             using (ISession session = this._sessionManager.OpenSession())
             {
                 return session.QueryOver<T>().Where(criterion1).JoinQueryOver(combinationCriterion).Where(criterion2).Skip((page - 1) * PageSize).Take(PageSize).List();
+            }
+        }
+
+        public ICollection<T> GetByCriteria<T, U, V>(ICriterion criterion1,
+                                                     Expression<Func<T, U>> combinationCriterion1,
+                                                     ICriterion criterion2,
+                                                     Expression<Func<U, V>> combinationCriterion2,
+                                                     ICriterion criterion3, int page) where T : class
+        {
+            using (ISession session = this._sessionManager.OpenSession())
+            {
+                return session.QueryOver<T>().Where(criterion1).JoinQueryOver(combinationCriterion1).Where(criterion2).JoinQueryOver(combinationCriterion2).Where(criterion3).Skip((page - 1) * PageSize).Take(PageSize).List();
             }
         }
 

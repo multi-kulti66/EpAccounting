@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModelTest.cs
-// Last Change: 19.02.2018, 20:49
+// Last Change: 22.02.2018, 21:20
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -76,12 +76,11 @@ namespace EpAccounting.Test.UI.ViewModel
                 .Returns(new List<Bill> { ModelFactory.GetDefaultBill() });
 
             Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
 
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, null, null);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(billConjunction, null, null, null, null);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
             this._billSearchViewModel.FoundBills.Should().HaveCount(1);
@@ -98,10 +97,10 @@ namespace EpAccounting.Test.UI.ViewModel
             Conjunction billConjunction = Restrictions.Conjunction();
             billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
 
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, null, null);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(billConjunction, null, null, null, null);
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
             this._mockDialogService.Verify(x => x.ShowExceptionMessage(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
@@ -111,18 +110,13 @@ namespace EpAccounting.Test.UI.ViewModel
         public void AddSingleBillToListThatMatchesBillAndClientCriterion()
         {
             // Arrange
-            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Bill> { ModelFactory.GetDefaultBill() });
 
-            Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
-            Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
-
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(new Conjunction(), b => b.Client, new Conjunction(), c => c.CityToPostalCode, new Conjunction());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
             this._billSearchViewModel.FoundBills.Should().HaveCount(1);
@@ -232,17 +226,11 @@ namespace EpAccounting.Test.UI.ViewModel
 
             Bill expectedBill = new Bill { Id = id, Date = date, KindOfBill = kindOfBill };
             this._mockRepository.Setup(x => x.GetById<Bill>(It.IsAny<int>())).Returns(expectedBill);
-            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>(), 1))
                 .Returns(new List<Bill>());
 
-            Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
-            Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
-
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
-
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(new Conjunction(), b => b.Client, new Conjunction(), c => c.CityToPostalCode, new Conjunction());
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             this._billSearchViewModel.FoundBills.Add(new BillDetailViewModel(expectedBill, this._mockRepository.Object, this._mockDialogService.Object));
 
@@ -323,20 +311,15 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int numberOfElements = 55;
 
-            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>()))
                 .Returns(numberOfElements);
 
-            Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
-            Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
-
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(new Conjunction(), b => b.Client, new Conjunction(), c => c.CityToPostalCode, new Conjunction());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
             this._billSearchViewModel.LoadNextPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
@@ -348,20 +331,15 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int numberOfElements = 55;
 
-            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>()))
                 .Returns(numberOfElements);
 
-            Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
-            Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
-
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(new Conjunction(), b => b.Client, new Conjunction(), c => c.CityToPostalCode, new Conjunction());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
             this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
 
             // Assert
@@ -374,20 +352,15 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int numberOfElements = 55;
 
-            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>()))
                 .Returns(numberOfElements);
 
-            Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
-            Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
-
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(new Conjunction(), b => b.Client, new Conjunction(), c => c.CityToPostalCode, new Conjunction());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
             this._billSearchViewModel.LoadLastPageCommand.RelayCommand.CanExecute(null).Should().BeTrue();
@@ -399,20 +372,15 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int numberOfElements = 55;
 
-            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), 1))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>()))
                 .Returns(numberOfElements);
 
-            Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
-            Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
-
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(new Conjunction(), b => b.Client, new Conjunction(), c => c.CityToPostalCode, new Conjunction());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
             this._billSearchViewModel.LoadLastPageCommand.RelayCommand.Execute(null);
 
             // Assert
@@ -443,20 +411,15 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int numberOfElements = 55;
 
-            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>()))
                 .Returns(numberOfElements);
 
-            Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
-            Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
-
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(new Conjunction(), b => b.Client, new Conjunction(), c => c.CityToPostalCode, new Conjunction());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
             this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
 
             // Assert
@@ -469,20 +432,15 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int numberOfElements = 55;
 
-            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>()))
                 .Returns(numberOfElements);
 
-            Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
-            Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
-
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(new Conjunction(), b => b.Client, new Conjunction(), c => c.CityToPostalCode, new Conjunction());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
             this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
             this._billSearchViewModel.LoadPreviousPageCommand.RelayCommand.Execute(null);
 
@@ -514,20 +472,15 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int numberOfElements = 55;
 
-            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>()))
                 .Returns(numberOfElements);
 
-            Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
-            Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
-
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(new Conjunction(), b => b.Client, new Conjunction(), c => c.CityToPostalCode, new Conjunction());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
             this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
 
             // Assert
@@ -540,20 +493,15 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int numberOfElements = 55;
 
-            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>()))
                 .Returns(numberOfElements);
 
-            Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
-            Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
-
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(new Conjunction(), b => b.Client, new Conjunction(), c => c.CityToPostalCode, new Conjunction());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
             this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
             this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
             this._billSearchViewModel.LoadFirstPageCommand.RelayCommand.Execute(null);
@@ -568,25 +516,20 @@ namespace EpAccounting.Test.UI.ViewModel
             // Arrange
             const int numberOfElements = 51;
 
-            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>());
-            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>()))
                 .Returns(numberOfElements);
 
-            Conjunction billConjunction = Restrictions.Conjunction();
-            billConjunction.Add(Restrictions.Where<Bill>(c => c.KindOfBill == ModelFactory.DefaultBillKindOfBill));
-            Conjunction clientConjunction = Restrictions.Conjunction();
-            clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == ModelFactory.DefaultClientTitle));
-
-            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(new Conjunction(), b => b.Client, new Conjunction(), c => c.CityToPostalCode, new Conjunction());
 
             // Act
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
             this._billSearchViewModel.LoadNextPageCommand.RelayCommand.Execute(null);
 
-            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>()))
                 .Returns(numberOfElements - 1);
-            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
             this._billSearchViewModel.CurrentPage.Should().Be(1);
@@ -597,13 +540,15 @@ namespace EpAccounting.Test.UI.ViewModel
         public void LoadBillsFromSpecificClientWhenLoadBillsFromClientMessageReceived()
         {
             // Arrange
-            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
+            this._mockRepository.Setup(x => x.GetByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>(), It.IsAny<int>()))
                 .Returns(new List<Bill>() { ModelFactory.GetDefaultBill() });
-            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>()))
+            this._mockRepository.Setup(x => x.GetQuantityByCriteria(It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Bill, Client>>>(), It.IsAny<ICriterion>(), It.IsAny<Expression<Func<Client, CityToPostalCode>>>(), It.IsAny<ICriterion>()))
                 .Returns(1);
 
+            Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> expectedTuple = new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(new Conjunction(), b => b.Client, new Conjunction(), c => c.CityToPostalCode, new Conjunction());
+
             // Act
-            Messenger.Default.Send(new NotificationMessage<int>(1, Resources.Message_LoadBillsFromClientForBillSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>(expectedTuple, Resources.Message_BillSearchCriteriaForBillSearchVM));
 
             // Assert
             this._billSearchViewModel.FoundBills.Count.Should().Be(1);

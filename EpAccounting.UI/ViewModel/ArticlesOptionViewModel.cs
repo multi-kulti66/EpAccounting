@@ -236,7 +236,7 @@ namespace EpAccounting.UI.ViewModel
                 }
                 catch (Exception e)
                 {
-                    this._dialogService.ShowExceptionMessage(e, string.Format("Could not delete article '{0}' from database!", article.Description));
+                    this._dialogService.ShowExceptionMessage(e, $"Could not delete article '{article.Description}' from database!");
                 }
             }
 

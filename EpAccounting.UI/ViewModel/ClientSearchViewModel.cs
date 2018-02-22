@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientSearchViewModel.cs
-// Last Change: 19.02.2018, 20:04
+// Last Change: 22.02.2018, 19:59
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,6 +9,7 @@ namespace EpAccounting.UI.ViewModel
     using System;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Linq.Expressions;
     using Business;
     using GalaSoft.MvvmLight.Command;
     using GalaSoft.MvvmLight.Messaging;
@@ -50,7 +51,7 @@ namespace EpAccounting.UI.ViewModel
             this._dialogService = dialogService;
 
             Messenger.Default.Register<NotificationMessage>(this, this.ExecuteNotificationMessage);
-            Messenger.Default.Register<NotificationMessage<ICriterion>>(this, this.ExecuteNotificationMessage);
+            Messenger.Default.Register<NotificationMessage<Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<int>>(this, this.ExecuteNotificationMessage);
             Messenger.Default.Register<NotificationMessage<bool>>(this, this.ExecuteNotificationMessage);
         }
@@ -171,7 +172,7 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        private ICriterion LastCriterion { get; set; }
+        private Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> LastCriterion { get; set; }
 
         #endregion
 
@@ -196,20 +197,41 @@ namespace EpAccounting.UI.ViewModel
             }
         }
 
-        private void LoadSearchedClients(ICriterion criterion, int page = 1)
+        private void LoadSearchedClients(Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> tupleCriterion, int page = 1)
         {
             try
             {
-                int numberOfClients = this._repository.GetQuantityByCriteria<Client>(criterion);
+                int numberOfClients;
+
+                if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
+                {
+                    numberOfClients = this._repository.GetQuantityByCriteria<Client>(tupleCriterion.Item1);
+                }
+                else
+                {
+                    numberOfClients = this._repository.GetQuantityByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3);
+                }
+
+
                 this.NumberOfAllPages = (numberOfClients - 1) / Settings.Default.PageSize + 1;
                 this.CurrentPage = this.CurrentPage > this.NumberOfAllPages ? this.NumberOfAllPages : page;
                 this.ReloadCommands();
 
                 this.FoundClients.Clear();
 
-                foreach (Client client in this._repository.GetByCriteria<Client>(criterion, this.CurrentPage).ToList())
+                if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
                 {
-                    this.FoundClients.Add(new ClientDetailViewModel(client, this._repository));
+                    foreach (Client client in this._repository.GetByCriteria<Client>(tupleCriterion.Item1, this.CurrentPage).ToList())
+                    {
+                        this.FoundClients.Add(new ClientDetailViewModel(client, this._repository));
+                    }
+                }
+                else
+                {
+                    foreach (Client client in this._repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, this.CurrentPage).ToList())
+                    {
+                        this.FoundClients.Add(new ClientDetailViewModel(client, this._repository));
+                    }
                 }
             }
             catch (Exception e)
@@ -239,7 +261,7 @@ namespace EpAccounting.UI.ViewModel
             }
             catch (Exception e)
             {
-                this._dialogService.ShowExceptionMessage(e, string.Format("Could not update client with id = '{0}'", id));
+                this._dialogService.ShowExceptionMessage(e, $"Could not update client with id = '{id}'");
             }
         }
 
@@ -256,7 +278,7 @@ namespace EpAccounting.UI.ViewModel
             this.LoadLastPageCommand.RelayCommand.RaiseCanExecuteChanged();
         }
 
-        private void ExecuteNotificationMessage(NotificationMessage<ICriterion> message)
+        private void ExecuteNotificationMessage(NotificationMessage<Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>> message)
         {
             if (message.Notification == Resources.Message_ClientSearchCriteriaForClientSearchVM)
             {

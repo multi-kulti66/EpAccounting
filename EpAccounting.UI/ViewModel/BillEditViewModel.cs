@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillEditViewModel.cs
-// Last Change: 19.02.2018, 19:40
+// Last Change: 22.02.2018, 20:45
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -237,7 +237,7 @@ namespace EpAccounting.UI.ViewModel
             }
             catch (Exception e)
             {
-                this._dialogService.ShowExceptionMessage(e, string.Format("Could not create bill for client with id = '{0}'", clientId));
+                this._dialogService.ShowExceptionMessage(e, $"Could not create bill for client with id = '{clientId}'");
                 return;
             }
 
@@ -305,7 +305,7 @@ namespace EpAccounting.UI.ViewModel
             this.CurrentBillDetailViewModel.City = messageContent.CityToPostalCode.City;
         }
 
-        private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion> GetBillSearchCriterion()
+        private Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> GetBillSearchCriterion()
         {
             Conjunction billConjunction = Restrictions.Conjunction();
 
@@ -313,7 +313,7 @@ namespace EpAccounting.UI.ViewModel
             if (this.CurrentBillDetailViewModel.Id != 0)
             {
                 billConjunction.Add(Restrictions.Where<Bill>(b => b.Id == this.CurrentBillDetailViewModel.Id));
-                return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, null, null);
+                return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(billConjunction, null, null, null, null);
             }
 
             if (this.CurrentBillDetailViewModel.KindOfBill != null)
@@ -337,13 +337,14 @@ namespace EpAccounting.UI.ViewModel
             }
 
             Conjunction clientConjunction = Restrictions.Conjunction();
+            Conjunction cityToPostalConjunction = Restrictions.Conjunction();
 
             // Client data
             // if client id is passed, it should just search bills for this client
             if (this.CurrentBillDetailViewModel.ClientId != 0)
             {
                 clientConjunction.Add(Restrictions.Where<Client>(c => c.Id == this.CurrentBillDetailViewModel.ClientId));
-                return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+                return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(billConjunction, b => b.Client, clientConjunction, null, null);
             }
 
             // searches all bills with specific client data
@@ -379,15 +380,15 @@ namespace EpAccounting.UI.ViewModel
 
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.PostalCode))
             {
-                clientConjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.PostalCode.IsLike(this.CurrentBillDetailViewModel.PostalCode, MatchMode.Anywhere)));
+                cityToPostalConjunction.Add(Restrictions.Where<CityToPostalCode>(c => c.PostalCode.IsLike(this.CurrentBillDetailViewModel.PostalCode, MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentBillDetailViewModel.City))
             {
-                clientConjunction.Add(Restrictions.Where<Client>(c => c.CityToPostalCode.City.IsLike(this.CurrentBillDetailViewModel.City, MatchMode.Anywhere)));
+                cityToPostalConjunction.Add(Restrictions.Where<CityToPostalCode>(c => c.City.IsLike(this.CurrentBillDetailViewModel.City, MatchMode.Anywhere)));
             }
 
-            return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion>(billConjunction, b => b.Client, clientConjunction);
+            return new Tuple<ICriterion, Expression<Func<Bill, Client>>, ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(billConjunction, b => b.Client, clientConjunction, c => c.CityToPostalCode, cityToPostalConjunction);
         }
 
         private bool CanClearFields()
@@ -483,6 +484,8 @@ namespace EpAccounting.UI.ViewModel
         {
             Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion,
                                        Expression<Func<Bill, Client>>,
+                                       ICriterion,
+                                       Expression<Func<Client, CityToPostalCode>>,
                                        ICriterion>>(this.GetBillSearchCriterion(),
                                                     Resources.Message_BillSearchCriteriaForBillSearchVM));
         }

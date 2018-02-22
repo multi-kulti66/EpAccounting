@@ -110,10 +110,10 @@ namespace EpAccounting.UI.Service
             this.FindAndReplace(this._wordApp, "<Datum>", billItemEditViewModel.CurrentBillDetailViewModel.Date);
             this.FindAndReplace(this._wordApp, "<Rechnungsnummer>", billItemEditViewModel.CurrentBillDetailViewModel.Id);
             this.FindAndReplace(this._wordApp, "<Kundennummer>", billItemEditViewModel.CurrentBillDetailViewModel.ClientId);
-            this.FindAndReplace(this._wordApp, "<Netto>", string.Format("{0:N2} €", billItemEditViewModel.NettoSum));
+            this.FindAndReplace(this._wordApp, "<Netto>", $"{billItemEditViewModel.NettoSum:N2} €");
             this.FindAndReplace(this._wordApp, "<MwSt%> ", billItemEditViewModel.CurrentBillDetailViewModel.VatPercentage);
-            this.FindAndReplace(this._wordApp, "<MwSt>", string.Format("{0:N2} €", billItemEditViewModel.VatSum));
-            this.FindAndReplace(this._wordApp, "<Brutto>", string.Format("{0:N2} €", billItemEditViewModel.BruttoSum));
+            this.FindAndReplace(this._wordApp, "<MwSt>", $"{billItemEditViewModel.VatSum:N2} €");
+            this.FindAndReplace(this._wordApp, "<Brutto>", $"{billItemEditViewModel.BruttoSum:N2} €");
             this.FindAndReplace(this._wordApp, "<Angebot>", Settings.Default.Offer);
 
             // The bookmark where the table will be inserted.
@@ -175,13 +175,13 @@ namespace EpAccounting.UI.Service
                 objTable.Cell(i, 2).Range.Text = billItemEditViewModel.BillItemDetailViewModels[i - 2].ArticleNumber.ToString();
                 objTable.Cell(i, 2).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                 objTable.Cell(i, 3).Range.Text = billItemEditViewModel.BillItemDetailViewModels[i - 2].Description;
-                objTable.Cell(i, 4).Range.Text = string.Format("{0:####.##}", billItemEditViewModel.BillItemDetailViewModels[i - 2].Amount);
+                objTable.Cell(i, 4).Range.Text = $"{billItemEditViewModel.BillItemDetailViewModels[i - 2].Amount:####.##}";
                 objTable.Cell(i, 4).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                objTable.Cell(i, 5).Range.Text = string.Format("{0:N2} €", billItemEditViewModel.BillItemDetailViewModels[i - 2].Price);
+                objTable.Cell(i, 5).Range.Text = $"{billItemEditViewModel.BillItemDetailViewModels[i - 2].Price:N2} €";
                 objTable.Cell(i, 5).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphRight;
-                objTable.Cell(i, 6).Range.Text = string.Format("{0:#0} %", billItemEditViewModel.BillItemDetailViewModels[i - 2].Discount);
+                objTable.Cell(i, 6).Range.Text = $"{billItemEditViewModel.BillItemDetailViewModels[i - 2].Discount:#0} %";
                 objTable.Cell(i, 6).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                objTable.Cell(i, 7).Range.Text = string.Format("{0:N2} €", billItemEditViewModel.BillItemDetailViewModels[i - 2].Sum);
+                objTable.Cell(i, 7).Range.Text = $"{billItemEditViewModel.BillItemDetailViewModels[i - 2].Sum:N2} €";
                 objTable.Cell(i, 7).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphRight;
                 objTable.Rows[i].AllowBreakAcrossPages = 0;
             }

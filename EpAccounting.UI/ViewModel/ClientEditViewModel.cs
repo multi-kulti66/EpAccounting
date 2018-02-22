@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientEditViewModel.cs
-// Last Change: 19.02.2018, 19:59
+// Last Change: 22.02.2018, 19:54
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -9,6 +9,7 @@ namespace EpAccounting.UI.ViewModel
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
     using Business;
@@ -317,123 +318,124 @@ namespace EpAccounting.UI.ViewModel
                                                    c.LastName == this.CurrentClientDetailViewModel.LastName);
         }
 
-        private ICriterion GetClientSearchCriterion()
+        private Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion> GetClientSearchCriterion()
         {
-            Conjunction conjunction = Restrictions.Conjunction();
+            Conjunction clientConjunction = Restrictions.Conjunction();
+            Conjunction cityToPostalCodeConjunction = Restrictions.Conjunction();
 
             if (this.CurrentClientDetailViewModel.Id != 0)
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.Id == this.CurrentClientDetailViewModel.Id));
-                return conjunction;
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.Id == this.CurrentClientDetailViewModel.Id));
+                return new Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(clientConjunction, null, null);
             }
 
             if (this.CurrentClientDetailViewModel.Title != null)
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.Title == this.CurrentClientDetailViewModel.Title));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.Title == this.CurrentClientDetailViewModel.Title));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.CompanyName))
             {
-                conjunction.Add(Restrictions.Where<Client>(c =>
-                                                               c.CompanyName
-                                                                .IsLike(this.CurrentClientDetailViewModel.CompanyName,
-                                                                        MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c =>
+                                                                     c.CompanyName
+                                                                      .IsLike(this.CurrentClientDetailViewModel.CompanyName,
+                                                                              MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.FirstName))
             {
-                conjunction.Add(Restrictions.Where<Client>(c =>
-                                                               c.FirstName
-                                                                .IsLike(this.CurrentClientDetailViewModel.FirstName,
-                                                                        MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c =>
+                                                                     c.FirstName
+                                                                      .IsLike(this.CurrentClientDetailViewModel.FirstName,
+                                                                              MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.LastName))
             {
-                conjunction.Add(Restrictions.Where<Client>(c =>
-                                                               c.LastName
-                                                                .IsLike(this.CurrentClientDetailViewModel.LastName,
-                                                                        MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c =>
+                                                                     c.LastName
+                                                                      .IsLike(this.CurrentClientDetailViewModel.LastName,
+                                                                              MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.Street))
             {
-                conjunction.Add(Restrictions.Where<Client>(c =>
-                                                               c.Street.IsLike(this.CurrentClientDetailViewModel.Street,
-                                                                               MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c =>
+                                                                     c.Street.IsLike(this.CurrentClientDetailViewModel.Street,
+                                                                                     MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.HouseNumber))
             {
-                conjunction.Add(Restrictions.Where<Client>(c =>
-                                                               c.HouseNumber
-                                                                .IsLike(this.CurrentClientDetailViewModel.HouseNumber,
-                                                                        MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c =>
+                                                                     c.HouseNumber
+                                                                      .IsLike(this.CurrentClientDetailViewModel.HouseNumber,
+                                                                              MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.PostalCode))
             {
-                conjunction.Add(Restrictions.Where<Client>(c =>
-                                                               c.CityToPostalCode.PostalCode
-                                                                .IsLike(this.CurrentClientDetailViewModel.PostalCode,
-                                                                        MatchMode.Anywhere)));
+                cityToPostalCodeConjunction.Add(Restrictions.Where<CityToPostalCode>(c =>
+                                                                                         c.PostalCode
+                                                                                          .IsLike(this.CurrentClientDetailViewModel.PostalCode,
+                                                                                                  MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.City))
             {
-                conjunction.Add(Restrictions.Where<Client>(c =>
-                                                               c.CityToPostalCode.City
-                                                                .IsLike(this.CurrentClientDetailViewModel.City,
-                                                                        MatchMode.Anywhere)));
+                cityToPostalCodeConjunction.Add(Restrictions.Where<CityToPostalCode>(c =>
+                                                                                         c.City
+                                                                                          .IsLike(this.CurrentClientDetailViewModel.City,
+                                                                                                  MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.DateOfBirth))
             {
-                conjunction.Add(Restrictions.Where<Client>(c =>
-                                                               c.DateOfBirth
-                                                                .IsLike(this.CurrentClientDetailViewModel.DateOfBirth,
-                                                                        MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c =>
+                                                                     c.DateOfBirth
+                                                                      .IsLike(this.CurrentClientDetailViewModel.DateOfBirth,
+                                                                              MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.PhoneNumber1))
             {
-                conjunction.Add(Restrictions.Where<Client>(c =>
-                                                               c.PhoneNumber1
-                                                                .IsLike(this.CurrentClientDetailViewModel.PhoneNumber1,
-                                                                        MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c =>
+                                                                     c.PhoneNumber1
+                                                                      .IsLike(this.CurrentClientDetailViewModel.PhoneNumber1,
+                                                                              MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.PhoneNumber2))
             {
-                conjunction.Add(Restrictions.Where<Client>(c =>
-                                                               c.PhoneNumber2
-                                                                .IsLike(this.CurrentClientDetailViewModel.PhoneNumber2,
-                                                                        MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c =>
+                                                                     c.PhoneNumber2
+                                                                      .IsLike(this.CurrentClientDetailViewModel.PhoneNumber2,
+                                                                              MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.MobileNumber))
             {
-                conjunction.Add(Restrictions.Where<Client>(c =>
-                                                               c.MobileNumber
-                                                                .IsLike(this.CurrentClientDetailViewModel.MobileNumber,
-                                                                        MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c =>
+                                                                     c.MobileNumber
+                                                                      .IsLike(this.CurrentClientDetailViewModel.MobileNumber,
+                                                                              MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.Telefax))
             {
-                conjunction.Add(Restrictions.Where<Client>(c =>
-                                                               c.Telefax
-                                                                .IsLike(this.CurrentClientDetailViewModel.Telefax,
-                                                                        MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c =>
+                                                                     c.Telefax
+                                                                      .IsLike(this.CurrentClientDetailViewModel.Telefax,
+                                                                              MatchMode.Anywhere)));
             }
 
             if (!string.IsNullOrEmpty(this.CurrentClientDetailViewModel.Email))
             {
-                conjunction.Add(Restrictions.Where<Client>(c => c.Email.IsLike(this.CurrentClientDetailViewModel.Email,
-                                                                               MatchMode.Anywhere)));
+                clientConjunction.Add(Restrictions.Where<Client>(c => c.Email.IsLike(this.CurrentClientDetailViewModel.Email,
+                                                                                     MatchMode.Anywhere)));
             }
 
-            return conjunction;
+            return new Tuple<ICriterion, Expression<Func<Client, CityToPostalCode>>, ICriterion>(clientConjunction, c => c.CityToPostalCode, cityToPostalCodeConjunction);
         }
 
         /// <summary>
@@ -565,9 +567,10 @@ namespace EpAccounting.UI.ViewModel
 
         public virtual void SendClientSearchCriterionMessage()
         {
-            Messenger.Default.Send(new NotificationMessage<ICriterion>(this.GetClientSearchCriterion(),
-                                                                       Resources
-                                                                          .Message_ClientSearchCriteriaForClientSearchVM));
+            Messenger.Default.Send(new NotificationMessage<Tuple<ICriterion,
+                                       Expression<Func<Client, CityToPostalCode>>,
+                                       ICriterion>>(this.GetClientSearchCriterion(),
+                                                    Resources.Message_ClientSearchCriteriaForClientSearchVM));
         }
 
         public virtual void SendUpdateClientValuesMessage()
