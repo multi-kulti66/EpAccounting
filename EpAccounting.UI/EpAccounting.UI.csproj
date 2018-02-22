@@ -119,7 +119,6 @@
     <Compile Include="Converter\ButtonDisplayNameToIsDefaultConverter.cs" />
     <Compile Include="Converter\UnitToDoubleConverter.cs" />
     <Compile Include="DatabaseFactory.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Markup\ListExtension.cs" />
     <Compile Include="Markup\EnumBindingMarkupExtension.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

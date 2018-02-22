@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModel.cs
-// Last Change: 22.02.2018, 20:53
+// Last Change: 22.02.2018, 21:46
 // Author: Andre Multerer
 // ///////////////////////////////////
 
