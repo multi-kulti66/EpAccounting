@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillItemEditViewModel.cs
-// Last Change: 19.02.2018, 19:41
+// Last Change: 01.03.2018, 14:58
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -269,7 +269,7 @@ namespace EpAccounting.UI.ViewModel
 
             this.BillItemDetailViewModels.Clear();
 
-            foreach (BillItem billItem in this._currentBill.BillItems)
+            foreach (var billItem in this._currentBill.BillItems)
             {
                 this.BillItemDetailViewModels.InsertOrderedBy(new BillItemDetailViewModel(billItem, this._repository), x => x.Position);
             }
@@ -281,15 +281,15 @@ namespace EpAccounting.UI.ViewModel
         {
             if (this._currentBill != null)
             {
-                foreach (BillItemDetailViewModel billItemDetailViewModel in this.BillItemDetailViewModels)
+                foreach (var billItemDetailViewModel in this.BillItemDetailViewModels)
                 {
                     if (this.CurrentBillDetailViewModel.KindOfVat == KindOfVat.inkl_MwSt)
                     {
-                        billItemDetailViewModel.Price *= (100 + (decimal) this.CurrentBillDetailViewModel.VatPercentage) / 100;
+                        billItemDetailViewModel.Price *= (100 + (decimal)this.CurrentBillDetailViewModel.VatPercentage) / 100;
                     }
                     else if (this.CurrentBillDetailViewModel.KindOfVat == KindOfVat.zzgl_MwSt)
                     {
-                        billItemDetailViewModel.Price *= 100 / (100 + (decimal) this.CurrentBillDetailViewModel.VatPercentage);
+                        billItemDetailViewModel.Price *= 100 / (100 + (decimal)this.CurrentBillDetailViewModel.VatPercentage);
                     }
                 }
 
@@ -301,7 +301,7 @@ namespace EpAccounting.UI.ViewModel
         {
             decimal sum = 0;
 
-            foreach (BillItemDetailViewModel billItemDetailViewModel in this.BillItemDetailViewModels)
+            foreach (var billItemDetailViewModel in this.BillItemDetailViewModels)
             {
                 sum += billItemDetailViewModel.Sum;
             }
@@ -309,13 +309,13 @@ namespace EpAccounting.UI.ViewModel
             if (this._currentBill.KindOfVat == KindOfVat.inkl_MwSt)
             {
                 this.BruttoSum = sum;
-                this.VatSum = this.BruttoSum / (decimal) (100 + this.CurrentBillDetailViewModel.VatPercentage) * (decimal) this.CurrentBillDetailViewModel.VatPercentage;
+                this.VatSum = this.BruttoSum / (decimal)(100 + this.CurrentBillDetailViewModel.VatPercentage) * (decimal)this.CurrentBillDetailViewModel.VatPercentage;
                 this.NettoSum = this.BruttoSum - this.VatSum;
             }
             else if (this._currentBill.KindOfVat == KindOfVat.zzgl_MwSt)
             {
                 this.NettoSum = sum;
-                this.BruttoSum = sum * (100 + (decimal) this.CurrentBillDetailViewModel.VatPercentage) / 100;
+                this.BruttoSum = sum * (100 + (decimal)this.CurrentBillDetailViewModel.VatPercentage) / 100;
                 this.VatSum = this.BruttoSum - this.NettoSum;
             }
             else
@@ -374,8 +374,8 @@ namespace EpAccounting.UI.ViewModel
 
         private void createBillBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            this._wordSerivce.CreateWordBill(this, (bool) e.Argument);
-            e.Result = (bool) e.Argument;
+            this._wordSerivce.CreateWordBill(this, (bool)e.Argument);
+            e.Result = (bool)e.Argument;
         }
 
         private void CreateBillBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -387,12 +387,12 @@ namespace EpAccounting.UI.ViewModel
             }
             else
             {
-                if ((bool) e.Result)
+                if ((bool)e.Result)
                 {
                     this._dialogService.ShowMessage(Resources.Dialog_Title_Bill_Created, Resources.Dialog_Message_Bill_Created);
                 }
 
-                if ((bool) e.Result == false)
+                if ((bool)e.Result == false)
                 {
                     if (this._wordSerivce.PrintDocument())
                     {
@@ -472,10 +472,10 @@ namespace EpAccounting.UI.ViewModel
 
         private void MoveItemUp()
         {
-            int oldIndex = this.SelectedBillItemDetailViewModel.Position - 1;
-            int newIndex = oldIndex - 1;
+            var oldIndex = this.SelectedBillItemDetailViewModel.Position - 1;
+            var newIndex = oldIndex - 1;
 
-            BillItemDetailViewModel tempItemDetailViewModel = this.BillItemDetailViewModels[oldIndex];
+            var tempItemDetailViewModel = this.BillItemDetailViewModels[oldIndex];
             this.BillItemDetailViewModels[oldIndex] = this.BillItemDetailViewModels[newIndex];
             this.BillItemDetailViewModels[newIndex] = tempItemDetailViewModel;
 
@@ -497,10 +497,10 @@ namespace EpAccounting.UI.ViewModel
 
         private void MoveItemDown()
         {
-            int oldIndex = this.SelectedBillItemDetailViewModel.Position - 1;
-            int newIndex = oldIndex + 1;
+            var oldIndex = this.SelectedBillItemDetailViewModel.Position - 1;
+            var newIndex = oldIndex + 1;
 
-            BillItemDetailViewModel tempItemDetailViewModel = this.BillItemDetailViewModels[oldIndex];
+            var tempItemDetailViewModel = this.BillItemDetailViewModels[oldIndex];
             this.BillItemDetailViewModels[oldIndex] = this.BillItemDetailViewModels[newIndex];
             this.BillItemDetailViewModels[newIndex] = tempItemDetailViewModel;
 
@@ -517,8 +517,8 @@ namespace EpAccounting.UI.ViewModel
 
         private void AddItem()
         {
-            BillItem billItem = new BillItem { Position = this.BillItemDetailViewModels.Count + 1 };
-            BillItemDetailViewModel billItemDetailViewModel = new BillItemDetailViewModel(billItem, this._repository);
+            var billItem = new BillItem { Position = this.BillItemDetailViewModels.Count + 1, Amount = 1 };
+            var billItemDetailViewModel = new BillItemDetailViewModel(billItem, this._repository);
 
             this._currentBill.AddBillItem(billItem);
             this.BillItemDetailViewModels.Add(billItemDetailViewModel);
@@ -576,9 +576,9 @@ namespace EpAccounting.UI.ViewModel
 
         private void UpdatePositions()
         {
-            for (int i = 0; i < this.BillItemDetailViewModels.Count; i++)
+            for (var i = 0; i < this.BillItemDetailViewModels.Count; i++)
             {
-                int currentPosition = i + 1;
+                var currentPosition = i + 1;
 
                 if (this.BillItemDetailViewModels[i].Position != currentPosition)
                 {
@@ -589,12 +589,12 @@ namespace EpAccounting.UI.ViewModel
 
         private void UpdateCommands()
         {
-            foreach (ImageCommandViewModel imageCommandViewModel in this.Commands)
+            foreach (var imageCommandViewModel in this.Commands)
             {
                 imageCommandViewModel.RelayCommand.RaiseCanExecuteChanged();
             }
 
-            foreach (ImageCommandViewModel imageCommandViewModel in this.WordCommands)
+            foreach (var imageCommandViewModel in this.WordCommands)
             {
                 imageCommandViewModel.RelayCommand.RaiseCanExecuteChanged();
             }

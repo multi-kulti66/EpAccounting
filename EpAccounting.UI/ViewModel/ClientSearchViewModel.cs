@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: ClientSearchViewModel.cs
-// Last Change: 22.02.2018, 19:59
+// Last Change: 01.03.2018, 15:13
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -203,13 +203,13 @@ namespace EpAccounting.UI.ViewModel
             {
                 int numberOfClients;
 
-                if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
+                if (tupleCriterion.Item2 != null && tupleCriterion.Item3 != null)
                 {
-                    numberOfClients = this._repository.GetQuantityByCriteria<Client>(tupleCriterion.Item1);
+                    numberOfClients = this._repository.GetQuantityByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3);
                 }
                 else
                 {
-                    numberOfClients = this._repository.GetQuantityByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3);
+                    numberOfClients = this._repository.GetQuantityByCriteria<Client>(tupleCriterion.Item1);
                 }
 
 
@@ -219,16 +219,16 @@ namespace EpAccounting.UI.ViewModel
 
                 this.FoundClients.Clear();
 
-                if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
+                if (tupleCriterion.Item2 != null && tupleCriterion.Item3 != null)
                 {
-                    foreach (Client client in this._repository.GetByCriteria<Client>(tupleCriterion.Item1, this.CurrentPage).ToList())
+                    foreach (var client in this._repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, this.CurrentPage).ToList())
                     {
                         this.FoundClients.Add(new ClientDetailViewModel(client, this._repository));
                     }
                 }
                 else
                 {
-                    foreach (Client client in this._repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, this.CurrentPage).ToList())
+                    foreach (var client in this._repository.GetByCriteria<Client>(tupleCriterion.Item1, this.CurrentPage).ToList())
                     {
                         this.FoundClients.Add(new ClientDetailViewModel(client, this._repository));
                     }
@@ -244,9 +244,9 @@ namespace EpAccounting.UI.ViewModel
         {
             try
             {
-                Client client = this._repository.GetById<Client>(id);
+                var client = this._repository.GetById<Client>(id);
 
-                for (int i = 0; i < this.FoundClients.Count; i++)
+                for (var i = 0; i < this.FoundClients.Count; i++)
                 {
                     if (this.FoundClients[i].Id == id)
                     {

@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: BillSearchViewModel.cs
-// Last Change: 22.02.2018, 21:46
+// Last Change: 01.03.2018, 15:11
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -183,9 +183,9 @@ namespace EpAccounting.UI.ViewModel
 
         private void LoadBillsFromClient(int clientId)
         {
-            Conjunction billConjunction = Restrictions.Conjunction();
+            var billConjunction = Restrictions.Conjunction();
             Expression<Func<Bill, Client>> expression = x => x.Client;
-            Conjunction clientConjunction = Restrictions.Conjunction();
+            var clientConjunction = Restrictions.Conjunction();
             clientConjunction.Add(Restrictions.Where<Client>(client => client.Id == clientId));
 
             this.LoadSearchedBills(new Tuple<ICriterion,
@@ -201,17 +201,17 @@ namespace EpAccounting.UI.ViewModel
             {
                 int numberOfBills;
 
-                if ((tupleCriterion.Item4 == null || tupleCriterion.Item5 == null) && (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null))
+                if (tupleCriterion.Item2 != null && tupleCriterion.Item3 != null && tupleCriterion.Item4 != null && tupleCriterion.Item5 != null)
                 {
-                    numberOfBills = this._repository.GetQuantityByCriteria<Bill>(tupleCriterion.Item1);
+                    numberOfBills = this._repository.GetQuantityByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, tupleCriterion.Item4, tupleCriterion.Item5);
                 }
-                else if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
+                else if (tupleCriterion.Item2 != null && tupleCriterion.Item3 != null)
                 {
                     numberOfBills = this._repository.GetQuantityByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3);
                 }
                 else
                 {
-                    numberOfBills = this._repository.GetQuantityByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, tupleCriterion.Item4, tupleCriterion.Item5);
+                    numberOfBills = this._repository.GetQuantityByCriteria<Bill>(tupleCriterion.Item1);
                 }
 
                 this.NumberOfAllPages = (numberOfBills - 1) / Settings.Default.PageSize + 1;
@@ -220,23 +220,23 @@ namespace EpAccounting.UI.ViewModel
 
                 this.FoundBills.Clear();
 
-                if ((tupleCriterion.Item4 == null || tupleCriterion.Item5 == null) && (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null))
+                if (tupleCriterion.Item2 != null && tupleCriterion.Item3 != null && tupleCriterion.Item4 != null && tupleCriterion.Item5 != null)
                 {
-                    foreach (Bill bill in this._repository.GetByCriteria<Bill>(tupleCriterion.Item1, this.CurrentPage).ToList())
+                    foreach (var bill in this._repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, tupleCriterion.Item4, tupleCriterion.Item5, this.CurrentPage).ToList())
                     {
                         this.FoundBills.Add(new BillDetailViewModel(bill, this._repository, this._dialogService));
                     }
                 }
-                else if (tupleCriterion.Item2 == null || tupleCriterion.Item3 == null)
+                else if (tupleCriterion.Item2 != null && tupleCriterion.Item3 != null)
                 {
-                    foreach (Bill bill in this._repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, this.CurrentPage).ToList())
+                    foreach (var bill in this._repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, this.CurrentPage).ToList())
                     {
                         this.FoundBills.Add(new BillDetailViewModel(bill, this._repository, this._dialogService));
                     }
                 }
                 else
                 {
-                    foreach (Bill bill in this._repository.GetByCriteria(tupleCriterion.Item1, tupleCriterion.Item2, tupleCriterion.Item3, tupleCriterion.Item4, tupleCriterion.Item5, this.CurrentPage).ToList())
+                    foreach (var bill in this._repository.GetByCriteria<Bill>(tupleCriterion.Item1, this.CurrentPage).ToList())
                     {
                         this.FoundBills.Add(new BillDetailViewModel(bill, this._repository, this._dialogService));
                     }
@@ -250,7 +250,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void UpdateBillViaBillId(int id)
         {
-            for (int i = 0; i < this.FoundBills.Count; i++)
+            for (var i = 0; i < this.FoundBills.Count; i++)
             {
                 if (this.FoundBills[i].Id != id)
                 {
@@ -259,7 +259,7 @@ namespace EpAccounting.UI.ViewModel
 
                 try
                 {
-                    Bill bill = this._repository.GetById<Bill>(id);
+                    var bill = this._repository.GetById<Bill>(id);
                     this.FoundBills[i] = new BillDetailViewModel(bill, this._repository, this._dialogService);
                 }
                 catch (Exception e)
@@ -271,7 +271,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void UpdateBillViaClientId(int id)
         {
-            for (int i = 0; i < this.FoundBills.Count; i++)
+            for (var i = 0; i < this.FoundBills.Count; i++)
             {
                 if (this.FoundBills[i].ClientId != id)
                 {
@@ -280,7 +280,7 @@ namespace EpAccounting.UI.ViewModel
 
                 try
                 {
-                    Bill bill = this._repository.GetById<Bill>(this.FoundBills[i].Id);
+                    var bill = this._repository.GetById<Bill>(this.FoundBills[i].Id);
                     this.FoundBills[i] = new BillDetailViewModel(bill, this._repository, this._dialogService);
                 }
                 catch (Exception e)
@@ -297,7 +297,7 @@ namespace EpAccounting.UI.ViewModel
 
         private void RemoveBillsViaClientId(int id)
         {
-            for (int i = this.FoundBills.Count - 1; i >= 0; i--)
+            for (var i = this.FoundBills.Count - 1; i >= 0; i--)
             {
                 if (this.FoundBills[i].ClientId == id)
                 {

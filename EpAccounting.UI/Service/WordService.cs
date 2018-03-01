@@ -1,6 +1,6 @@
 ﻿// ///////////////////////////////////
 // File: WordService.cs
-// Last Change: 17.02.2018, 14:28
+// Last Change: 01.03.2018, 15:16
 // Author: Andre Multerer
 // ///////////////////////////////////
 
@@ -44,8 +44,7 @@ namespace EpAccounting.UI.Service
                 throw new Exception(Resources.Exception_Message_NoPathToBillFolder);
             }
 
-            this._wordApp = new Application();
-            this._wordApp.DisplayAlerts = WdAlertLevel.wdAlertsNone;
+            this._wordApp = new Application { DisplayAlerts = WdAlertLevel.wdAlertsNone };
 
             // Represents the path to the word template.
             object pathWordTemplate = Settings.Default.WordTemplateFilePath;
@@ -74,7 +73,7 @@ namespace EpAccounting.UI.Service
 
             // Open the word document.
             this._wordDoc = this._wordApp.Documents.Open(ref pathWordTemplate, ref this._oMissing, ref readOnly, ref this._oMissing, ref this._oMissing,
-                                                       ref this._oMissing, ref this._oMissing, ref this._oMissing, ref this._oMissing, ref this._oMissing, ref this._oMissing, ref isVisible, ref this._oMissing, ref this._oMissing, ref this._oMissing, ref this._oMissing);
+                                                         ref this._oMissing, ref this._oMissing, ref this._oMissing, ref this._oMissing, ref this._oMissing, ref this._oMissing, ref isVisible, ref this._oMissing, ref this._oMissing, ref this._oMissing, ref this._oMissing);
 
             // Activate the document.
             this._wordDoc.Activate();
@@ -120,10 +119,10 @@ namespace EpAccounting.UI.Service
             object bookmarkTableStart = "tableStart";
 
             // Creates a new instance of a table.
-            Range wrdRng = this._wordDoc.Bookmarks.get_Item(ref bookmarkTableStart).Range;
+            var wrdRng = this._wordDoc.Bookmarks.get_Item(ref bookmarkTableStart).Range;
 
             // Adds the table to the word document.
-            Table objTable = this._wordDoc.Tables.Add(wrdRng, billItemEditViewModel.BillItemDetailViewModels.Count + 1, 7, ref this._oMissing, ref this._oMissing);
+            var objTable = this._wordDoc.Tables.Add(wrdRng, billItemEditViewModel.BillItemDetailViewModels.Count + 1, 7, ref this._oMissing, ref this._oMissing);
 
             // Sets the preferred width for the columns
             objTable.Columns.PreferredWidthType = WdPreferredWidthType.wdPreferredWidthPercent;
@@ -161,14 +160,14 @@ namespace EpAccounting.UI.Service
             objTable.Cell(1, 7).Range.Text = "Gesamtpreis";
 
             // Changes the background color of the header and centers the text
-            for (int i = 1; i <= 7; i++)
+            for (var i = 1; i <= 7; i++)
             {
-                objTable.Cell(1, i).Range.Shading.BackgroundPatternColor = (WdColor) ColorTranslator.ToOle(Color.LightGray);
+                objTable.Cell(1, i).Range.Shading.BackgroundPatternColor = (WdColor)ColorTranslator.ToOle(Color.LightGray);
                 objTable.Cell(1, i).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
             }
 
             // Fills in all the billDetails and sets the row height.
-            for (int i = 2; i <= billItemEditViewModel.BillItemDetailViewModels.Count + 1; i++)
+            for (var i = 2; i <= billItemEditViewModel.BillItemDetailViewModels.Count + 1; i++)
             {
                 objTable.Cell(i, 1).Range.Text = billItemEditViewModel.BillItemDetailViewModels[i - 2].Position.ToString();
                 objTable.Cell(i, 1).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
@@ -191,7 +190,7 @@ namespace EpAccounting.UI.Service
             objTable.Rows[1].Borders[WdBorderType.wdBorderBottom].LineStyle = WdLineStyle.wdLineStyleSingle;
             objTable.Rows[billItemEditViewModel.BillItemDetailViewModels.Count + 1].Borders[WdBorderType.wdBorderBottom].LineStyle = WdLineStyle.wdLineStyleSingle;
 
-            for (int i = 1; i <= 7; i++)
+            for (var i = 1; i <= 7; i++)
             {
                 objTable.Columns[i].Borders[WdBorderType.wdBorderLeft].LineStyle = WdLineStyle.wdLineStyleSingle;
                 objTable.Columns[i].Borders[WdBorderType.wdBorderRight].LineStyle = WdLineStyle.wdLineStyleSingle;
@@ -203,19 +202,18 @@ namespace EpAccounting.UI.Service
 
         public bool PrintDocument()
         {
-            bool printed = false;
-
-            using (PrintDialog printDialog = new PrintDialog())
+            using (var printDialog = new PrintDialog())
             {
-                if (printDialog.ShowDialog() == DialogResult.OK)
+                if (printDialog.ShowDialog() != DialogResult.OK)
                 {
-                    this._wordApp.ActivePrinter = printDialog.PrinterSettings.PrinterName;
-                    this._wordApp.ActiveDocument.PrintOut();
-                    printed = true;
+                    return false;
                 }
+
+                this._wordApp.ActivePrinter = printDialog.PrinterSettings.PrinterName;
+                this._wordApp.ActiveDocument.PrintOut(Copies: printDialog.PrinterSettings.Copies);
             }
 
-            return printed;
+            return true;
         }
 
         public void CloseDocument()
